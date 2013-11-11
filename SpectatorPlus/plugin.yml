@@ -1,0 +1,26 @@
+name: SpectatorPlus
+main: com.pgcraft.spectatorplus.SpectatorPlus
+version: 'B1.3'
+description: Lets players spectate other competitors in events, games, etc. when they're not playing. Allows them to fly but stops them helping other players.
+author: pgmann
+commands:
+  spectate:
+    description: Turns Spectator mode on
+    usage: '/spectate [off]'
+    aliases: spec
+permissions:
+  spectate.*:
+    description: Allows you to spectate and stops players spectating you
+    children:
+      spectate.use: true
+      spectate.hide: true
+    default: false
+  spectate.use:
+    description: Allows you to spectate
+    default: op
+  spectate.hide:
+    description: Stops players spectating you
+    default: false
+  spectate.set:
+    description: Allows you to set the spectator lobby
+    default: op
