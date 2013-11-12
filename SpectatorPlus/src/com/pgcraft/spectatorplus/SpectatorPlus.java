@@ -38,6 +38,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class SpectatorPlus extends JavaPlugin {
+	String[] arenaNameStore = new String[100000];
 	boolean[] specStore = new boolean[100000];
 	boolean[] tpStore = new boolean[100000];
 	int[] setupStore = new int[100000];
@@ -168,7 +169,11 @@ public class SpectatorPlus extends JavaPlugin {
         			}
         		}
         		if (specStore[event.getPlayer().getEntityId()] == true && event.getMaterial() == Material.WRITTEN_BOOK && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        			event.setCancelled(true);
         			arenaSelect(event.getPlayer());
+        		}
+        		if (specStore[event.getPlayer().getEntityId()] == true) {
+        			event.setCancelled(true);
         		}
             }
             @EventHandler
@@ -205,14 +210,26 @@ public class SpectatorPlus extends JavaPlugin {
 									arenaStore[event.getWhoClicked().getEntityId()] = i;
 								}
 							}
-							double tpPosY = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.y");
-							double tpPosX = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.x");
-							double tpPosZ = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.z");
-							World tpWorld = (World) getConfig().get("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.world");
+							double tpPosY = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.y", event.getWhoClicked().getLocation().getY());
+							double tpPosX = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.x", event.getWhoClicked().getLocation().getX());
+							double tpPosZ = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.z", event.getWhoClicked().getLocation().getZ());
+							World tpWorld = getServer().getWorld(getConfig().getString("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.world", event.getWhoClicked().getWorld().getName()));
 							Location where = new Location(tpWorld, tpPosX, tpPosY, tpPosZ);
 
-							event.getWhoClicked().teleport(where);
-		                   	((Player)event.getWhoClicked()).sendMessage(prefix + "Teleported you to " + ChatColor.RED + chosenArena);
+							if (tpWorld == event.getWhoClicked().getWorld()) {
+								double dist = where.distance(event.getWhoClicked().getLocation());
+								if (dist <= 1) {
+									((Player)event.getWhoClicked()).sendMessage(prefix + "No lobby location set for " + ChatColor.RED + chosenArena);
+								} else {
+									((Player)event.getWhoClicked()).sendMessage(prefix + "Teleported you to " + ChatColor.RED + chosenArena);
+									event.getWhoClicked().teleport(where);
+								}
+							} else {
+								((Player)event.getWhoClicked()).sendMessage(prefix + "Teleported you to " + ChatColor.RED + chosenArena);
+								event.getWhoClicked().teleport(where);
+							}
+							
+
 						}
         			}
         			event.setCancelled(true);
@@ -248,6 +265,7 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	// custom method to spawn the player in the lobby
 	void spawnPlayer(Player player) {
+		player.setFireTicks(0);
 		if (getConfig().getBoolean("active") == true) {
 			Location where = new Location(getServer().getWorld(getConfig().getString("world")), getConfig().getDouble("xPos"), getConfig().getDouble("yPos"), getConfig().getDouble("zPos"));
 			Location aboveWhere = new Location(getServer().getWorld(getConfig().getString("world")), getConfig().getDouble("xPos"), getConfig().getDouble("yPos") + 1, getConfig().getDouble("zPos"));
@@ -266,6 +284,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			tpStore[player.getEntityId()] = true;
 			player.teleport(where);
+
 			tpStore[player.getEntityId()] = false;
 		} else {
 			player.performCommand("spawn");
@@ -404,16 +423,33 @@ public class SpectatorPlus extends JavaPlugin {
         			} else {
         				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
         			}
-        		} else if (args.length == 1 && args[0].equals("arena")) {
+        		} else if ((args.length == 1 && args[0].equals("arena")) || (args.length == 2 && args[0].equals("arena") && args[1].equals("add"))) {
         			if (sender.hasPermission("spectate.set")) {
-        				spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add/reset>");
+        				spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add <name>/reset/lobby <id>/list>");
         			} else {
         				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
         			}
-        		} else if (args.length == 2 && args[0].equals("arena") && args[1].equals("add")) {
+        		} else if (args.length == 3 && args[0].equals("arena") && args[1].equals("add")) {
         			if (sender.hasPermission("spectate.set")) {
+        				arenaNameStore[spectator.getEntityId()] = args[2];
         				spectator.sendMessage(prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - the corner with the highest co-ordinates");
         				setupStore[spectator.getEntityId()] = 1;
+        			} else {
+        				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
+        			}
+        		} else if (args.length == 2 && args[0].equals("arena") && args[1].equals("list")) {
+        			if (sender.hasPermission("spectate.set")) {
+    					spectator.sendMessage(ChatColor.GOLD + "          ~~ " + ChatColor.RED + "Arenas" + ChatColor.GOLD + " ~~          ");
+        				for (int i=1; i<getConfig().getInt("nextarena"); i++) {
+        					spectator.sendMessage(ChatColor.RED + "(#" + i + ") " + getConfig().getString("arena." + i + ".name") + ChatColor.GOLD + " Lobby x:" + getConfig().getDouble("arena." + i + ".lobby.x") + " y:" + getConfig().getDouble("arena." + i + ".lobby.y") + " z:" + getConfig().getDouble("arena." + i + ".lobby.z"));
+        				}
+        			} else {
+        				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
+        			}
+        		} else if (args.length == 3 && args[0].equals("arena") && args[1].equals("lobby")) {
+        			if (sender.hasPermission("spectate.set")) {
+        				int region = Integer.parseInt(args[2]);
+        				lobbySetup(spectator, region);
         			} else {
         				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
         			}
@@ -448,7 +484,7 @@ public class SpectatorPlus extends JavaPlugin {
 					spectator.addPotionEffect(heal);
 					// give them compass
 					ItemStack compass = new ItemStack(Material.COMPASS, 1);
-					ItemMeta compassMeta = (SkullMeta)compass.getItemMeta();
+					ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
 					compassMeta.setDisplayName(ChatColor.BLUE + "Teleporter");
 					compass.setItemMeta(compassMeta);
 					spectator.getInventory().addItem(compass);
@@ -464,7 +500,7 @@ public class SpectatorPlus extends JavaPlugin {
         		} else {
     				spectator.sendMessage(ChatColor.GOLD + "            ~~ " + ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus" + ChatColor.GOLD + " ~~            ");
     				spectator.sendMessage(ChatColor.RED + "/spectate [off]" + ChatColor.GOLD + ": Enables/disables spectator mode");
-    				spectator.sendMessage(ChatColor.RED + "/spectate arena <add/reset>" + ChatColor.GOLD + ": Adds/deletes arenas");
+    				spectator.sendMessage(ChatColor.RED + "/spectate arena <add <name>/reset/lobby <id>/list>" + ChatColor.GOLD + ": Adds/deletes arenas");
     				spectator.sendMessage(ChatColor.RED + "/spectate lobby <set/del>" + ChatColor.GOLD + ": Adds/deletes the spectator lobby");
     				spectator.sendMessage(ChatColor.RED + "/spectate mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
         		}
@@ -489,9 +525,10 @@ public class SpectatorPlus extends JavaPlugin {
 			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.y", Math.floor(pos2store[player.getEntityId()].getY()));
 			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.x", Math.floor(pos2store[player.getEntityId()].getX()));
 			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.z", Math.floor(pos2store[player.getEntityId()].getZ()));
+			getConfig().set("arena." + getConfig().getInt("nextarena") + ".name", arenaNameStore[player.getEntityId()]);
 			getConfig().set("nextarena", getConfig().getInt("nextarena") + 1);
 			SpectatorPlus.this.saveConfig();
-			player.sendMessage(prefix + "Arena " + ChatColor.RED + "#" + (getConfig().getInt("nextarena")-1) + ChatColor.GOLD + " successfully set up!");
+			player.sendMessage(prefix + "Arena " + ChatColor.RED + arenaNameStore[player.getEntityId()] + " (#" + (getConfig().getInt("nextarena")-1) + ")" + ChatColor.GOLD + " successfully set up!");
 			return true;
     	} else {
     		if (setupStore[player.getEntityId()] == 1) {
@@ -503,5 +540,12 @@ public class SpectatorPlus extends JavaPlugin {
     			return false;
     		}
     	}
+	}
+	void lobbySetup(Player player, int arenaNum) {
+		getConfig().set("arena." + arenaNum + ".lobby.y", Math.floor(player.getLocation().getY()));
+		getConfig().set("arena." + arenaNum + ".lobby.x", Math.floor(player.getLocation().getX()));
+		getConfig().set("arena." + arenaNum + ".lobby.z", Math.floor(player.getLocation().getZ()));
+		getConfig().set("arena." + arenaNum + ".lobby.world", player.getWorld().getName());
+		player.sendMessage(prefix + "Arena " + ChatColor.RED + "#" + arenaNum + ChatColor.GOLD + "'s lobby location set to your location");
 	}
 }
