@@ -1,6 +1,6 @@
 name: SpectatorPlus
 main: com.pgcraft.spectatorplus.SpectatorPlus
-version: 'B1.3'
+version: 'B1.4'
 description: Lets players spectate other competitors in events, games, etc. when they're not playing. Allows them to fly but stops them helping other players.
 author: pgmann
 commands:

@@ -1,5 +1,7 @@
 package com.pgcraft.spectatorplus;
 
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -14,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -25,8 +28,10 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
@@ -39,7 +44,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class SpectatorPlus extends JavaPlugin {
 	String[] arenaNameStore = new String[100000];
-	boolean[] specStore = new boolean[100000];
+	public boolean[] specStore = new boolean[100000];
 	boolean[] tpStore = new boolean[100000];
 	int[] setupStore = new int[100000];
 	int[] arenaStore = new int[100000];
@@ -47,6 +52,8 @@ public class SpectatorPlus extends JavaPlugin {
 	Location[] pos2store = new Location[100000];
 	String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
 	String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
+	public HashMap <String, ItemStack[]> inventories = new HashMap<String, ItemStack[]>();
+	public HashMap <String, ItemStack[]> armour = new HashMap<String, ItemStack[]>();
 	@Override
 	public void onEnable() {
 		this.saveDefaultConfig(); // save default config if none is there
@@ -88,6 +95,20 @@ public class SpectatorPlus extends JavaPlugin {
             	// Set up mode
             	if(modeSetup(event.getPlayer(), event.getBlock()) == true) {
             		event.setCancelled(true);
+            	}
+            }
+            @EventHandler(priority=EventPriority.HIGHEST)
+            public void onGamemodeChange(PlayerGameModeChangeEvent event) {
+            	if (specStore[event.getPlayer().getEntityId()] == true && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
+            		event.setCancelled(true);
+            		event.getPlayer().setAllowFlight(true);
+            	}
+            }
+            @EventHandler(priority=EventPriority.HIGHEST)
+            public void onPlayerMove(PlayerMoveEvent event) {
+            	if (specStore[event.getPlayer().getEntityId()] == true) {
+            		event.getPlayer().setAllowFlight(true);
+            		event.getPlayer().setGameMode(GameMode.ADVENTURE);
             	}
             }
             @EventHandler
@@ -153,7 +174,7 @@ public class SpectatorPlus extends JavaPlugin {
         		if (specStore[spectator.getEntityId()] == true) {
         			spawnPlayer(spectator);
         			spectator.setGameMode(getServer().getDefaultGameMode());
-        			spectator.getInventory().clear();
+        			loadPlayerInv(spectator);
         			specStore[spectator.getEntityId()] = false;
         		}
             }
@@ -168,7 +189,7 @@ public class SpectatorPlus extends JavaPlugin {
         				tpPlayer(event.getPlayer(), 0);
         			}
         		}
-        		if (specStore[event.getPlayer().getEntityId()] == true && event.getMaterial() == Material.WRITTEN_BOOK && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        		if (specStore[event.getPlayer().getEntityId()] == true && event.getMaterial() == Material.WATCH && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
         			event.setCancelled(true);
         			arenaSelect(event.getPlayer());
         		}
@@ -197,7 +218,7 @@ public class SpectatorPlus extends JavaPlugin {
 						}
         			}
         			//manage arenaSelect choice
-        			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.WRITTEN_BOOK) {
+        			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.BOOK) {
 						ItemStack arenaBook = event.getCurrentItem();
 						ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
 						String chosenArena = meta.getDisplayName();
@@ -253,7 +274,7 @@ public class SpectatorPlus extends JavaPlugin {
 				player.removePotionEffect(PotionEffectType.HEAL);
 				player.setAllowFlight(false);
 				player.setGameMode(getServer().getDefaultGameMode());
-				player.getInventory().clear();
+				loadPlayerInv(player);
 
 			}
 		}
@@ -336,7 +357,7 @@ public class SpectatorPlus extends JavaPlugin {
 	void arenaSelect(Player spectator) {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, basePrefix);
 		for (int i=1; i<getConfig().getInt("nextarena"); i++) {
-			ItemStack arenaBook = new ItemStack(Material.WRITTEN_BOOK, 1);
+			ItemStack arenaBook = new ItemStack(Material.BOOK, 1);
 			ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
 			meta.setDisplayName(getConfig().getString("arena." + i + ".name"));
 			arenaBook.setItemMeta(meta);
@@ -367,7 +388,7 @@ public class SpectatorPlus extends JavaPlugin {
         			spectator.setGameMode(getServer().getDefaultGameMode());
         			spectator.setAllowFlight(false);
         			spectator.removePotionEffect(PotionEffectType.HEAL);
-        			spectator.getInventory().clear();
+        			loadPlayerInv(spectator);
 
         			spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled");
         		} else if (args.length == 1 && args[0].equals("lobby")) {
@@ -473,9 +494,7 @@ public class SpectatorPlus extends JavaPlugin {
 					}
 					// gamemode and inventory
 					spectator.setGameMode(GameMode.ADVENTURE);
-					/*invStore[spectator.getEntityId()] = Bukkit.getServer().createInventory(spectator, 36);
-					invStore[spectator.getEntityId()].addItem(spectator.getInventory().getContents());*/
-					spectator.getInventory().clear();
+					savePlayerInv(spectator);
 					spectator.setAllowFlight(true);
 					spectator.setFoodLevel(20);
 					// disable interaction
@@ -488,10 +507,10 @@ public class SpectatorPlus extends JavaPlugin {
 					compassMeta.setDisplayName(ChatColor.BLUE + "Teleporter");
 					compass.setItemMeta(compassMeta);
 					spectator.getInventory().addItem(compass);
-					// give them book (only for arena mode)
+					// give them bookcase (only for arena mode)
 					String mode = getConfig().getString("mode");
 					if (mode.equals("arena")) {
-						ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+						ItemStack book = new ItemStack(Material.WATCH, 1);
 						ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
 						bookMeta.setDisplayName(ChatColor.DARK_RED + "Arena chooser");
 						book.setItemMeta(bookMeta);
@@ -547,5 +566,22 @@ public class SpectatorPlus extends JavaPlugin {
 		getConfig().set("arena." + arenaNum + ".lobby.z", Math.floor(player.getLocation().getZ()));
 		getConfig().set("arena." + arenaNum + ".lobby.world", player.getWorld().getName());
 		player.sendMessage(prefix + "Arena " + ChatColor.RED + "#" + arenaNum + ChatColor.GOLD + "'s lobby location set to your location");
+	}
+	void savePlayerInv(Player player) {
+		ItemStack[] inv = player.getInventory().getContents();
+		ItemStack[] arm = player.getInventory().getArmorContents();
+		this.inventories.put(player.getName(), inv);
+		this.armour.put(player.getName(), arm);
+		player.getInventory().clear();
+		player.getInventory().setArmorContents(null);
+	}
+	@SuppressWarnings("deprecation")
+	void loadPlayerInv(Player player) {
+		player.getInventory().clear();
+		player.getInventory().setContents(this.inventories.get(player.getName()));
+		player.getInventory().setArmorContents(this.armour.get(player.getName()));
+		this.inventories.remove(player.getName());
+		this.armour.remove(player.getName());
+		player.updateInventory(); // yes, it's deprecated. But it still works!
 	}
 }
