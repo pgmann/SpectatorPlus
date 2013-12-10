@@ -7,33 +7,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -43,239 +21,34 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class SpectatorPlus extends JavaPlugin {
-	String[] arenaNameStore = new String[100000];
-	public boolean[] specStore = new boolean[100000];
-	boolean[] tpStore = new boolean[100000];
-	int[] setupStore = new int[100000];
-	int[] arenaStore = new int[100000];
-	Location[] pos1store = new Location[100000];
-	Location[] pos2store = new Location[100000];
+	public HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
 	String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
 	String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
-	public HashMap <String, ItemStack[]> inventories = new HashMap<String, ItemStack[]>();
-	public HashMap <String, ItemStack[]> armour = new HashMap<String, ItemStack[]>();
 	@Override
 	public void onEnable() {
 		this.saveDefaultConfig(); // save default config if none is there
-		getServer().getPluginManager().registerEvents(new Listener() { 
-            @EventHandler
-            public void onPlayerJoin(PlayerJoinEvent event) {
-            	// On player join - hide spectators from the joining player
-    			for (Player target : getServer().getOnlinePlayers()) {
-					if (specStore[target.getEntityId()] == true) {
-						event.getPlayer().hidePlayer(target);
-					}
-				}
-            }
-            @EventHandler
-            public void onBlockPlace(BlockPlaceEvent event) {
-                // On block place - cancel if the player is a spectator
-            	if (specStore[event.getPlayer().getEntityId()] == true) {
-            		event.setCancelled(true);
-            		event.getPlayer().sendMessage(prefix + "You cannot place blocks while in spectate mode!");
-            	}
-            }
-            @EventHandler
-            public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
-                // On entity hit - are they a spectator or were they hit by a spectator?
-            	if (specStore[event.getDamager().getEntityId()] == true) {
-            		event.setCancelled(true);
-            	}
-            	if (specStore[event.getEntity().getEntityId()] == true) {
-            		event.setCancelled(true);
-            	}
-            }
-            @EventHandler
-            public void onBlockBreak(BlockBreakEvent event) {
-                // On block break - Cancel if the player is a spectator. Fires only when the block is fully broken
-            	if (specStore[event.getPlayer().getEntityId()] == true) {
-            		event.setCancelled(true);
-            		event.getPlayer().sendMessage(prefix + "You cannot break blocks while in spectate mode!");
-            	}
-            	// Set up mode
-            	if(modeSetup(event.getPlayer(), event.getBlock()) == true) {
-            		event.setCancelled(true);
-            	}
-            }
-            @EventHandler(priority=EventPriority.HIGHEST)
-            public void onGamemodeChange(PlayerGameModeChangeEvent event) {
-            	if (specStore[event.getPlayer().getEntityId()] == true && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
-            		event.setCancelled(true);
-            		event.getPlayer().setAllowFlight(true);
-            	}
-            }
-            @EventHandler(priority=EventPriority.HIGHEST)
-            public void onPlayerMove(PlayerMoveEvent event) {
-            	if (specStore[event.getPlayer().getEntityId()] == true) {
-            		event.getPlayer().setAllowFlight(true);
-            		event.getPlayer().setGameMode(GameMode.ADVENTURE);
-            	}
-            }
-            @EventHandler
-            public void onPlayerDropItem(PlayerDropItemEvent event) {
-                // On player drop item - Cancel if the player is a spectator
-            	if (specStore[event.getPlayer().getEntityId()] == true) {
-            		event.setCancelled(true);
-            	}
-            }
-            @EventHandler
-            public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-                // On player pickup item - Cancel if the player is a spectator
-            	if (specStore[event.getPlayer().getEntityId()] == true) {
-            		event.setCancelled(true);
-            	}
-            }
-            @EventHandler
-            public void onEntityTarget(EntityTargetEvent event) {
-                // On entity target - Stop mobs targeting spectators
-            	if (event.getTarget() != null && specStore[event.getTarget().getEntityId()] == true) {
-            		event.setCancelled(true);
-            	}
-            }
-            @EventHandler
-            public void onBlockDamage(BlockDamageEvent event) {
-                // On block damage - Cancels the block damage animation
-            	if (specStore[event.getPlayer().getEntityId()] == true) {
-            		event.setCancelled(true);
-            		event.getPlayer().sendMessage(prefix + "You cannot break blocks while in spectate mode!");
-            	}
-            	// Set up mode
-            	if (modeSetup(event.getPlayer(), event.getBlock()) == true) {
-            		event.setCancelled(true);
-            	}
-            }
-            @EventHandler
-            public void onEntityDamage(EntityDamageEvent event) {
-                // On block damage - Cancels the block damage animation
-            	if (event.getEntity() instanceof Player && specStore[getServer().getPlayer(((Player) event.getEntity()).getName()).getEntityId()] == true) {
-            		event.setCancelled(true);
-            	}
-            	if (event.getEntity() instanceof Player && tpStore[getServer().getPlayer(((Player) event.getEntity()).getName()).getEntityId()] == true) {
-            		event.setCancelled(true);
-            	}
-            }
-            @EventHandler
-            public void onFoodLevelChange(FoodLevelChangeEvent event) {
-                // On food loss - Cancels the food loss
-            	if (event.getEntityType() == EntityType.PLAYER && specStore[event.getEntity().getEntityId()] == true) {
-            		event.setCancelled(true);
-            		getServer().getPlayer(event.getEntity().getName()).setFoodLevel(20);
-            	}
-            }
-            @EventHandler
-            public void onPlayerQuit(PlayerQuitEvent event) {
-        		for (Player target : getServer().getOnlinePlayers()) {
-        			target.showPlayer(event.getPlayer()); // show the leaving player to everyone
-        			event.getPlayer().showPlayer(target); // show the leaving player everyone
-        			event.getPlayer().removePotionEffect(PotionEffectType.HEAL);
-        			
-        		}
-        		Player spectator = event.getPlayer();
-        		if (specStore[spectator.getEntityId()] == true) {
-        			spawnPlayer(spectator);
-        			spectator.setGameMode(getServer().getDefaultGameMode());
-        			loadPlayerInv(spectator);
-        			specStore[spectator.getEntityId()] = false;
-        		}
-            }
-            @EventHandler
-            public void onPlayerInteract(PlayerInteractEvent event) {
-        		if (specStore[event.getPlayer().getEntityId()] == true && event.getMaterial() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-        			String mode = getConfig().getString("mode"); 
-        			if (mode.equals("arena")) {
-        				int region = arenaStore[event.getPlayer().getEntityId()];
-        				tpPlayer(event.getPlayer(), region);
-        			} else {
-        				tpPlayer(event.getPlayer(), 0);
-        			}
-        		}
-        		if (specStore[event.getPlayer().getEntityId()] == true && event.getMaterial() == Material.WATCH && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-        			event.setCancelled(true);
-        			arenaSelect(event.getPlayer());
-        		}
-        		if (specStore[event.getPlayer().getEntityId()] == true) {
-        			event.setCancelled(true);
-        		}
-            }
-            @EventHandler
-            public void onInventoryClick(InventoryClickEvent event) {
-        		if (specStore[event.getWhoClicked().getEntityId()] == true) {
-        			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.SKULL_ITEM && event.getCurrentItem().getDurability() == 3) {
-						ItemStack playerhead = event.getCurrentItem();
-						SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
-						Player skullOwner = getServer().getPlayer(meta.getOwner());
-						event.getWhoClicked().closeInventory();
-						if (skullOwner != null && skullOwner.isOnline() == true && skullOwner.getAllowFlight() == false) {
-							event.getWhoClicked().teleport(skullOwner);
-		                   	((Player)event.getWhoClicked()).sendMessage(prefix + "Teleported you to " + ChatColor.RED + skullOwner.getName());
-						} else {
-							if (skullOwner == null) {
-								OfflinePlayer offlineSkullOwner = getServer().getOfflinePlayer(meta.getOwner());
-								((Player) event.getWhoClicked()).sendMessage(prefix + ChatColor.RED + offlineSkullOwner.getName() + ChatColor.GOLD + " is not online!");
-							} else if (skullOwner.getAllowFlight() == true) {
-								((Player) event.getWhoClicked()).sendMessage(prefix + ChatColor.RED + skullOwner.getName() + ChatColor.GOLD + " is currently spectating!");
-							}
-						}
-        			}
-        			//manage arenaSelect choice
-        			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.BOOK) {
-						ItemStack arenaBook = event.getCurrentItem();
-						ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
-						String chosenArena = meta.getDisplayName();
-						event.getWhoClicked().closeInventory();
-
-						if (arenaBook != null) {
-							// find out the arena id #
-							for (int i=1; i<getConfig().getInt("nextarena"); i++) {
-								if (getConfig().getString("arena." + i + ".name") == chosenArena) {
-									arenaStore[event.getWhoClicked().getEntityId()] = i;
-								}
-							}
-							double tpPosY = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.y", event.getWhoClicked().getLocation().getY());
-							double tpPosX = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.x", event.getWhoClicked().getLocation().getX());
-							double tpPosZ = getConfig().getDouble("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.z", event.getWhoClicked().getLocation().getZ());
-							World tpWorld = getServer().getWorld(getConfig().getString("arena." + arenaStore[event.getWhoClicked().getEntityId()] + ".lobby.world", event.getWhoClicked().getWorld().getName()));
-							Location where = new Location(tpWorld, tpPosX, tpPosY, tpPosZ);
-
-							if (tpWorld == event.getWhoClicked().getWorld()) {
-								double dist = where.distance(event.getWhoClicked().getLocation());
-								if (dist <= 1) {
-									((Player)event.getWhoClicked()).sendMessage(prefix + "No lobby location set for " + ChatColor.RED + chosenArena);
-								} else {
-									((Player)event.getWhoClicked()).sendMessage(prefix + "Teleported you to " + ChatColor.RED + chosenArena);
-									event.getWhoClicked().teleport(where);
-								}
-							} else {
-								((Player)event.getWhoClicked()).sendMessage(prefix + "Teleported you to " + ChatColor.RED + chosenArena);
-								event.getWhoClicked().teleport(where);
-							}
-							
-
-						}
-        			}
-        			event.setCancelled(true);
-        		}
-            }
-		}, this);
+		for (Player player : getServer().getOnlinePlayers()) {
+			user.put(player.getName(), new PlayerObject());
+		}
+		getServer().getPluginManager().registerEvents(new SpectateListener(this), this);
  
         this.getCommand("spectate").setExecutor(commands);
         this.getCommand("spec").setExecutor(commands);
 	}
-	
+	@Override
 	public void onDisable() {
-		for (Player isSpec : getServer().getOnlinePlayers()) { // treat everyone as if they're spectator
-			for (Player target : getServer().getOnlinePlayers()) { // show everyone that player
-				target.showPlayer(isSpec);
+		for (Player player : getServer().getOnlinePlayers()) {
+			for (Player target : getServer().getOnlinePlayers()) {
+				target.showPlayer(player);
 			}
-		}
-		for (Player player: getServer().getOnlinePlayers()) {
-			if (specStore[player.getEntityId()] == true) {
-				spawnPlayer(player);
+			if (user.get(player.getName()).spectating) {
 				player.removePotionEffect(PotionEffectType.HEAL);
 				player.setAllowFlight(false);
 				player.setGameMode(getServer().getDefaultGameMode());
+				player.getInventory().clear();
 				loadPlayerInv(player);
-
+				spawnPlayer(player);
+				user.get(player.getName()).spectating = false;
 			}
 		}
 	}
@@ -303,10 +76,10 @@ public class SpectatorPlus extends JavaPlugin {
 					}
 				}
 			}
-			tpStore[player.getEntityId()] = true;
+			user.get(player.getName()).teleporting = true;
 			player.teleport(where);
 
-			tpStore[player.getEntityId()] = false;
+			user.get(player.getName()).teleporting = false;
 		} else {
 			player.performCommand("spawn");
 		}
@@ -317,7 +90,7 @@ public class SpectatorPlus extends JavaPlugin {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, basePrefix);
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (getConfig().getString("mode").equals("any")) {
-				if (player.hasPermission("spectate.hide") == false && specStore[player.getEntityId()] == false) {
+				if (player.hasPermission("spectate.hide") == false && user.get(player.getName()).spectating == false) {
 					ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 					SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
 					meta.setOwner(player.getName());
@@ -334,7 +107,7 @@ public class SpectatorPlus extends JavaPlugin {
 				int pos1z = getConfig().getInt("arena." + region + ".1.z");
 				int pos2z = getConfig().getInt("arena." + region + ".2.z");
 				// pos1 should have the highest co-ords of the arena, pos2 the lowest
-				if (player.hasPermission("spectate.hide") == false && specStore[player.getEntityId()] == false) {
+				if (player.hasPermission("spectate.hide") == false && user.get(player.getName()).spectating == false) {
 					if (Math.floor(where.getY()) < Math.floor(pos1y) && Math.floor(where.getY()) > Math.floor(pos2y)) {
 						if (Math.floor(where.getX()) < pos1x && Math.floor(where.getX()) > pos2x) {
 							if (Math.floor(where.getZ()) < pos1z && Math.floor(where.getZ()) > pos2z) {
@@ -384,7 +157,7 @@ public class SpectatorPlus extends JavaPlugin {
         			spawnPlayer(spectator);
         			
         			// allow interaction
-        			specStore[spectator.getEntityId()] = false;
+        			user.get(spectator.getName()).spectating = false;
         			spectator.setGameMode(getServer().getDefaultGameMode());
         			spectator.setAllowFlight(false);
         			spectator.removePotionEffect(PotionEffectType.HEAL);
@@ -452,9 +225,9 @@ public class SpectatorPlus extends JavaPlugin {
         			}
         		} else if (args.length == 3 && args[0].equals("arena") && args[1].equals("add")) {
         			if (sender.hasPermission("spectate.set")) {
-        				arenaNameStore[spectator.getEntityId()] = args[2];
+        				user.get(spectator.getName()).arenaName = args[2];
         				spectator.sendMessage(prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - the corner with the highest co-ordinates");
-        				setupStore[spectator.getEntityId()] = 1;
+        				user.get(spectator.getName()).setup = 1;
         			} else {
         				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
         			}
@@ -498,7 +271,7 @@ public class SpectatorPlus extends JavaPlugin {
 					spectator.setAllowFlight(true);
 					spectator.setFoodLevel(20);
 					// disable interaction
-					specStore[spectator.getEntityId()] = true;
+					user.get(spectator.getName()).spectating = true;
 					PotionEffect heal = new PotionEffect(PotionEffectType.HEAL, Integer.MAX_VALUE, 1000, true);
 					spectator.addPotionEffect(heal);
 					// give them compass
@@ -534,26 +307,26 @@ public class SpectatorPlus extends JavaPlugin {
         } // end of onCommand
 	};
 	boolean modeSetup(Player player, Block block) {
-    	if (setupStore[player.getEntityId()] == 2) {
-    		pos2store[player.getEntityId()] = block.getLocation();
-    		setupStore[player.getEntityId()] = 0;
+    	if (user.get(player.getName()).setup == 2) {
+    		user.get(player.getName()).pos2 = block.getLocation();
+    		user.get(player.getName()).setup = 0;
     		
-			getConfig().set("arena." + getConfig().getInt("nextarena") + ".1.y", Math.floor(pos1store[player.getEntityId()].getY()));
-			getConfig().set("arena." + getConfig().getInt("nextarena") + ".1.x", Math.floor(pos1store[player.getEntityId()].getX()));
-			getConfig().set("arena." + getConfig().getInt("nextarena") + ".1.z", Math.floor(pos1store[player.getEntityId()].getZ()));
-			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.y", Math.floor(pos2store[player.getEntityId()].getY()));
-			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.x", Math.floor(pos2store[player.getEntityId()].getX()));
-			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.z", Math.floor(pos2store[player.getEntityId()].getZ()));
-			getConfig().set("arena." + getConfig().getInt("nextarena") + ".name", arenaNameStore[player.getEntityId()]);
+			getConfig().set("arena." + getConfig().getInt("nextarena") + ".1.y", Math.floor(user.get(player.getName()).pos1.getY()));
+			getConfig().set("arena." + getConfig().getInt("nextarena") + ".1.x", Math.floor(user.get(player.getName()).pos1.getX()));
+			getConfig().set("arena." + getConfig().getInt("nextarena") + ".1.z", Math.floor(user.get(player.getName()).pos1.getZ()));
+			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.y", Math.floor(user.get(player.getName()).pos2.getY()));
+			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.x", Math.floor(user.get(player.getName()).pos2.getX()));
+			getConfig().set("arena." + getConfig().getInt("nextarena") + ".2.z", Math.floor(user.get(player.getName()).pos2.getZ()));
+			getConfig().set("arena." + getConfig().getInt("nextarena") + ".name", user.get(player.getName()).arenaName);
 			getConfig().set("nextarena", getConfig().getInt("nextarena") + 1);
 			SpectatorPlus.this.saveConfig();
-			player.sendMessage(prefix + "Arena " + ChatColor.RED + arenaNameStore[player.getEntityId()] + " (#" + (getConfig().getInt("nextarena")-1) + ")" + ChatColor.GOLD + " successfully set up!");
+			player.sendMessage(prefix + "Arena " + ChatColor.RED + user.get(player.getName()).arenaName + " (#" + (getConfig().getInt("nextarena")-1) + ")" + ChatColor.GOLD + " successfully set up!");
 			return true;
     	} else {
-    		if (setupStore[player.getEntityId()] == 1) {
-    		pos1store[player.getEntityId()] = block.getLocation();
+    		if (user.get(player.getName()).setup == 1) {
+    		user.get(player.getName()).pos1 = block.getLocation();
 			player.sendMessage(prefix + "Punch point " + ChatColor.RED + "#2" + ChatColor.GOLD + " - the corner with the lowest co-ordinates");
-    		setupStore[player.getEntityId()] = 2;
+			user.get(player.getName()).setup = 2;
     		return true;
     		} else {
     			return false;
@@ -570,18 +343,18 @@ public class SpectatorPlus extends JavaPlugin {
 	void savePlayerInv(Player player) {
 		ItemStack[] inv = player.getInventory().getContents();
 		ItemStack[] arm = player.getInventory().getArmorContents();
-		this.inventories.put(player.getName(), inv);
-		this.armour.put(player.getName(), arm);
+		user.get(player.getName()).inventory = inv;
+		user.get(player.getName()).armour = arm;
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 	}
 	@SuppressWarnings("deprecation")
 	void loadPlayerInv(Player player) {
 		player.getInventory().clear();
-		player.getInventory().setContents(this.inventories.get(player.getName()));
-		player.getInventory().setArmorContents(this.armour.get(player.getName()));
-		this.inventories.remove(player.getName());
-		this.armour.remove(player.getName());
+		player.getInventory().setContents(user.get(player.getName()).inventory);
+		player.getInventory().setArmorContents(user.get(player.getName()).armour);
+		user.get(player.getName()).inventory = null;
+		user.get(player.getName()).armour = null;
 		player.updateInventory(); // yes, it's deprecated. But it still works!
 	}
 }
