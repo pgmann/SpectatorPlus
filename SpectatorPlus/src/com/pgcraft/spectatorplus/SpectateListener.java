@@ -90,7 +90,7 @@ public class SpectateListener implements Listener {
     }
     @EventHandler(priority=EventPriority.HIGHEST)
     public void onGamemodeChange(PlayerGameModeChangeEvent event) {
-    	if (plugin.user.get(event.getPlayer().getName()).spectating == true && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
+    	if (plugin.user.get(event.getPlayer().getName()).spectating && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
     		event.setCancelled(true);
     		event.getPlayer().setAllowFlight(true);
     	}
@@ -157,15 +157,16 @@ public class SpectateListener implements Listener {
     }
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
+    	Player spectator = event.getPlayer();
 		for (Player target : plugin.getServer().getOnlinePlayers()) {
 			target.showPlayer(event.getPlayer()); // show the leaving player to everyone
 			event.getPlayer().showPlayer(target); // show the leaving player everyone
 		}
-		Player spectator = event.getPlayer();
-		if (plugin.user.get(spectator.getName()).spectating == true) {
+		if (plugin.user.get(spectator.getName()).spectating) {
+			plugin.user.get(spectator.getName()).spectating = false;
+			spectator.setGameMode(plugin.getServer().getDefaultGameMode());
 			plugin.spawnPlayer(spectator);
 			event.getPlayer().removePotionEffect(PotionEffectType.HEAL);
-			spectator.setGameMode(plugin.getServer().getDefaultGameMode());
 			plugin.loadPlayerInv(spectator);
 			plugin.user.remove(spectator.getName());
 		}

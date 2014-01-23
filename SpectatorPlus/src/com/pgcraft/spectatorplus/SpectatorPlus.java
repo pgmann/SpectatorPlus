@@ -146,24 +146,22 @@ public class SpectatorPlus extends JavaPlugin {
             // On command: to the sender of the command
         	if (sender instanceof Player && sender.hasPermission("spectate.use")) {
         		Player spectator = getServer().getPlayer(sender.getName());
-        		// on spectate disable
-        		if (args.length == 1 && args[0].equals("off")) {
-        			// show them to everyone
-        			for (Player target : getServer().getOnlinePlayers()) { 
-        				target.showPlayer(spectator);
+        		if (args.length > 0 && args[0].equals("on")) {
+        			if (args.length == 1) {
+        				enableSpectate((Player) sender, sender);
+        			} else if (getServer().getPlayer(args[1]) != null) {
+        				enableSpectate(getServer().getPlayer(args[1]), sender);
+        			} else {
+        				sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
         			}
-        			
-        			// teleport to spawn
-        			spawnPlayer(spectator);
-        			
-        			// allow interaction
-        			user.get(spectator.getName()).spectating = false;
-        			spectator.setGameMode(getServer().getDefaultGameMode());
-        			spectator.setAllowFlight(false);
-        			spectator.removePotionEffect(PotionEffectType.HEAL);
-        			loadPlayerInv(spectator);
-
-        			spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled");
+        		} else if (args.length > 0 && args[0].equals("off")) {
+        			if (args.length == 1) {
+        				disableSpectate((Player) sender, sender);
+        			} else if (getServer().getPlayer(args[1]) != null) {
+        				disableSpectate(getServer().getPlayer(args[1]), sender);
+        			} else {
+        				sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
+        			}
         		} else if (args.length == 1 && args[0].equals("lobby")) {
         			if (sender.hasPermission("spectate.set")) {
         				spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate lobby <set/del>");
@@ -201,7 +199,7 @@ public class SpectatorPlus extends JavaPlugin {
         			} else {
         				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
         			}
-        		} else if (args.length == 2 && args[0].equals("mode") && args[1].equals("any")) {
+        		} else if (args.length > 1 && args[0].equals("mode") && args[1].equals("any")) {
         			if (sender.hasPermission("spectate.set")) {
         				getConfig().set("mode", "any");
         				SpectatorPlus.this.saveConfig();
@@ -209,7 +207,7 @@ public class SpectatorPlus extends JavaPlugin {
         			} else {
         				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
         			}
-        		} else if (args.length == 2 && args[0].equals("mode") && args[1].equals("arena")) {
+        		} else if (args.length > 1 && args[0].equals("mode") && args[1].equals("arena")) {
         			if (sender.hasPermission("spectate.set")) {
         				getConfig().set("mode", "arena");
         				SpectatorPlus.this.saveConfig();
@@ -256,56 +254,144 @@ public class SpectatorPlus extends JavaPlugin {
         			} else {
         				spectator.sendMessage(prefix + "You do not have permission to change the mode!");
         			}
-        		} else if (args.length == 0) {
-        			// teleport them to the global lobby
-    				spawnPlayer(spectator);
-    				// tell them spectator mode is enabled
-        			spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled");
-        			// hide them from everyone
-					for (Player target : getServer().getOnlinePlayers()) {
-						target.hidePlayer(spectator);
-					}
-					// gamemode and inventory
-					spectator.setGameMode(GameMode.ADVENTURE);
-					savePlayerInv(spectator);
-					spectator.setAllowFlight(true);
-					spectator.setFoodLevel(20);
-					// disable interaction
-					user.get(spectator.getName()).spectating = true;
-					PotionEffect heal = new PotionEffect(PotionEffectType.HEAL, Integer.MAX_VALUE, 1000, true);
-					spectator.addPotionEffect(heal);
-					// give them compass
-					ItemStack compass = new ItemStack(Material.COMPASS, 1);
-					ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
-					compassMeta.setDisplayName(ChatColor.BLUE + "Teleporter");
-					compass.setItemMeta(compassMeta);
-					spectator.getInventory().addItem(compass);
-					// give them bookcase (only for arena mode)
-					String mode = getConfig().getString("mode");
-					if (mode.equals("arena")) {
-						ItemStack book = new ItemStack(Material.WATCH, 1);
-						ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
-						bookMeta.setDisplayName(ChatColor.DARK_RED + "Arena chooser");
-						book.setItemMeta(bookMeta);
-						spectator.getInventory().addItem(book);
-					}
         		} else {
-    				spectator.sendMessage(ChatColor.GOLD + "            ~~ " + ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus" + ChatColor.GOLD + " ~~            ");
-    				spectator.sendMessage(ChatColor.RED + "/spectate [off]" + ChatColor.GOLD + ": Enables/disables spectator mode");
-    				spectator.sendMessage(ChatColor.RED + "/spectate arena <add <name>/reset/lobby <id>/list>" + ChatColor.GOLD + ": Adds/deletes arenas");
-    				spectator.sendMessage(ChatColor.RED + "/spectate lobby <set/del>" + ChatColor.GOLD + ": Adds/deletes the spectator lobby");
-    				spectator.sendMessage(ChatColor.RED + "/spectate mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
+    				printHelp(sender);
         		}
         	} else {
         		if (sender instanceof Player) {
         			sender.sendMessage(prefix + "You don't have permission to spectate!");
         		} else {
-        			sender.sendMessage(prefix + "Only players can exectute this command!");
+        			// Console commands
+            		if (args.length > 0 && args[0].equals("on")) {
+            			if (args.length == 1) {
+            				sender.sendMessage(prefix + "Usage: /spec on <player>");
+            			} else if (getServer().getPlayer(args[1]) != null) {
+            				enableSpectate(getServer().getPlayer(args[1]), sender);
+            			} else {
+            				sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
+            			}
+            		} else if (args.length > 0 && args[0].equals("off")) {
+            			if (args.length == 1) {
+            				sender.sendMessage(prefix + "Usage: /spec off <player>");
+            			} else if (getServer().getPlayer(args[1]) != null) {
+            				disableSpectate(getServer().getPlayer(args[1]), sender);
+            			} else {
+            				sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
+            			}
+            		} else if (args.length == 1 && args[0].equals("mode")) {
+            			sender.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate mode <arena/any>");
+            		} else if (args.length > 1 && args[0].equals("mode") && args[1].equals("any")) {
+            			getConfig().set("mode", "any");
+            			saveConfig();
+            			sender.sendMessage(prefix + "Mode set to " + ChatColor.RED + "any");
+            		} else if (args.length > 1 && args[0].equals("mode") && args[1].equals("arena")) {
+            			getConfig().set("mode", "arena");
+            			saveConfig();
+            			sender.sendMessage(prefix + "Mode set to " + ChatColor.RED + "arena" + ChatColor.GOLD + ". Only players in arena regions can be teleported to by spectators.");
+            		} else {
+            			printHelp(sender);
+            		}
         		}
         	}
         	return true; // return true: to stop usage showing
         } // end of onCommand
 	};
+	void printHelp(CommandSender sender) {
+		sender.sendMessage(ChatColor.GOLD + "            ~~ " + ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus" + ChatColor.GOLD + " ~~            ");
+		sender.sendMessage(ChatColor.RED + "/spectate <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
+		if (sender instanceof Player) {
+			sender.sendMessage(ChatColor.RED + "/spectate arena <add <name>/reset/lobby <id>/list>" + ChatColor.GOLD + ": Adds/deletes arenas");
+			sender.sendMessage(ChatColor.RED + "/spectate lobby <set/del>" + ChatColor.GOLD + ": Adds/deletes the spectator lobby");
+		}
+		sender.sendMessage(ChatColor.RED + "/spectate mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
+	}
+	void disableSpectate(Player spectator, CommandSender sender) {
+		if (user.get(spectator.getName()).spectating) {
+			// show them to everyone
+			for (Player target : getServer().getOnlinePlayers()) { 
+				target.showPlayer(spectator);
+			}
+			
+			// teleport to spawn
+			spawnPlayer(spectator);
+			
+			// allow interaction
+			user.get(spectator.getName()).spectating = false;
+			spectator.setGameMode(getServer().getDefaultGameMode());
+			spectator.setAllowFlight(false);
+			spectator.removePotionEffect(PotionEffectType.HEAL);
+			loadPlayerInv(spectator);
+			
+			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
+				spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled");
+			} else if (sender instanceof Player && !spectator.getName().equals(sender.getName())) {
+				spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.RED + ((Player) sender).getDisplayName());
+				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
+			} else {
+				spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");
+				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
+			}
+			
+		} else {
+			// Spectate mode wasn't on
+			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
+				spectator.sendMessage(prefix + "You aren't spectating!");
+			} else {
+				sender.sendMessage(prefix + ChatColor.RED + spectator.getDisplayName() + ChatColor.GOLD + " isn't spectating!");
+			}
+		}
+	}
+	void enableSpectate(Player spectator, CommandSender sender) {
+		if (user.get(spectator.getName()).spectating) {
+			// Spectate mode wasn't on
+			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
+				spectator.sendMessage(prefix + "You are already spectating!");
+			} else {
+				sender.sendMessage(prefix + ChatColor.RED + spectator.getDisplayName() + ChatColor.GOLD + " is already spectating!");
+			}
+		} else {
+			// teleport them to the global lobby
+			spawnPlayer(spectator);
+			// hide them from everyone
+			for (Player target : getServer().getOnlinePlayers()) {
+				target.hidePlayer(spectator);
+			}
+			// gamemode and inventory
+			spectator.setGameMode(GameMode.ADVENTURE);
+			savePlayerInv(spectator);
+			spectator.setAllowFlight(true);
+			spectator.setFoodLevel(20);
+			// disable interaction
+			user.get(spectator.getName()).spectating = true;
+			PotionEffect heal = new PotionEffect(PotionEffectType.HEAL, Integer.MAX_VALUE, 1000, true);
+			spectator.addPotionEffect(heal);
+			// give them compass
+			ItemStack compass = new ItemStack(Material.COMPASS, 1);
+			ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
+			compassMeta.setDisplayName(ChatColor.BLUE + "Teleporter");
+			compass.setItemMeta(compassMeta);
+			spectator.getInventory().addItem(compass);
+			// give them bookcase (only for arena mode)
+			String mode = getConfig().getString("mode");
+			if (mode.equals("arena")) {
+				ItemStack book = new ItemStack(Material.WATCH, 1);
+				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
+				bookMeta.setDisplayName(ChatColor.DARK_RED + "Arena chooser");
+				book.setItemMeta(bookMeta);
+				spectator.getInventory().addItem(book);
+			}
+			// manage messages if spectator was enabled
+			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
+				spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled");
+			} else if (sender instanceof Player && !spectator.getName().equals(sender.getName())) {
+				spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.RED + ((Player) sender).getDisplayName());
+				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
+			} else {
+				spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");
+				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
+			}
+		}
+	}
 	boolean modeSetup(Player player, Block block) {
     	if (user.get(player.getName()).setup == 2) {
     		user.get(player.getName()).pos2 = block.getLocation();

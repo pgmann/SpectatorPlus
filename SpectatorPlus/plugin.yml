@@ -1,11 +1,11 @@
 name: SpectatorPlus
 main: com.pgcraft.spectatorplus.SpectatorPlus
-version: '1.5'
-description: Lets players spectate other competitors in events, games, etc. when they're not playing. Allows them to fly but stops them helping other players.
+version: '1.6'
+description: "Lets players spectate other competitors in events, games, etc. when they're not playing. Allows them to fly but stops them helping other players. Do [/spec help] for help!"
 author: pgmann
 commands:
   spectate:
-    description: Turns Spectator mode on
+    description: 'See [/spec help] for help'
     usage: 'Do /spectate help to see the plugin help'
     aliases: spec
 permissions:
