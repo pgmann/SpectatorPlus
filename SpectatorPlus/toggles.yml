@@ -1,0 +1,15 @@
+# Enable the teleporter (compass)?
+compass: true
+# Enable the arena selector in arena mode (clock)?
+arenaclock: true
+# Enable spectator-only chat, invisible to non-specs?
+specchat: true
+# Prefix spectator names in the tab list?
+colouredtablist: true
+# Show spectatorplus plugin messages to spectators?
+outputmessages: true
+# Enable spectate mode when a player dies?
+deathspec: false
+
+# Config version (do not alter)
+version: 1
