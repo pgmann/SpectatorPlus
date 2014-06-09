@@ -4,12 +4,20 @@ compass: true
 arenaclock: true
 # Enable spectator-only chat, invisible to non-specs?
 specchat: true
-# Prefix spectator names in the tab list?
-colouredtablist: true
 # Show spectatorplus plugin messages to spectators?
 outputmessages: true
 # Enable spectate mode when a player dies?
 deathspec: false
 
+# Prefix spectator names in the tab list?
+colouredtablist: true
+# See other spectators when you're spectating? (*requires colouredtablist to be true*)
+seespecs: false
+
+# Block commands while spectating?
+blockcmds: true
+# Allow anyone with spectate.admin to bypass command blocking?
+adminbypass: false
+
 # Config version (do not alter)
-version: 1
+version: 1.9

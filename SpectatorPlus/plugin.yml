@@ -21,6 +21,6 @@ permissions:
   spectate.hide:
     description: Stops players spectating you
     default: false
-  spectate.set:
+  spectate.admin:
     description: Allows you to set the spectator lobby
     default: op

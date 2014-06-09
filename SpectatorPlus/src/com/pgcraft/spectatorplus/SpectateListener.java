@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +22,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -32,7 +34,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.potion.PotionEffectType;
 
 public class SpectateListener implements Listener {
 	private SpectatorPlus plugin; // pointer to your main class, unrequired if you don't need methods from the main class
@@ -50,10 +51,13 @@ public class SpectateListener implements Listener {
 				event.getPlayer().hidePlayer(target);
 			}
 		}
+		if (plugin.specs.getConfig().contains(event.getPlayer().getName())) {
+			plugin.enableSpectate(event.getPlayer(), (CommandSender) event.getPlayer());
+		}
 	}
 	@EventHandler
 	public void onChatSend(AsyncPlayerChatEvent event) {
-		if (plugin.specchat) {
+		if (plugin.specChat) {
 			if (plugin.user.get(event.getPlayer().getName()).spectating) {
 				event.setCancelled(true);
 				for (Player player : plugin.getServer().getOnlinePlayers()) {
@@ -105,7 +109,7 @@ public class SpectateListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-	@EventHandler(priority=EventPriority.HIGHEST)
+	@EventHandler(priority=EventPriority.HIGH)
 	public void onGamemodeChange(PlayerGameModeChangeEvent event) {
 		if (plugin.user.get(event.getPlayer().getName()).spectating && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
 			event.setCancelled(true);
@@ -113,67 +117,67 @@ public class SpectateListener implements Listener {
 		}
 	}
 	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onPlayerMove(PlayerMoveEvent event) {
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
+	void onPlayerMove(PlayerMoveEvent event) {
+		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.getPlayer().setAllowFlight(true);
 			event.getPlayer().setGameMode(GameMode.ADVENTURE);
 		}
 	}
 	@EventHandler
-	public void onPlayerDropItem(PlayerDropItemEvent event) {
+	void onPlayerDropItem(PlayerDropItemEvent event) {
 		// On player drop item - Cancel if the player is a spectator
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
+		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 		}
 	}
 	@EventHandler
-	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+	void onPlayerPickupItem(PlayerPickupItemEvent event) {
 		// On player pickup item - Cancel if the player is a spectator
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
+		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 		}
 	}
 	@EventHandler
-	public void onEntityTarget(EntityTargetEvent event) {
+	void onEntityTarget(EntityTargetEvent event) {
 		// On entity target - Stop mobs targeting spectators
 		if (event.getTarget() != null && event.getTarget() instanceof Player && plugin.user.get(((Player) event.getTarget()).getName()).spectating) {
 			event.setCancelled(true);
 		}
 	}
 	@EventHandler
-	public void onBlockDamage(BlockDamageEvent event) {
+	void onBlockDamage(BlockDamageEvent event) {
 		// On block damage - Cancels the block damage animation
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
+		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 			if(plugin.output) {event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");}
 		}
 		// Set up mode
-		if (plugin.modeSetup(event.getPlayer(), event.getBlock()) == true) {
+		if (plugin.modeSetup(event.getPlayer(), event.getBlock())) {
 			event.setCancelled(true);
 		}
 	}
 	@EventHandler
-	public void onEntityDamage(EntityDamageEvent event) {
+	void onEntityDamage(EntityDamageEvent event) {
 		// On block damage - Cancels the block damage animation
-		if (event.getEntity() instanceof Player && plugin.user.get(((Player) event.getEntity()).getName()).spectating == true) {
+		if (event.getEntity() instanceof Player && plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
 			event.setCancelled(true);
 			event.getEntity().setFireTicks(0);
 		}
-		if (event.getEntity() instanceof Player && plugin.user.get(((Player) event.getEntity()).getName()).teleporting == true) {
+		if (event.getEntity() instanceof Player && plugin.user.get(((Player) event.getEntity()).getName()).teleporting) {
 			event.setCancelled(true);
 			event.getEntity().setFireTicks(0);
 		}
 	}
 	@EventHandler
-	public void onFoodLevelChange(FoodLevelChangeEvent event) {
+	void onFoodLevelChange(FoodLevelChangeEvent event) {
 		// On food loss - Cancels the food loss
-		if (event.getEntityType() == EntityType.PLAYER && plugin.user.get(event.getEntity().getName()).spectating == true) {
+		if (event.getEntityType() == EntityType.PLAYER && plugin.user.get(event.getEntity().getName()).spectating) {
 			event.setCancelled(true);
 			plugin.getServer().getPlayer(event.getEntity().getName()).setFoodLevel(20);
 		}
 	}
 	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
+	void onPlayerQuit(PlayerQuitEvent event) {
 		Player spectator = event.getPlayer();
 		if (plugin.scoreboard) {
 			plugin.team.removePlayer(spectator);
@@ -186,13 +190,12 @@ public class SpectateListener implements Listener {
 			plugin.user.get(spectator.getName()).spectating = false;
 			spectator.setGameMode(plugin.getServer().getDefaultGameMode());
 			plugin.spawnPlayer(spectator);
-			event.getPlayer().removePotionEffect(PotionEffectType.HEAL);
 			plugin.loadPlayerInv(spectator);
 			plugin.user.remove(spectator.getName());
 		}
 	}
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) {
+	void onPlayerInteract(PlayerInteractEvent event) {
 		if (plugin.user.get(event.getPlayer().getName()).spectating == true && event.getMaterial() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			String mode = plugin.setup.getConfig().getString("mode"); 
 			if (mode.equals("arena")) {
@@ -212,23 +215,33 @@ public class SpectateListener implements Listener {
 		}
 	}
 	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent event) {
+	void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		if (plugin.blockCmds) {
+			if (event.getPlayer().hasPermission("spectate.admin")&&plugin.adminBypass) {
+				// Do nothing
+			} else if (!(event.getMessage().startsWith("/spec")||event.getMessage().startsWith("/spectate")) && plugin.user.get(event.getPlayer().getName()).spectating) {
+				event.getPlayer().sendMessage(plugin.prefix+"Command blocked!");
+				event.setCancelled(true);
+			}
+		}
+	}
+	@EventHandler
+	void onPlayerRespawn(PlayerRespawnEvent event) {
 		if(plugin.death) {
 			// prevent murdering clients! (force close bug if spec mode is enabled instantly)
 			new AfterRespawnTask(event.getPlayer(), plugin).runTaskLater(plugin, 20);
 		}
 	}
 	@EventHandler
-	public void onInventoryClick(InventoryClickEvent event) {
-		if (plugin.user.get(event.getWhoClicked().getName()).spectating == true) {
+	void onInventoryClick(InventoryClickEvent event) {
+		if (plugin.user.get(event.getWhoClicked().getName()).spectating) {
 			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.SKULL_ITEM && event.getCurrentItem().getDurability() == 3) {
 				ItemStack playerhead = event.getCurrentItem();
 				SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
 				Player skullOwner = plugin.getServer().getPlayer(meta.getOwner());
 				event.getWhoClicked().closeInventory();
 				if (skullOwner != null && skullOwner.isOnline() && !plugin.user.get(skullOwner.getName()).spectating) {
-					event.getWhoClicked().teleport(skullOwner);
-					if(plugin.output) {((Player)event.getWhoClicked()).sendMessage(plugin.prefix + "Teleported you to " + ChatColor.RED + skullOwner.getName());}
+					plugin.choosePlayer((Player) event.getWhoClicked(), skullOwner);
 				} else {
 					if (skullOwner == null) {
 						OfflinePlayer offlineSkullOwner = plugin.getServer().getOfflinePlayer(meta.getOwner());

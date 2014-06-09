@@ -88,5 +88,11 @@ public class ConfigAccessor {
             this.plugin.saveResource(fileName+".yml", false);
         }
     }
+    
+    public void saveDefaultConfig(boolean force) {
+        if (force) {            
+            this.plugin.saveResource(fileName+".yml", true);
+        }
+    }
  
 }

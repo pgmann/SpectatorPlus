@@ -28,16 +28,20 @@ public class SpectatorPlus extends JavaPlugin {
 	public HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
 	String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
 	String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
+	double version = 1.9; // Plugin version
 	ConsoleCommandSender console;
-	ConfigAccessor setup,toggles;	
+	ConfigAccessor setup,toggles,specs;
 
-	// manage toggles
+	// Manage toggles
 	boolean compass;
 	boolean clock;
-	boolean specchat;
+	boolean specChat;
 	boolean scoreboard;
 	boolean output;
 	boolean death;
+	boolean seeSpecs;
+	boolean blockCmds;
+	boolean adminBypass;
 
 	ScoreboardManager manager;
 	Scoreboard board;
@@ -47,30 +51,52 @@ public class SpectatorPlus extends JavaPlugin {
 	public void onEnable() {
 		setup = new ConfigAccessor(this, "setup");
 		toggles = new ConfigAccessor(this, "toggles");
+		specs = new ConfigAccessor(this, "spectators");
 
 		setup.saveDefaultConfig();
 		toggles.saveDefaultConfig();
+		specs.saveDefaultConfig();
+		
+		console = getServer().getConsoleSender();
+		
+		// Fix config if from previous version
+		if (toggles.getConfig().getDouble("version")<version) {
+			console.sendMessage(prefix+"Version "+ChatColor.RED+version+ChatColor.GOLD+" includes new toggles, adding to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			toggles.getConfig().set("seespecs", false);
+			toggles.getConfig().set("blockcmds", true);
+			toggles.getConfig().set("adminbypass", false);
+			// Config was updated, fix version number.
+			console.sendMessage(prefix+"Config updated from version "+ChatColor.RED+toggles.getConfig().getDouble("version")+ChatColor.GOLD+" to version "+ChatColor.RED+version+ChatColor.GOLD+" successfully!");
+			toggles.getConfig().set("version",version);
+			toggles.saveConfig();
+		}
 
 		compass = toggles.getConfig().getBoolean("compass", true);
 		clock = toggles.getConfig().getBoolean("arenaclock", true);
-		specchat = toggles.getConfig().getBoolean("specchat", true);
+		specChat = toggles.getConfig().getBoolean("specchat", true);
 		scoreboard = toggles.getConfig().getBoolean("colouredtablist", true);
 		output = toggles.getConfig().getBoolean("outputmessages", true);
 		death = toggles.getConfig().getBoolean("deathspec", false);
+		seeSpecs = toggles.getConfig().getBoolean("seespecs", false);
+		if (!scoreboard) seeSpecs = false;
+		blockCmds = toggles.getConfig().getBoolean("blockCmds", true);
+		adminBypass = toggles.getConfig().getBoolean("adminbypass", false);
 
-		console = getServer().getConsoleSender();
 		if (scoreboard) {
 			manager = Bukkit.getScoreboardManager();
 			board = manager.getNewScoreboard();
 			team = board.registerNewTeam("spec");
 			team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
 		}
+		if (seeSpecs) {
+			team.setCanSeeFriendlyInvisibles(true);
+		}
 
 		for (Player player : getServer().getOnlinePlayers()) {
 			user.put(player.getName(), new PlayerObject());
 		}
 		getServer().getPluginManager().registerEvents(new SpectateListener(this), this);
-		if(output) {console.sendMessage(prefix + "Version " + ChatColor.RED + "1.8" + ChatColor.GOLD + " is enabled!");}
+		if(output) {console.sendMessage(prefix + "Version " + ChatColor.RED + version + ChatColor.GOLD + " is enabled!");}
 		this.getCommand("spectate").setExecutor(commands);
 		this.getCommand("spec").setExecutor(commands);
 	}
@@ -82,7 +108,6 @@ public class SpectatorPlus extends JavaPlugin {
 				target.showPlayer(player);
 			}
 			if (user.get(player.getName()).spectating) {
-				player.removePotionEffect(PotionEffectType.HEAL);
 				player.setAllowFlight(false);
 				player.setGameMode(getServer().getDefaultGameMode());
 				player.getInventory().clear();
@@ -94,10 +119,6 @@ public class SpectatorPlus extends JavaPlugin {
 				user.get(player.getName()).spectating = false;
 			}
 		}
-	}
-	@Override
-	public void onLoad() {
-
 	}
 
 	// --------------
@@ -192,6 +213,10 @@ public class SpectatorPlus extends JavaPlugin {
 		spectator.openInventory(gui);
 	}
 
+	void choosePlayer(Player spectator, Player target) {
+		spectator.teleport(target);
+		if(output) {spectator.sendMessage(prefix + "Teleported you to " + ChatColor.RED + target.getName());}
+	}
 
 	// command
 	CommandExecutor commands = new CommandExecutor() {
@@ -207,6 +232,30 @@ public class SpectatorPlus extends JavaPlugin {
 					} else {
 						sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
 					}
+				} else if(args.length > 0 && args[0].equals("reload")) {
+					setup.reloadConfig();
+					toggles.reloadConfig();
+					sender.sendMessage(prefix+"Config reloaded!");
+				} else if (args.length > 0 && (args[0].equals("p")||args[0].equals("player"))) {
+					// For the player who issued the command...
+					if (sender instanceof Player) {
+						if (user.get(sender.getName()).spectating) {
+							if (args.length>1) {
+								if (getServer().getPlayer(args[1])!=null&&!user.get(getServer().getPlayer(args[1]).getName()).spectating) {
+									choosePlayer((Player) sender, getServer().getPlayer(args[1]));
+								} else {
+									sender.sendMessage(prefix+ChatColor.WHITE+args[1]+ChatColor.GOLD+" isn't online!");
+								}
+							} else {
+								sender.sendMessage(prefix+"Specify the player you want to spectate: /spec p <player>");
+							}
+						} else {
+							sender.sendMessage(prefix+"You aren't spectating!");
+						}
+					} else {
+						sender.sendMessage(prefix+"Cannot be executed from the console!");
+					}
+					// TODO add argument to allow the console to teleport spectators to players.
 				} else if (args.length > 0 && args[0].equals("off")) {
 					if (args.length == 1) {
 						disableSpectate((Player) sender, sender);
@@ -216,13 +265,13 @@ public class SpectatorPlus extends JavaPlugin {
 						sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
 					}
 				} else if (args.length == 1 && args[0].equals("lobby")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate lobby <set/del>");
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 				} else if (args.length == 2 && args[0].equals("lobby") && args[1].equals("set")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						Location where = spectator.getLocation();
 						setup.getConfig().set("xPos", Math.floor(where.getX())+0.5);
 						setup.getConfig().set("yPos", Math.floor(where.getY()));
@@ -235,7 +284,7 @@ public class SpectatorPlus extends JavaPlugin {
 						spectator.sendMessage(prefix + "You do not have permission to set the lobby location!");
 					}
 				} else if (args.length == 2 && args[0].equals("lobby") && (args[1].equals("del") || args[1].equals("delete"))) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						setup.getConfig().set("xPos", 0);
 						setup.getConfig().set("yPos", 0);
 						setup.getConfig().set("zPos", 0);
@@ -247,13 +296,13 @@ public class SpectatorPlus extends JavaPlugin {
 						spectator.sendMessage(prefix + "You do not have permission to set the lobby location!");
 					}
 				} else if (args.length == 1 && args[0].equals("mode")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate mode <arena/any>");
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 				} else if (args.length > 1 && args[0].equals("mode") && args[1].equals("any")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						setup.getConfig().set("mode", "any");
 						setup.saveConfig();
 						spectator.sendMessage(prefix + "Mode set to " + ChatColor.RED + "any");
@@ -261,7 +310,7 @@ public class SpectatorPlus extends JavaPlugin {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 				} else if (args.length > 1 && args[0].equals("mode") && args[1].equals("arena")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						setup.getConfig().set("mode", "arena");
 						setup.saveConfig();
 						spectator.sendMessage(prefix + "Mode set to " + ChatColor.RED + "arena" + ChatColor.GOLD + ". Only players in arena regions can be teleported to by spectators.");
@@ -269,13 +318,13 @@ public class SpectatorPlus extends JavaPlugin {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 				} else if ((args.length == 1 && args[0].equals("arena")) || (args.length == 2 && args[0].equals("arena") && args[1].equals("add"))) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add <name>/reset/lobby <id>/list>");
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 				} else if (args.length == 3 && args[0].equals("arena") && args[1].equals("add")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						user.get(spectator.getName()).arenaName = args[2];
 						spectator.sendMessage(prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - a corner of the arena");
 						user.get(spectator.getName()).setup = 1;
@@ -283,7 +332,7 @@ public class SpectatorPlus extends JavaPlugin {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 				} else if (args.length == 2 && args[0].equals("arena") && args[1].equals("list")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						spectator.sendMessage(ChatColor.GOLD + "          ~~ " + ChatColor.RED + "Arenas" + ChatColor.GOLD + " ~~          ");
 						for (int i=1; i<setup.getConfig().getInt("nextarena"); i++) {
 							spectator.sendMessage(ChatColor.RED + "(#" + i + ") " + setup.getConfig().getString("arena." + i + ".name") + ChatColor.GOLD + " Lobby x:" + setup.getConfig().getDouble("arena." + i + ".lobby.x") + " y:" + setup.getConfig().getDouble("arena." + i + ".lobby.y") + " z:" + setup.getConfig().getDouble("arena." + i + ".lobby.z"));
@@ -292,13 +341,13 @@ public class SpectatorPlus extends JavaPlugin {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 				} else if (args.length == 3 && args[0].equals("arena") && args[1].equals("lobby")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						lobbySetup(spectator, args[2]);
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 				} else if (args.length == 2 && args[0].equals("arena") && args[1].equals("reset")) {
-					if (sender.hasPermission("spectate.set")) {
+					if (sender.hasPermission("spectate.admin")) {
 						setup.getConfig().set("arena", null);
 						setup.getConfig().set("nextarena", 1);
 						setup.saveConfig();
@@ -354,13 +403,18 @@ public class SpectatorPlus extends JavaPlugin {
 		if (sender instanceof Player) {
 			sender.sendMessage(ChatColor.RED + "/spectate arena <add <name>/reset/lobby <id>/list>" + ChatColor.GOLD + ": Adds/deletes arenas");
 			sender.sendMessage(ChatColor.RED + "/spectate lobby <set/del>" + ChatColor.GOLD + ": Adds/deletes the spectator lobby");
+			sender.sendMessage(ChatColor.RED + "/spectate player <player>" + ChatColor.GOLD + ": Teleport to <player>");
 		}
+		sender.sendMessage(ChatColor.RED + "/spectate reload" + ChatColor.GOLD + ": Reload configuration");
 		sender.sendMessage(ChatColor.RED + "/spectate mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
 	}
 	void disableSpectate(Player spectator, CommandSender sender) {
 		if (user.get(spectator.getName()).spectating) {
 			// show them to everyone
-			for (Player target : getServer().getOnlinePlayers()) { 
+			for (Player target : getServer().getOnlinePlayers()) {
+				if (seeSpecs&&user.get(target.getName()).spectating) {
+					spectator.hidePlayer(target);
+				}
 				target.showPlayer(spectator);
 			}
 
@@ -371,8 +425,8 @@ public class SpectatorPlus extends JavaPlugin {
 			user.get(spectator.getName()).spectating = false;
 			spectator.setGameMode(getServer().getDefaultGameMode());
 			spectator.setAllowFlight(false);
-			spectator.removePotionEffect(PotionEffectType.HEAL);
 			loadPlayerInv(spectator);
+			spectator.removePotionEffect(PotionEffectType.INVISIBILITY);
 
 			//remove from spec team
 			if (scoreboard) {
@@ -388,7 +442,8 @@ public class SpectatorPlus extends JavaPlugin {
 				if(output) {spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");}
 				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
 			}
-
+			specs.getConfig().set(spectator.getName(), null);
+			specs.saveConfig();
 		} else {
 			// Spectate mode wasn't on
 			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
@@ -411,17 +466,20 @@ public class SpectatorPlus extends JavaPlugin {
 			spawnPlayer(spectator);
 			// hide them from everyone
 			for (Player target : getServer().getOnlinePlayers()) {
-				target.hidePlayer(spectator);
+				if(seeSpecs&&user.get(target.getName()).spectating) {
+					spectator.showPlayer(target);
+				} else {
+					target.hidePlayer(spectator); // Hide the spectator from non-specs: if seeSpecs mode is off and the target isn't spectating
+				}
 			}
-			// gamemode and inventory
+			// gamemode, 'ghost' and inventory
 			spectator.setGameMode(GameMode.ADVENTURE);
 			savePlayerInv(spectator);
 			spectator.setAllowFlight(true);
 			spectator.setFoodLevel(20);
+			spectator.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
 			// disable interaction
 			user.get(spectator.getName()).spectating = true;
-			PotionEffect heal = new PotionEffect(PotionEffectType.HEAL, Integer.MAX_VALUE, 1000, true);
-			spectator.addPotionEffect(heal);
 			// give them compass if toggle on
 			if (compass) {
 				ItemStack compass = new ItemStack(Material.COMPASS, 1);
@@ -455,6 +513,8 @@ public class SpectatorPlus extends JavaPlugin {
 				if(output) {spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");}
 				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
 			}
+			specs.getConfig().set(spectator.getName(), true);
+			specs.saveConfig();
 		}
 	}
 	boolean modeSetup(Player player, Block block) {
