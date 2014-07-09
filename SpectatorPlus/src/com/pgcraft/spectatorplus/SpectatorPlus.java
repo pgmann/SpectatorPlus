@@ -24,11 +24,12 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
+@SuppressWarnings("deprecation")
 public class SpectatorPlus extends JavaPlugin {
-	public HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
+	HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
 	String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
 	String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
-	double version = 1.9; // Plugin version
+	double version = 1.91; // Plugin version
 	ConsoleCommandSender console;
 	ConfigAccessor setup,toggles,specs;
 
@@ -60,15 +61,25 @@ public class SpectatorPlus extends JavaPlugin {
 		console = getServer().getConsoleSender();
 		
 		// Fix config if from previous version
-		if (toggles.getConfig().getDouble("version")<version) {
-			console.sendMessage(prefix+"Version "+ChatColor.RED+version+ChatColor.GOLD+" includes new toggles, adding to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			toggles.getConfig().set("seespecs", false);
+		if (toggles.getConfig().contains("version") && toggles.getConfig().getDouble("version")<version) {
+			console.sendMessage(prefix+"Updating to version "+ChatColor.RED+version+ChatColor.GOLD+"...");
+			if (!toggles.getConfig().contains("seespecs")) {
+				toggles.getConfig().set("seespecs", false);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"seespecs: false"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			if (!toggles.getConfig().contains("blockcmds")) {
 			toggles.getConfig().set("blockcmds", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"blockcmds: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			if (!toggles.getConfig().contains("adminbypass")) {
 			toggles.getConfig().set("adminbypass", false);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"adminbypass: false"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
 			// Config was updated, fix version number.
-			console.sendMessage(prefix+"Config updated from version "+ChatColor.RED+toggles.getConfig().getDouble("version")+ChatColor.GOLD+" to version "+ChatColor.RED+version+ChatColor.GOLD+" successfully!");
 			toggles.getConfig().set("version",version);
 			toggles.saveConfig();
+		} else if (toggles.getConfig().contains("version") && toggles.getConfig().getDouble("version")>version) {
+			console.sendMessage(ChatColor.GOLD+"Version "+ChatColor.RED+toggles.getConfig().getDouble("version")+ChatColor.GOLD+" available!");
 		}
 
 		compass = toggles.getConfig().getBoolean("compass", true);
@@ -233,24 +244,32 @@ public class SpectatorPlus extends JavaPlugin {
 						sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
 					}
 				} else if(args.length > 0 && args[0].equals("reload")) {
-					setup.reloadConfig();
-					toggles.reloadConfig();
-					sender.sendMessage(prefix+"Config reloaded!");
+					if (sender.hasPermission("spectate.admin.reload")) {
+						setup.reloadConfig();
+						toggles.reloadConfig();
+						sender.sendMessage(prefix+"Config reloaded!");
+					} else {
+						sender.sendMessage(prefix+"You do not have permission to reload!");
+					}
 				} else if (args.length > 0 && (args[0].equals("p")||args[0].equals("player"))) {
 					// For the player who issued the command...
 					if (sender instanceof Player) {
-						if (user.get(sender.getName()).spectating) {
-							if (args.length>1) {
-								if (getServer().getPlayer(args[1])!=null&&!user.get(getServer().getPlayer(args[1]).getName()).spectating) {
-									choosePlayer((Player) sender, getServer().getPlayer(args[1]));
+						if (sender.hasPermission("spectate.use.others")) {
+							if (user.get(sender.getName()).spectating) {
+								if (args.length>1) {
+									if (getServer().getPlayer(args[1])!=null&&!user.get(getServer().getPlayer(args[1]).getName()).spectating) {
+										choosePlayer((Player) sender, getServer().getPlayer(args[1]));
+									} else {
+										sender.sendMessage(prefix+ChatColor.WHITE+args[1]+ChatColor.GOLD+" isn't online!");
+									}
 								} else {
-									sender.sendMessage(prefix+ChatColor.WHITE+args[1]+ChatColor.GOLD+" isn't online!");
+									sender.sendMessage(prefix+"Specify the player you want to spectate: /spec p <player>");
 								}
 							} else {
-								sender.sendMessage(prefix+"Specify the player you want to spectate: /spec p <player>");
+								sender.sendMessage(prefix+"You aren't spectating!");
 							}
 						} else {
-							sender.sendMessage(prefix+"You aren't spectating!");
+							sender.sendMessage(prefix+"You do not have permission to enable spectate for other players!");
 						}
 					} else {
 						sender.sendMessage(prefix+"Cannot be executed from the console!");
@@ -598,7 +617,6 @@ public class SpectatorPlus extends JavaPlugin {
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
 	}
-	@SuppressWarnings("deprecation")
 	void loadPlayerInv(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setContents(user.get(player.getName()).inventory);

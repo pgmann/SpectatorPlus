@@ -35,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+@SuppressWarnings("deprecation")
 public class SpectateListener implements Listener {
 	private SpectatorPlus plugin; // pointer to your main class, unrequired if you don't need methods from the main class
 
