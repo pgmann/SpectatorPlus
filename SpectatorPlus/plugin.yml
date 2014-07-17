@@ -38,3 +38,6 @@ permissions:
   spectate.admin.reload:
     description: Allows you to reload the plugin
     default: op
+  spectate.say:
+    description: Allows you to send a message only to the spectators
+    default: op
