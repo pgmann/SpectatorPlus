@@ -90,7 +90,7 @@ public class SpectatorPlus extends JavaPlugin {
 		death = toggles.getConfig().getBoolean("deathspec", false);
 		seeSpecs = toggles.getConfig().getBoolean("seespecs", false);
 		if (!scoreboard) seeSpecs = false;
-		blockCmds = toggles.getConfig().getBoolean("blockCmds", true);
+		blockCmds = toggles.getConfig().getBoolean("blockcmds", true);
 		adminBypass = toggles.getConfig().getBoolean("adminbypass", false);
 
 		if (scoreboard) {
