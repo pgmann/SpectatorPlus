@@ -32,6 +32,7 @@ public class SpectatorPlus extends JavaPlugin {
 	double version = 1.91; // Plugin version
 	ConsoleCommandSender console;
 	ConfigAccessor setup,toggles,specs;
+	SpectateAPI api = null;
 
 	// Manage toggles
 	boolean compass;
@@ -59,6 +60,7 @@ public class SpectatorPlus extends JavaPlugin {
 		specs.saveDefaultConfig();
 		
 		console = getServer().getConsoleSender();
+		api = new SpectateAPI(this);
 		
 		// Fix config if from previous version
 		if (toggles.getConfig().contains("version") && toggles.getConfig().getDouble("version")<version) {
@@ -669,5 +671,8 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 		}
 		console.sendMessage(formattedMessage);
+	}
+	public SpectateAPI getAPI() {
+		return api;
 	}
 }
