@@ -63,10 +63,10 @@ public class SpectateListener implements Listener {
 				event.setCancelled(true);
 				for (Player player : plugin.getServer().getOnlinePlayers()) {
 					if(plugin.user.get(player.getName()).spectating) {
-						player.sendMessage(ChatColor.GRAY + "[SPEC] " + event.getPlayer().getDisplayName() + ": " + event.getMessage());
+						player.sendMessage(ChatColor.GRAY + "[SPEC] " + event.getPlayer().getDisplayName() + ChatColor.GRAY + ": " + event.getMessage());
 					}
 				}
-				plugin.console.sendMessage(ChatColor.GRAY + "[SPEC] " + event.getPlayer().getDisplayName() + ": " + event.getMessage());
+				plugin.console.sendMessage(ChatColor.GRAY + "[SPEC] " + event.getPlayer().getDisplayName() + ChatColor.GRAY + ": " + event.getMessage());
 			}
 		}
 	}
