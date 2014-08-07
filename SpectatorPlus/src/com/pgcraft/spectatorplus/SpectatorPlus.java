@@ -682,17 +682,17 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		String invite = null;
 		if(isAction) {
-			invite = "* " + playerName + " ";
+			invite = "* " + playerName + " " + ChatColor.GRAY;
 		} else {
 			invite = playerName + ChatColor.GRAY + ": ";
 		}
 		
 		for (Player player : getServer().getOnlinePlayers()) {
 			if(user.get(player.getName()).spectating) {
-				player.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + ChatColor.GRAY + message);
+				player.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + message);
 			}
 		}
-		console.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + ChatColor.GRAY + message);
+		console.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + message);
 	}
 	public SpectateAPI getAPI() {
 		return api;
