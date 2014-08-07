@@ -212,7 +212,7 @@ public class SpectateListener implements Listener {
 	}
 	@EventHandler
 	void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
-		if(plugin.specChat && event.getMessage().startsWith("/me")) {
+		if(plugin.specChat && event.getMessage().startsWith("/me") && plugin.user.get(event.getPlayer().getName()).spectating) {
 			plugin.sendSpectatorMessage(event.getPlayer(), event.getMessage().substring(4), true);
 			event.setCancelled(true);
 			return;
