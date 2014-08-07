@@ -374,6 +374,24 @@ public class SpectatorPlus extends JavaPlugin {
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
+				} else if (args.length == 1 && args[0].equals("say")) {
+					if(sender.hasPermission("spectate.say")) {
+						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate say <message>");
+					}
+					else {
+						spectator.sendMessage(prefix + "You do not have permission to say something to the spectators!");
+					}
+				} else if (args.length >= 2 && args[0].equals("say") && !args[1].isEmpty()) {
+					if(sender.hasPermission("spectate.say")) {
+						String message = "";
+						for(Integer i = 1; i < args.length; i++) {
+							message += args[i] + " ";
+						}
+						broadcastToSpectators((CommandSender) spectator, message);
+					}
+					else {
+						spectator.sendMessage(prefix + "You do not have permission to say something to the spectators!");
+					}
 				} else {
 					printHelp(sender);
 				}
@@ -408,6 +426,14 @@ public class SpectatorPlus extends JavaPlugin {
 						setup.getConfig().set("mode", "arena");
 						setup.saveConfig();
 						sender.sendMessage(prefix + "Mode set to " + ChatColor.RED + "arena" + ChatColor.GOLD + ". Only players in arena regions can be teleported to by spectators.");
+					} else if (args.length == 1 && args[0].equals("say")) {
+						sender.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate say <message>");
+					} else if (args.length >= 2 && args[0].equals("say") && !args[1].isEmpty()) {
+						String message = "";
+						for(Integer i = 1; i < args.length; i++) {
+							message += args[i] + " ";
+						}
+						broadcastToSpectators(sender, message);
 					} else {
 						printHelp(sender);
 					}
@@ -426,6 +452,7 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		sender.sendMessage(ChatColor.RED + "/spectate reload" + ChatColor.GOLD + ": Reload configuration");
 		sender.sendMessage(ChatColor.RED + "/spectate mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
+		sender.sendMessage(ChatColor.RED + "/spectate say <message>" + ChatColor.GOLD + ": Sends a message to the spectators only");
 	}
 	void disableSpectate(Player spectator, CommandSender sender) {
 		if (user.get(spectator.getName()).spectating) {
@@ -624,5 +651,23 @@ public class SpectatorPlus extends JavaPlugin {
 		user.get(player.getName()).inventory = null;
 		user.get(player.getName()).armour = null;
 		player.updateInventory(); // yes, it's deprecated. But it still works!
+	}
+	void broadcastToSpectators(CommandSender sender, String message) {
+		String senderName = null;
+		if(sender instanceof Player) {
+			senderName = ((Player) sender).getDisplayName();
+		}
+		else {
+			senderName = "CONSOLE";
+		}
+		
+		String formattedMessage = ChatColor.GOLD + "[" + senderName + ChatColor.GOLD + " -> spectators] " + ChatColor.RESET + message;
+		
+		for (Player player : getServer().getOnlinePlayers()) {
+			if(user.get(player.getName()).spectating || player.getName() == sender.getName()) {
+				player.sendMessage(formattedMessage);
+			}
+		}
+		console.sendMessage(formattedMessage);
 	}
 }
