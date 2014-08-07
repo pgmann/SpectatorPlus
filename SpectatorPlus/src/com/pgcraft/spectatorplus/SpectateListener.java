@@ -61,12 +61,7 @@ public class SpectateListener implements Listener {
 		if (plugin.specChat) {
 			if (plugin.user.get(event.getPlayer().getName()).spectating) {
 				event.setCancelled(true);
-				for (Player player : plugin.getServer().getOnlinePlayers()) {
-					if(plugin.user.get(player.getName()).spectating) {
-						player.sendMessage(ChatColor.GRAY + "[SPEC] " + event.getPlayer().getDisplayName() + ChatColor.GRAY + ": " + event.getMessage());
-					}
-				}
-				plugin.console.sendMessage(ChatColor.GRAY + "[SPEC] " + event.getPlayer().getDisplayName() + ChatColor.GRAY + ": " + event.getMessage());
+				plugin.sendSpectatorMessage(event.getPlayer(), event.getMessage(), false);
 			}
 		}
 	}
@@ -217,10 +212,16 @@ public class SpectateListener implements Listener {
 	}
 	@EventHandler
 	void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
+		if(plugin.specChat && event.getMessage().startsWith("/me")) {
+			plugin.sendSpectatorMessage(event.getPlayer(), event.getMessage().substring(4), true);
+			event.setCancelled(true);
+			return;
+		}
+		
 		if (plugin.blockCmds) {
-			if (event.getPlayer().hasPermission("spectate.admin")&&plugin.adminBypass) {
+			if (event.getPlayer().hasPermission("spectate.admin") && plugin.adminBypass) {
 				// Do nothing
-			} else if (!(event.getMessage().startsWith("/spec")||event.getMessage().startsWith("/spectate")) && plugin.user.get(event.getPlayer().getName()).spectating) {
+			} else if (!(event.getMessage().startsWith("/spec") || event.getMessage().startsWith("/spectate") || event.getMessage().startsWith("/me")) && plugin.user.get(event.getPlayer().getName()).spectating) {
 				event.getPlayer().sendMessage(plugin.prefix+"Command blocked!");
 				event.setCancelled(true);
 			}

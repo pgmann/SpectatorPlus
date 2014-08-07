@@ -672,6 +672,28 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		console.sendMessage(formattedMessage);
 	}
+	void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
+		String playerName = null;
+		if(sender instanceof Player) {
+			playerName = ((Player) sender).getDisplayName();
+		} else {
+			playerName = "CONSOLE";
+		}
+		
+		String invite = null;
+		if(isAction) {
+			invite = "* " + playerName + " ";
+		} else {
+			invite = playerName + ChatColor.GRAY + ": ";
+		}
+		
+		for (Player player : getServer().getOnlinePlayers()) {
+			if(user.get(player.getName()).spectating) {
+				player.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + ChatColor.GRAY + message);
+			}
+		}
+		console.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + ChatColor.GRAY + message);
+	}
 	public SpectateAPI getAPI() {
 		return api;
 	}
