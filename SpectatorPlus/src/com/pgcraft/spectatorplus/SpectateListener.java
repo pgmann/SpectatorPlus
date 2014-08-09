@@ -255,32 +255,7 @@ public class SpectateListener implements Listener {
 				event.getWhoClicked().closeInventory();
 
 				if (arenaBook != null) {
-					// find out the arena id #
-					for (int i=1; i<plugin.setup.getConfig().getInt("nextarena"); i++) {
-						if (plugin.setup.getConfig().getString("arena." + i + ".name") == chosenArena) {
-							plugin.user.get(event.getWhoClicked().getName()).arenaNum = i;
-						}
-					}
-					double tpPosY = plugin.setup.getConfig().getDouble("arena." + plugin.user.get(event.getWhoClicked().getName()).arenaNum + ".lobby.y", event.getWhoClicked().getLocation().getY());
-					double tpPosX = plugin.setup.getConfig().getDouble("arena." + plugin.user.get(event.getWhoClicked().getName()).arenaNum + ".lobby.x", event.getWhoClicked().getLocation().getX());
-					double tpPosZ = plugin.setup.getConfig().getDouble("arena." + plugin.user.get(event.getWhoClicked().getName()).arenaNum + ".lobby.z", event.getWhoClicked().getLocation().getZ());
-					World tpWorld = plugin.getServer().getWorld(plugin.setup.getConfig().getString("arena." + plugin.user.get(event.getWhoClicked().getName()).arenaNum + ".lobby.world", event.getWhoClicked().getWorld().getName()));
-					Location where = new Location(tpWorld, tpPosX, tpPosY, tpPosZ);
-
-					if (tpWorld == event.getWhoClicked().getWorld()) {
-						double dist = where.distance(event.getWhoClicked().getLocation());
-						if (dist <= 1) {
-							((Player)event.getWhoClicked()).sendMessage(plugin.prefix + "No lobby location set for " + ChatColor.RED + chosenArena);
-						} else {
-							if(plugin.output) {((Player)event.getWhoClicked()).sendMessage(plugin.prefix + "Teleported you to " + ChatColor.RED + chosenArena);}
-							event.getWhoClicked().teleport(where);
-						}
-					} else {
-						if(plugin.output) {((Player)event.getWhoClicked()).sendMessage(plugin.prefix + "Teleported you to " + ChatColor.RED + chosenArena);}
-						event.getWhoClicked().teleport(where);
-					}
-
-
+					plugin.setArenaForPlayer((Player) event.getWhoClicked(), chosenArena);
 				}
 			}
 			event.setCancelled(true);

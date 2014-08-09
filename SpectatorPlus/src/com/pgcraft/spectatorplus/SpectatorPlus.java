@@ -7,11 +7,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -371,7 +374,7 @@ public class SpectatorPlus extends JavaPlugin {
 					
 				// Manage the "/spec arena [param(s)]" command
 					// "/spec arena" or "/spec arena add" or "/spec arena lobby": Print usage
-				} else if ((args.length == 1 && args[0].equals("arena")) || (args.length == 2 && args[0].equals("arena") && (args[1].equals("add") || args[1].equals("lobby")))) {
+				} else if ((args.length == 1 && args[0].equals("arena")) || (args.length == 2 && args[0].equals("arena") && (args[1].equals("add") || args[1].equals("remove") || args[1].equals("lobby")))) {
 					if (sender.hasPermission("spectate.admin.arena")) {
 						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add <name>/reset/lobby <name>/list>");
 					} else {
@@ -385,6 +388,18 @@ public class SpectatorPlus extends JavaPlugin {
 						user.get(spectator.getName()).setup = 1;
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to add an arena!");
+					}
+					// "/spec arena remove <name>": Removes an arena
+				} else if(args.length == 3 && args[0].equals("arena") && args[1].equals("remove")) {
+					if(sender.hasPermission("spectate.admin.arena")) {
+						if(removeArena(args[2])) {
+							spectator.sendMessage(prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " removed.");
+						}
+						else {
+							spectator.sendMessage(prefix + "The arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " does not exists!");
+						}
+					} else {
+						spectator.sendMessage(prefix + "You do not have permission to remove an arena!");
 					}
 					// "/spec arena list": List arenas, ID's and lobby locations
 				} else if (args.length == 2 && args[0].equals("arena") && args[1].equals("list")) {
@@ -674,6 +689,56 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Removes an arena.
+	 * 
+	 * @param arenaName
+	 * @return True if the arena was removed; false else (non-existant arena).
+	 */
+	boolean removeArena(String arenaName) {
+		int arenaNum = 0;
+		for (int i=1; i < setup.getConfig().getInt("nextarena"); i++) {
+			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
+				arenaNum = i;
+			}
+		}
+		
+		if(arenaNum == 0) { // Not found
+			return false;
+		}
+		
+		// The arena is replaced by the last arena
+		int lastArenaNum = setup.getConfig().getInt("nextarena") - 1;
+		ConfigurationSection movedArena = setup.getConfig().getConfigurationSection("arena." + lastArenaNum);
+		
+		for(String key : movedArena.getValues(true).keySet()) {
+			setup.getConfig().set("arena." + arenaNum + "." + key, movedArena.get(key));
+		}
+		
+		// The last arena is removed
+		setup.getConfig().set("arena." + lastArenaNum, null);
+		setup.getConfig().set("nextarena", lastArenaNum);
+		
+		// The players in the last arena are moved to the pseudo-new one
+		// and the players in the deleted arena are removed to the arena
+		for(Player player : this.getServer().getOnlinePlayers()) {
+			if(user.get(player.getName()).spectating) {
+				
+				if(user.get(player.getName()).arenaNum == arenaNum) {
+					removePlayerFromArena(player);
+				}
+				else if(user.get(player.getName()).arenaNum == lastArenaNum) {
+					setArenaForPlayer(player, setup.getConfig().getString("arena." + arenaNum + ".name"));
+				}
+			}
+			
+		}
+		
+		setup.saveConfig();
+		
+		return true;
+	}
+	
 	// setLobbyLoc: Sets an arena's lobby location to the position of 'player'
 	void setArenaLobbyLoc(Player player, String arenaName) {
 		int arenaNum = 0;
@@ -692,6 +757,59 @@ public class SpectatorPlus extends JavaPlugin {
 			setup.saveConfig();
 			player.sendMessage(prefix + "Arena " + ChatColor.RED + arenaName + ChatColor.GOLD + "'s lobby location set to your location");
 		}
+	}
+	
+	/**
+	 * Sets the arena for the given player.
+	 * Teleports the player to the lobby of that arena, if a lobby is available.
+	 * 
+	 * @param player The player
+	 * @param arenaName The name of the arena
+	 * @return True if the change was effective (i.e. the arena exists).
+	 */
+	boolean setArenaForPlayer(Player player, String arenaName) {
+		int arenaNum = 0;
+		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
+			if (setup.getConfig().getString("arena." + i + ".name") == arenaName) {
+				arenaNum = i;
+				break;
+			}
+		}
+		
+		if(arenaNum == 0) { // Not found
+			return false;
+		}
+		
+		user.get(player.getName()).arenaNum = arenaNum;
+		
+		Double tpPosY = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.y", (Double) null);
+		Double tpPosX = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.x", (Double) null);
+		Double tpPosZ = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.z", (Double) null);
+		World tpWorld = getServer().getWorld(setup.getConfig().getString("arena." + user.get(player.getName()).arenaNum + ".lobby.world", player.getWorld().getName()));
+		
+		if(tpPosX == null || tpPosY == null || tpPosZ == null) { // No lobby set
+			player.sendMessage(prefix + "No lobby location set for " + ChatColor.RED + arenaName);
+			return true;
+		}
+		
+		Location where = new Location(tpWorld, tpPosX, tpPosY, tpPosZ);
+		
+		if(output) {
+			player.sendMessage(prefix + "Teleported you to " + ChatColor.RED + arenaName);
+		}
+		
+		player.teleport(where);
+		
+		return true;
+	}
+	
+	/**
+	 * Removes a player from his arena
+	 * 
+	 * @param player
+	 */
+	void removePlayerFromArena(Player player) {
+		user.get(player.getName()).arenaNum = 0;
 	}
 	
 	// Saves player inventory before enabling spectate mode
