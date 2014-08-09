@@ -159,7 +159,7 @@ public class SpectateListener implements Listener {
 	}
 	@EventHandler
 	void onEntityDamage(EntityDamageEvent event) {
-		// On block damage - Cancels the block damage animation
+		// On entity damage - Stops users hitting players and mobs while spectating
 		if (event.getEntity() instanceof Player && plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
 			event.setCancelled(true);
 			event.getEntity().setFireTicks(0);

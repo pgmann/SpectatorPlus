@@ -20,4 +20,4 @@ blockcmds: true
 adminbypass: false
 
 # Config version (do not alter)
-version: 1.91
+version: 1.92
