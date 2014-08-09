@@ -101,7 +101,7 @@ public class SpectateListener implements Listener {
 			if(plugin.output) {event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");}
 		}
 		// Set up mode
-		if(plugin.modeSetup(event.getPlayer(), event.getBlock()) == true) {
+		if(plugin.arenaSetup(event.getPlayer(), event.getBlock()) == true) {
 			event.setCancelled(true);
 		}
 	}
@@ -148,7 +148,7 @@ public class SpectateListener implements Listener {
 			if(plugin.output) {event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");}
 		}
 		// Set up mode
-		if (plugin.modeSetup(event.getPlayer(), event.getBlock())) {
+		if (plugin.arenaSetup(event.getPlayer(), event.getBlock())) {
 			event.setCancelled(true);
 		}
 	}
