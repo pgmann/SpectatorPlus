@@ -784,12 +784,13 @@ public class SpectatorPlus extends JavaPlugin {
 		user.get(player.getName()).arenaNum = arenaNum;
 		
 		if(teleportToLobby) {
-			Double tpPosY = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.y", (Double) null);
-			Double tpPosX = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.x", (Double) null);
-			Double tpPosZ = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.z", (Double) null);
+			// The coordinate 40000000 can't be set by the player, because the maximum coordinate allowed by Minecraft is 30000000.
+			Double tpPosY = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.y", 40000000d);
+			Double tpPosX = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.x", 40000000d);
+			Double tpPosZ = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.z", 40000000d);
 			World tpWorld = getServer().getWorld(setup.getConfig().getString("arena." + user.get(player.getName()).arenaNum + ".lobby.world", player.getWorld().getName()));
 			
-			if(tpPosX == null || tpPosY == null || tpPosZ == null) { // No lobby set
+			if(tpPosX == 40000000d || tpPosY == 40000000d || tpPosZ == 40000000d) { // No lobby set
 				player.sendMessage(prefix + "No lobby location set for " + ChatColor.RED + arenaName);
 				return true;
 			}
