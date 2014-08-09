@@ -376,7 +376,7 @@ public class SpectatorPlus extends JavaPlugin {
 					// "/spec arena" or "/spec arena add" or "/spec arena lobby": Print usage
 				} else if ((args.length == 1 && args[0].equals("arena")) || (args.length == 2 && args[0].equals("arena") && (args[1].equals("add") || args[1].equals("remove") || args[1].equals("lobby")))) {
 					if (sender.hasPermission("spectate.admin.arena")) {
-						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add <name>/reset/lobby <name>/list>");
+						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add <name>/remove <name>/reset/lobby <name>/list>");
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to manage arenas!");
 					}
