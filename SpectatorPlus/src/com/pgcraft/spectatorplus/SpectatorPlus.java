@@ -728,7 +728,7 @@ public class SpectatorPlus extends JavaPlugin {
 					removePlayerFromArena(player);
 				}
 				else if(user.get(player.getName()).arenaNum == lastArenaNum) {
-					setArenaForPlayer(player, setup.getConfig().getString("arena." + arenaNum + ".name"));
+					setArenaForPlayer(player, setup.getConfig().getString("arena." + arenaNum + ".name"), false);
 				}
 			}
 			
@@ -763,11 +763,12 @@ public class SpectatorPlus extends JavaPlugin {
 	 * Sets the arena for the given player.
 	 * Teleports the player to the lobby of that arena, if a lobby is available.
 	 * 
-	 * @param player The player
-	 * @param arenaName The name of the arena
+	 * @param player The player.
+	 * @param arenaName The name of the arena.
+	 * @param teleportToLobby If true the player will be teleported to the lobby (if a lobby is set).
 	 * @return True if the change was effective (i.e. the arena exists).
 	 */
-	boolean setArenaForPlayer(Player player, String arenaName) {
+	boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
 		int arenaNum = 0;
 		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
 			if (setup.getConfig().getString("arena." + i + ".name") == arenaName) {
@@ -782,26 +783,41 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		user.get(player.getName()).arenaNum = arenaNum;
 		
-		Double tpPosY = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.y", (Double) null);
-		Double tpPosX = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.x", (Double) null);
-		Double tpPosZ = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.z", (Double) null);
-		World tpWorld = getServer().getWorld(setup.getConfig().getString("arena." + user.get(player.getName()).arenaNum + ".lobby.world", player.getWorld().getName()));
-		
-		if(tpPosX == null || tpPosY == null || tpPosZ == null) { // No lobby set
-			player.sendMessage(prefix + "No lobby location set for " + ChatColor.RED + arenaName);
-			return true;
+		if(teleportToLobby) {
+			Double tpPosY = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.y", (Double) null);
+			Double tpPosX = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.x", (Double) null);
+			Double tpPosZ = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.z", (Double) null);
+			World tpWorld = getServer().getWorld(setup.getConfig().getString("arena." + user.get(player.getName()).arenaNum + ".lobby.world", player.getWorld().getName()));
+			
+			if(tpPosX == null || tpPosY == null || tpPosZ == null) { // No lobby set
+				player.sendMessage(prefix + "No lobby location set for " + ChatColor.RED + arenaName);
+				return true;
+			}
+			
+			Location where = new Location(tpWorld, tpPosX, tpPosY, tpPosZ);
+			
+			if(output) {
+				player.sendMessage(prefix + "Teleported you to " + ChatColor.RED + arenaName);
+			}
+			
+			player.teleport(where);
 		}
-		
-		Location where = new Location(tpWorld, tpPosX, tpPosY, tpPosZ);
-		
-		if(output) {
-			player.sendMessage(prefix + "Teleported you to " + ChatColor.RED + arenaName);
-		}
-		
-		player.teleport(where);
 		
 		return true;
 	}
+	
+	/**
+	 * Sets the arena for the given player.
+	 * Teleports the player to the lobby of that arena, if a lobby is available.
+	 * 
+	 * @param player The player.
+	 * @param arenaName The name of the arena.
+	 * @return True if the change was effective (i.e. the arena exists).
+	 */
+	boolean setArenaForPlayer(Player player, String arenaName) {
+		return setArenaForPlayer(player, arenaName, true);
+	}
+	
 	
 	/**
 	 * Removes a player from his arena
