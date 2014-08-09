@@ -13,7 +13,7 @@ permissions:
     description: Allows you to spectate and stops players spectating you
     children:
       spectate.use: true
-      spectate.hide: true
+      spectate.hide: false
       spectate.admin: true
     default: false
   spectate.use:
@@ -31,10 +31,18 @@ permissions:
     children:
       spectate.use.others: true
       spectate.admin.lobby: true
+      spectate.admin.mode: true
+      spectate.admin.arena: true
       spectate.admin.reload: true
       spectate.admin.say: true
   spectate.admin.lobby:
     description: Allows you to set the global lobby
+    default: op
+  spectate.admin.mode:
+    description: Allows you to set the plugin mode
+    default: op
+  spectate.admin.arena:
+    description: Allows you to manage arenas
     default: op
   spectate.admin.reload:
     description: Allows you to reload the plugin

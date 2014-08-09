@@ -138,7 +138,7 @@ public class SpectatorPlus extends JavaPlugin {
 	// CUSTOM METHODS
 	// --------------
 
-	// custom method to spawn the player in the lobby
+	// Teleport the player to the global lobby location
 	void spawnPlayer(Player player) {
 		player.setFireTicks(0);
 		if (setup.getConfig().getBoolean("active") == true) {
@@ -166,8 +166,8 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 	}
 
-	// player head inventory method 
-	void tpPlayer(Player spectator, int region) {
+	// Opens the player head GUI, to allow spectators to choose a player to teleport to.
+	void showGUI(Player spectator, int region) {
 		Inventory gui = null;
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
@@ -213,8 +213,9 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		spectator.openInventory(gui);
 	}
-
-	void arenaSelect(Player spectator) {
+	
+	// Shows the arena selection GUI, full of books with the name of valid arenas.
+	void showArenaGUI(Player spectator) {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, basePrefix);
 		for (int i=1; i<setup.getConfig().getInt("nextarena"); i++) {
 			ItemStack arenaBook = new ItemStack(Material.BOOK, 1);
@@ -225,13 +226,14 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		spectator.openInventory(gui);
 	}
-
+	
+	// Teleports the spectator to the player they have chosen using "/spec p <target>"
 	void choosePlayer(Player spectator, Player target) {
 		spectator.teleport(target);
 		if(output) {spectator.sendMessage(prefix + "Teleported you to " + ChatColor.RED + target.getName());}
 	}
 
-	// command
+	// Main SpectatorPlus CommandExecutor.
 	CommandExecutor commands = new CommandExecutor() {
 		public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 			// On command: to the sender of the command
@@ -250,21 +252,24 @@ public class SpectatorPlus extends JavaPlugin {
 						} else {
 							sender.sendMessage(prefix+"You do not have permission to enable spectate for others!");
 						}
-					// -> Spectate another player failed: target not found/isn't online
+					// -> Enabling spectate for another player failed: target not found (isn't online)
 					} else {
 						sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
 					}
 				
 				// Disable spectate mode
 				} else if (args.length > 0 && args[0].equals("off")) {
+					// Disable spectate for self
 					if (args.length == 1) {
 						disableSpectate((Player) sender, sender);
+					// Disable spectate for other players
 					} else if (getServer().getPlayer(args[1]) != null) {
 						if (sender.hasPermission("spectate.use.others")) {
 							disableSpectate(getServer().getPlayer(args[1]), sender);
 						} else {
 							sender.sendMessage(prefix+"You do not have permission to disable spectate for others!");
 						}
+					// -> Disabling spectate for another player failed: target not found (isn't online)
 					} else {
 						sender.sendMessage(prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
 					}
@@ -304,14 +309,14 @@ public class SpectatorPlus extends JavaPlugin {
 				// Manage the "/spec lobby [param]" command
 					// "/spec lobby": Print usage
 				} else if (args.length == 1 && args[0].equals("lobby")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.lobby")) {
 						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate lobby <set/del>");
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to set the lobby location!");
 					}
 					// "/spec lobby set": Set the lobby (if player has permission)
 				} else if (args.length == 2 && args[0].equals("lobby") && args[1].equals("set")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.lobby")) {
 						Location where = spectator.getLocation();
 						setup.getConfig().set("xPos", Math.floor(where.getX())+0.5);
 						setup.getConfig().set("yPos", Math.floor(where.getY()));
@@ -325,7 +330,7 @@ public class SpectatorPlus extends JavaPlugin {
 					}
 					// "/spec lobby del": Delete the lobby (if player has permission)
 				} else if (args.length == 2 && args[0].equals("lobby") && (args[1].equals("del") || args[1].equals("delete"))) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.lobby")) {
 						setup.getConfig().set("xPos", 0);
 						setup.getConfig().set("yPos", 0);
 						setup.getConfig().set("zPos", 0);
@@ -340,14 +345,14 @@ public class SpectatorPlus extends JavaPlugin {
 				// Manage the "/spec mode [param]" command
 					// "/spec mode": Print usage
 				} else if (args.length == 1 && args[0].equals("mode")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.mode")) {
 						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate mode <arena/any>");
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to change the mode!");
 					}
 					// "/spec mode any": Set mode to any
 				} else if (args.length > 1 && args[0].equals("mode") && args[1].equals("any")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.mode")) {
 						setup.getConfig().set("mode", "any");
 						setup.saveConfig();
 						spectator.sendMessage(prefix + "Mode set to " + ChatColor.RED + "any");
@@ -356,7 +361,7 @@ public class SpectatorPlus extends JavaPlugin {
 					}
 					// "/spec mode arena": Set mode to arena
 				} else if (args.length > 1 && args[0].equals("mode") && args[1].equals("arena")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.mode")) {
 						setup.getConfig().set("mode", "arena");
 						setup.saveConfig();
 						spectator.sendMessage(prefix + "Mode set to " + ChatColor.RED + "arena" + ChatColor.GOLD + ". Only players in arena regions can be teleported to by spectators.");
@@ -367,14 +372,14 @@ public class SpectatorPlus extends JavaPlugin {
 				// Manage the "/spec arena [param(s)]" command
 					// "/spec arena" or "/spec arena add" or "/spec arena lobby": Print usage
 				} else if ((args.length == 1 && args[0].equals("arena")) || (args.length == 2 && args[0].equals("arena") && (args[1].equals("add") || args[1].equals("lobby")))) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.arena")) {
 						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add <name>/reset/lobby <name>/list>");
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to manage arenas!");
 					}
 					// "/spec arena add <name>": Enter arena setup mode
 				} else if (args.length == 3 && args[0].equals("arena") && args[1].equals("add")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.arena")) {
 						user.get(spectator.getName()).arenaName = args[2];
 						spectator.sendMessage(prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - a corner of the arena");
 						user.get(spectator.getName()).setup = 1;
@@ -383,7 +388,7 @@ public class SpectatorPlus extends JavaPlugin {
 					}
 					// "/spec arena list": List arenas, ID's and lobby locations
 				} else if (args.length == 2 && args[0].equals("arena") && args[1].equals("list")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.arena")) {
 						spectator.sendMessage(ChatColor.GOLD + "          ~~ " + ChatColor.RED + "Arenas" + ChatColor.GOLD + " ~~          ");
 						for (int i=1; i<setup.getConfig().getInt("nextarena"); i++) {
 							spectator.sendMessage(ChatColor.RED + "(#" + i + ") " + setup.getConfig().getString("arena." + i + ".name") + ChatColor.GOLD + " Lobby x:" + setup.getConfig().getDouble("arena." + i + ".lobby.x") + " y:" + setup.getConfig().getDouble("arena." + i + ".lobby.y") + " z:" + setup.getConfig().getDouble("arena." + i + ".lobby.z"));
@@ -393,14 +398,14 @@ public class SpectatorPlus extends JavaPlugin {
 					}
 					// "/spec arena lobby <name>": Set the lobby of arena <name> to the player's location
 				} else if (args.length == 3 && args[0].equals("arena") && args[1].equals("lobby")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.arena")) {
 						setArenaLobbyLoc(spectator, args[2]);
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to set an arena lobby!");
 					}
 					// "/spec arena reset": Reset/delete ALL arenas
 				} else if (args.length == 2 && args[0].equals("arena") && args[1].equals("reset")) {
-					if (sender.hasPermission("spectate.admin")) {
+					if (sender.hasPermission("spectate.admin.arena")) {
 						setup.getConfig().set("arena", null);
 						setup.getConfig().set("nextarena", 1);
 						setup.saveConfig();
@@ -418,7 +423,7 @@ public class SpectatorPlus extends JavaPlugin {
 					}
 					// "/spec say <message...>": Sends a message to all spectators
 				} else if (args.length >= 2 && args[0].equals("say") && !args[1].isEmpty()) {
-					if(sender.hasPermission("spectate.say")) {
+					if(sender.hasPermission("spectate.admin.say")) {
 						String message = "";
 						for(int i = 1; i < args.length; i++) {
 							message += args[i] + " ";

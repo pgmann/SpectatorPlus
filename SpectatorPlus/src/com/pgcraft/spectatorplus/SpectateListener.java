@@ -27,7 +27,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -37,7 +36,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 @SuppressWarnings("deprecation")
 public class SpectateListener implements Listener {
-	private SpectatorPlus plugin; // pointer to your main class, unrequired if you don't need methods from the main class
+	private SpectatorPlus plugin; // Pointer to main class (see SpectatorPlus.java)
 
 	public SpectateListener(SpectatorPlus plugin) {
 		this.plugin = plugin;
@@ -58,6 +57,7 @@ public class SpectateListener implements Listener {
 	}
 	@EventHandler
 	public void onChatSend(AsyncPlayerChatEvent event) {
+		// Cancel chat messages from spectators and put it into spectator chat instead.
 		if (plugin.specChat) {
 			if (plugin.user.get(event.getPlayer().getName()).spectating) {
 				event.setCancelled(true);
@@ -107,16 +107,10 @@ public class SpectateListener implements Listener {
 	}
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onGamemodeChange(PlayerGameModeChangeEvent event) {
+		// on Gamemode Change - stop players from changing their gamemode whilst spectating.
 		if (plugin.user.get(event.getPlayer().getName()).spectating && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
 			event.setCancelled(true);
 			event.getPlayer().setAllowFlight(true);
-		}
-	}
-	@EventHandler(priority=EventPriority.HIGHEST)
-	void onPlayerMove(PlayerMoveEvent event) {
-		if (plugin.user.get(event.getPlayer().getName()).spectating) {
-			event.getPlayer().setAllowFlight(true);
-			event.getPlayer().setGameMode(GameMode.ADVENTURE);
 		}
 	}
 	@EventHandler
@@ -166,7 +160,7 @@ public class SpectateListener implements Listener {
 	}
 	@EventHandler
 	void onFoodLevelChange(FoodLevelChangeEvent event) {
-		// On food loss - Cancels the food loss
+		// On food loss - Cancels the food loss for spectators
 		if (event.getEntityType() == EntityType.PLAYER && plugin.user.get(event.getEntity().getName()).spectating) {
 			event.setCancelled(true);
 			plugin.getServer().getPlayer(event.getEntity().getName()).setFoodLevel(20);
@@ -196,14 +190,14 @@ public class SpectateListener implements Listener {
 			String mode = plugin.setup.getConfig().getString("mode"); 
 			if (mode.equals("arena")) {
 				int region = plugin.user.get(event.getPlayer().getName()).arenaNum;
-				plugin.tpPlayer(event.getPlayer(), region);
+				plugin.showGUI(event.getPlayer(), region);
 			} else {
-				plugin.tpPlayer(event.getPlayer(), 0);
+				plugin.showGUI(event.getPlayer(), 0);
 			}
 		}
 		if (plugin.user.get(event.getPlayer().getName()).spectating == true && event.getMaterial() == Material.WATCH && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			event.setCancelled(true);
-			plugin.arenaSelect(event.getPlayer());
+			plugin.showArenaGUI(event.getPlayer());
 		}
 		// Cancel chest opening, doors, anything when the player right clicks.
 		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
@@ -253,7 +247,7 @@ public class SpectateListener implements Listener {
 					}
 				}
 			}
-			//manage arenaSelect choice
+			// Manage showArenaGUI method selection
 			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.BOOK) {
 				ItemStack arenaBook = event.getCurrentItem();
 				ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
