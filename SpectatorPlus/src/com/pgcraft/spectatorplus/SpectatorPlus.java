@@ -7,11 +7,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -139,7 +142,8 @@ public class SpectatorPlus extends JavaPlugin {
 	// --------------
 
 	// Teleport the player to the global lobby location
-	void spawnPlayer(Player player) {
+	// Returns true if the player was  teleported, false else.
+	boolean spawnPlayer(Player player) {
 		player.setFireTicks(0);
 		if (setup.getConfig().getBoolean("active") == true) {
 			Location where = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos"), setup.getConfig().getDouble("zPos"));
@@ -159,10 +163,10 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			user.get(player.getName()).teleporting = true;
 			player.teleport(where);
-
 			user.get(player.getName()).teleporting = false;
+			return true;
 		} else {
-			player.performCommand("spawn");
+			return player.performCommand("spawn");
 		}
 	}
 
@@ -371,9 +375,9 @@ public class SpectatorPlus extends JavaPlugin {
 					
 				// Manage the "/spec arena [param(s)]" command
 					// "/spec arena" or "/spec arena add" or "/spec arena lobby": Print usage
-				} else if ((args.length == 1 && args[0].equals("arena")) || (args.length == 2 && args[0].equals("arena") && (args[1].equals("add") || args[1].equals("lobby")))) {
+				} else if ((args.length == 1 && args[0].equals("arena")) || (args.length == 2 && args[0].equals("arena") && (args[1].equals("add") || args[1].equals("remove") || args[1].equals("lobby")))) {
 					if (sender.hasPermission("spectate.admin.arena")) {
-						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add <name>/reset/lobby <name>/list>");
+						spectator.sendMessage(prefix + "Usage: " + ChatColor.RED + "/spectate arena <add <name>/remove <name>/reset/lobby <name>/list>");
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to manage arenas!");
 					}
@@ -385,6 +389,18 @@ public class SpectatorPlus extends JavaPlugin {
 						user.get(spectator.getName()).setup = 1;
 					} else {
 						spectator.sendMessage(prefix + "You do not have permission to add an arena!");
+					}
+					// "/spec arena remove <name>": Removes an arena
+				} else if(args.length == 3 && args[0].equals("arena") && args[1].equals("remove")) {
+					if(sender.hasPermission("spectate.admin.arena")) {
+						if(removeArena(args[2])) {
+							spectator.sendMessage(prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " removed.");
+						}
+						else {
+							spectator.sendMessage(prefix + "The arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " does not exists!");
+						}
+					} else {
+						spectator.sendMessage(prefix + "You do not have permission to remove an arena!");
 					}
 					// "/spec arena list": List arenas, ID's and lobby locations
 				} else if (args.length == 2 && args[0].equals("arena") && args[1].equals("list")) {
@@ -674,6 +690,56 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 	}
 	
+	/**
+	 * Removes an arena.
+	 * 
+	 * @param arenaName
+	 * @return True if the arena was removed; false else (non-existant arena).
+	 */
+	boolean removeArena(String arenaName) {
+		int arenaNum = 0;
+		for (int i=1; i < setup.getConfig().getInt("nextarena"); i++) {
+			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
+				arenaNum = i;
+			}
+		}
+		
+		if(arenaNum == 0) { // Not found
+			return false;
+		}
+		
+		// The arena is replaced by the last arena
+		int lastArenaNum = setup.getConfig().getInt("nextarena") - 1;
+		ConfigurationSection movedArena = setup.getConfig().getConfigurationSection("arena." + lastArenaNum);
+		
+		for(String key : movedArena.getValues(true).keySet()) {
+			setup.getConfig().set("arena." + arenaNum + "." + key, movedArena.get(key));
+		}
+		
+		// The last arena is removed
+		setup.getConfig().set("arena." + lastArenaNum, null);
+		setup.getConfig().set("nextarena", lastArenaNum);
+		
+		// The players in the last arena are moved to the pseudo-new one
+		// and the players in the deleted arena are removed to the arena
+		for(Player player : this.getServer().getOnlinePlayers()) {
+			if(user.get(player.getName()).spectating) {
+				
+				if(user.get(player.getName()).arenaNum == arenaNum) {
+					removePlayerFromArena(player);
+				}
+				else if(user.get(player.getName()).arenaNum == lastArenaNum) {
+					setArenaForPlayer(player, setup.getConfig().getString("arena." + arenaNum + ".name"), false);
+				}
+			}
+			
+		}
+		
+		setup.saveConfig();
+		
+		return true;
+	}
+	
 	// setLobbyLoc: Sets an arena's lobby location to the position of 'player'
 	void setArenaLobbyLoc(Player player, String arenaName) {
 		int arenaNum = 0;
@@ -691,6 +757,88 @@ public class SpectatorPlus extends JavaPlugin {
 			setup.getConfig().set("arena." + arenaNum + ".lobby.world", player.getWorld().getName());
 			setup.saveConfig();
 			player.sendMessage(prefix + "Arena " + ChatColor.RED + arenaName + ChatColor.GOLD + "'s lobby location set to your location");
+		}
+	}
+	
+	/**
+	 * Sets the arena for the given player.
+	 * Teleports the player to the lobby of that arena, if a lobby is available.
+	 * 
+	 * @param player The player.
+	 * @param arenaName The name of the arena.
+	 * @param teleportToLobby If true the player will be teleported to the lobby (if a lobby is set).
+	 * @return True if the change was effective (i.e. the arena exists).
+	 */
+	boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
+		int arenaNum = 0;
+		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
+			if (setup.getConfig().getString("arena." + i + ".name") == arenaName) {
+				arenaNum = i;
+				break;
+			}
+		}
+		
+		if(arenaNum == 0) { // Not found
+			return false;
+		}
+		
+		user.get(player.getName()).arenaNum = arenaNum;
+		
+		if(teleportToLobby) {
+			// The coordinate 40000000 can't be set by the player, because the maximum coordinate allowed by Minecraft is 30000000.
+			Double tpPosY = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.y", 40000000d);
+			Double tpPosX = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.x", 40000000d);
+			Double tpPosZ = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.z", 40000000d);
+			World tpWorld = getServer().getWorld(setup.getConfig().getString("arena." + user.get(player.getName()).arenaNum + ".lobby.world", player.getWorld().getName()));
+			
+			if(tpPosX == 40000000d || tpPosY == 40000000d || tpPosZ == 40000000d) { // No lobby set
+				player.sendMessage(prefix + "No lobby location set for " + ChatColor.RED + arenaName);
+				return true;
+			}
+			
+			Location where = new Location(tpWorld, tpPosX, tpPosY, tpPosZ);
+			
+			if(output) {
+				player.sendMessage(prefix + "Teleported you to " + ChatColor.RED + arenaName);
+			}
+			
+			player.teleport(where);
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Sets the arena for the given player.
+	 * Teleports the player to the lobby of that arena, if a lobby is available.
+	 * 
+	 * @param player The player.
+	 * @param arenaName The name of the arena.
+	 * @return True if the change was effective (i.e. the arena exists).
+	 */
+	boolean setArenaForPlayer(Player player, String arenaName) {
+		return setArenaForPlayer(player, arenaName, true);
+	}
+	
+	
+	/**
+	 * Removes a player from his arena.
+	 * The player is teleported to the main lobby, if such a lobby is set.
+	 * 
+	 * @param player
+	 */
+	void removePlayerFromArena(Player player) {
+		user.get(player.getName()).arenaNum = 0;
+		
+		boolean teleported = spawnPlayer(player);
+		
+		if(output) {
+			if(teleported) {
+				player.sendMessage(prefix + "You were removed from your current arena and teleported to the main lobby.");
+			}
+			else {
+				player.sendMessage(prefix + "You were removed from your current arena.");
+			}
 		}
 	}
 	
