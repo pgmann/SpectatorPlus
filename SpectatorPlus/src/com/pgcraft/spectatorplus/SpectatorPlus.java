@@ -142,7 +142,8 @@ public class SpectatorPlus extends JavaPlugin {
 	// --------------
 
 	// Teleport the player to the global lobby location
-	void spawnPlayer(Player player) {
+	// Returns true if the player was  teleported, false else.
+	boolean spawnPlayer(Player player) {
 		player.setFireTicks(0);
 		if (setup.getConfig().getBoolean("active") == true) {
 			Location where = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos"), setup.getConfig().getDouble("zPos"));
@@ -162,10 +163,10 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			user.get(player.getName()).teleporting = true;
 			player.teleport(where);
-
 			user.get(player.getName()).teleporting = false;
+			return true;
 		} else {
-			player.performCommand("spawn");
+			return player.performCommand("spawn");
 		}
 	}
 
@@ -821,12 +822,24 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	
 	/**
-	 * Removes a player from his arena
+	 * Removes a player from his arena.
+	 * The player is teleported to the main lobby, if such a lobby is set.
 	 * 
 	 * @param player
 	 */
 	void removePlayerFromArena(Player player) {
 		user.get(player.getName()).arenaNum = 0;
+		
+		boolean teleported = spawnPlayer(player);
+		
+		if(output) {
+			if(teleported) {
+				player.sendMessage(prefix + "You were removed from your current arena and teleported to the main lobby.");
+			}
+			else {
+				player.sendMessage(prefix + "You were removed from your current arena.");
+			}
+		}
 	}
 	
 	// Saves player inventory before enabling spectate mode
