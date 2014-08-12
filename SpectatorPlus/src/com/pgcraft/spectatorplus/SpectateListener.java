@@ -41,23 +41,42 @@ public class SpectateListener implements Listener {
 	public SpectateListener(SpectatorPlus plugin) {
 		this.plugin = plugin;
 	}
+	
+	/**
+	 * Used to:
+	 *  - save the player in the internal list of players;
+	 *  - set the internal scoreboard for this player;
+	 *  - hide spectators from the joining player;
+	 *  - enable the spectator mode if the player is registered as a spectator.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		// On player join - hide spectators from the joining player
 		plugin.user.put(event.getPlayer().getName(), new PlayerObject());
-		if (plugin.scoreboard) {event.getPlayer().setScoreboard(plugin.board);}
+		
+		if (plugin.scoreboard) {
+			event.getPlayer().setScoreboard(plugin.board);
+		}
+		
 		for (Player target : plugin.getServer().getOnlinePlayers()) {
 			if (plugin.user.get(target.getName()).spectating == true) {
 				event.getPlayer().hidePlayer(target);
 			}
 		}
+		
 		if (plugin.specs.getConfig().contains(event.getPlayer().getName())) {
 			plugin.enableSpectate(event.getPlayer(), (CommandSender) event.getPlayer());
 		}
 	}
+	
+	/**
+	 * Used to hide chat messages sent by spectators, if the spectator chat is enabled.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	public void onChatSend(AsyncPlayerChatEvent event) {
-		// Cancel chat messages from spectators and put it into spectator chat instead.
 		if (plugin.specChat) {
 			if (plugin.user.get(event.getPlayer().getName()).spectating) {
 				event.setCancelled(true);
@@ -65,54 +84,96 @@ public class SpectateListener implements Listener {
 			}
 		}
 	}
+	
+	/**
+	 * Used to prevent spectators from placing blocks.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		// On block place - cancel if the player is a spectator
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
+		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
-			if(plugin.output) {event.getPlayer().sendMessage(plugin.prefix + "You cannot place blocks while in spectate mode!");}
+			if(plugin.output) {
+				event.getPlayer().sendMessage(plugin.prefix + "You cannot place blocks while in spectate mode!");
+			}
 		}
 	}
+	
+	/**
+	 * Used to cancel any damage taken or caused by a spectator.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
-		// On entity hit - are they a spectator or were they hit by a spectator?
+		// Manages spectators damaging players
 		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
 			if (plugin.user.get(((Player) event.getDamager()).getName()).spectating || plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
 				event.setCancelled(true);
 			}
-			// Manage spectators damaging mobs
-		} else if (event.getEntity() instanceof Player == false && event.getDamager() instanceof Player) {
+		}
+		
+		// Manages spectators damaging mobs
+		else if (event.getEntity() instanceof Player == false && event.getDamager() instanceof Player) {
 			if (plugin.user.get(((Player) event.getDamager()).getName()).spectating == true) {
 				event.setCancelled(true);
 			}
-			// Manage mobs damaging spectators
-		} else if (event.getEntity() instanceof Player && event.getDamager() instanceof Player == false) {
+		}
+		
+		// Manages mobs damaging spectators
+		else if (event.getEntity() instanceof Player && event.getDamager() instanceof Player == false) {
 			if (plugin.user.get(((Player) event.getEntity()).getName()).spectating == true) {
 				event.setCancelled(true);
 			}
 		}
+		
 		// Otherwise both entities are mobs, ignore the event.
 	}
+	
+	/**
+	 * Used to:
+	 *  - prevent spectator from breaking blocks;
+	 *  - setup an arena, if the command was sent before by this player.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		// On block break - Cancel if the player is a spectator. Fires only when the block is fully broken
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
+		// Cancel if the player is a spectator. Fires only when the block is fully broken.
+		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
-			if(plugin.output) {event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");}
+			
+			if(plugin.output) {
+				event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");
+			}
 		}
+		
 		// Set up mode
-		if(plugin.arenaSetup(event.getPlayer(), event.getBlock()) == true) {
+		if(plugin.arenaSetup(event.getPlayer(), event.getBlock())) {
 			event.setCancelled(true);
 		}
 	}
+	
+	
+	/**
+	 * Used to prevent spectators from changing their gamemove whilst spectating.
+	 * @param event
+	 */
 	@EventHandler(priority=EventPriority.HIGH)
 	public void onGamemodeChange(PlayerGameModeChangeEvent event) {
-		// on Gamemode Change - stop players from changing their gamemode whilst spectating.
 		if (plugin.user.get(event.getPlayer().getName()).spectating && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
 			event.setCancelled(true);
 			event.getPlayer().setAllowFlight(true);
 		}
 	}
+	
+	
+	/**
+	 * Used to prevent spectators from dropping items on ground.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onPlayerDropItem(PlayerDropItemEvent event) {
 		// On player drop item - Cancel if the player is a spectator
@@ -120,13 +181,24 @@ public class SpectateListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
+	
+	/**
+	 * Used to prevent spectators from picking up items.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onPlayerPickupItem(PlayerPickupItemEvent event) {
-		// On player pickup item - Cancel if the player is a spectator
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 		}
 	}
+	
+	/**
+	 * Used to prevent the mobs to be interested by (and aggressive against) spectators. 
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onEntityTarget(EntityTargetEvent event) {
 		// On entity target - Stop mobs targeting spectators
@@ -134,18 +206,38 @@ public class SpectateListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
+	
+	/**
+	 * Used to:
+	 *  - prevent the damage block animation to be displayed, if the player is a spectator;
+	 *  - setup an arena (if the command was sent before by the sender).
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onBlockDamage(BlockDamageEvent event) {
 		// On block damage - Cancels the block damage animation
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
-			if(plugin.output) {event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");}
+			
+			if(plugin.output) {
+				event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");
+			}
 		}
+		
 		// Set up mode
 		if (plugin.arenaSetup(event.getPlayer(), event.getBlock())) {
 			event.setCancelled(true);
 		}
 	}
+	
+	/**
+	 * Used to:
+	 *  - prevent players & mobs from damaging spectators;
+	 *  - stop the fire display when a spectator go out of a fire/lava block.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onEntityDamage(EntityDamageEvent event) {
 		// On entity damage - Stops users hitting players and mobs while spectating
@@ -158,32 +250,60 @@ public class SpectateListener implements Listener {
 			event.getEntity().setFireTicks(0);
 		}
 	}
+	
+	/**
+	 * Used to prevent the food level to drop if the player is a spectator.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onFoodLevelChange(FoodLevelChangeEvent event) {
-		// On food loss - Cancels the food loss for spectators
 		if (event.getEntityType() == EntityType.PLAYER && plugin.user.get(event.getEntity().getName()).spectating) {
 			event.setCancelled(true);
 			plugin.getServer().getPlayer(event.getEntity().getName()).setFoodLevel(20);
 		}
 	}
+	
+	/**
+	 * Used to:
+	 *  - removes the player from the internal scoreboard;
+	 *  - disable the “hidden” state of the spectator;
+	 *  - put the player back in the server's default gamemode;
+	 *  - disable the spectator mode and reload the inventory, to avoid this inventory to be destroyed on server restart.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onPlayerQuit(PlayerQuitEvent event) {
 		Player spectator = event.getPlayer();
+		
 		if (plugin.scoreboard) {
 			plugin.team.removePlayer(spectator);
 		}
+		
 		for (Player target : plugin.getServer().getOnlinePlayers()) {
 			target.showPlayer(event.getPlayer()); // show the leaving player to everyone
 			event.getPlayer().showPlayer(target); // show the leaving player everyone
 		}
+		
 		if (plugin.user.get(spectator.getName()).spectating) {
 			plugin.user.get(spectator.getName()).spectating = false;
 			spectator.setGameMode(plugin.getServer().getDefaultGameMode());
+			
 			plugin.spawnPlayer(spectator);
 			plugin.loadPlayerInv(spectator);
+			
 			plugin.user.remove(spectator.getName());
 		}
 	}
+	
+	/**
+	 * Used to:
+	 *  - display the various GUIs (teleportation, arenas) when the player right-click with the good item;
+	 *  - prevent the player from opening chests, doors...
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onPlayerInteract(PlayerInteractEvent event) {
 		if (plugin.user.get(event.getPlayer().getName()).spectating == true && event.getMaterial() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
@@ -195,15 +315,25 @@ public class SpectateListener implements Listener {
 				plugin.showGUI(event.getPlayer(), 0);
 			}
 		}
+		
 		if (plugin.user.get(event.getPlayer().getName()).spectating == true && event.getMaterial() == Material.WATCH && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			event.setCancelled(true);
 			plugin.showArenaGUI(event.getPlayer());
 		}
+		
 		// Cancel chest opening, doors, anything when the player right clicks.
 		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
 			event.setCancelled(true);
 		}
 	}
+	
+	/**
+	 * Used to:
+	 *  - prevent a command to be executed if the player is a spectator and the option is set in the config;
+	 *  - catch /me commands to show them into the spectator chat.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		if(plugin.specChat && event.getMessage().startsWith("/me") && plugin.user.get(event.getPlayer().getName()).spectating) {
@@ -221,6 +351,12 @@ public class SpectateListener implements Listener {
 			}
 		}
 	}
+	
+	/**
+	 * Used to enable the spectator mode for dead players, if this option is enabled in the config.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onPlayerRespawn(PlayerRespawnEvent event) {
 		if(plugin.death) {
@@ -228,25 +364,36 @@ public class SpectateListener implements Listener {
 			new AfterRespawnTask(event.getPlayer(), plugin).runTaskLater(plugin, 20);
 		}
 	}
+	
+	/**
+	 * Used to get the selected item in the various GUIs.
+	 * 
+	 * @param event
+	 */
 	@EventHandler
 	void onInventoryClick(InventoryClickEvent event) {
 		if (plugin.user.get(event.getWhoClicked().getName()).spectating) {
+			// Teleportation GUI
 			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.SKULL_ITEM && event.getCurrentItem().getDurability() == 3) {
 				ItemStack playerhead = event.getCurrentItem();
 				SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
 				Player skullOwner = plugin.getServer().getPlayer(meta.getOwner());
 				event.getWhoClicked().closeInventory();
+				
 				if (skullOwner != null && skullOwner.isOnline() && !plugin.user.get(skullOwner.getName()).spectating) {
 					plugin.choosePlayer((Player) event.getWhoClicked(), skullOwner);
-				} else {
+				}
+				else {
 					if (skullOwner == null) {
 						OfflinePlayer offlineSkullOwner = plugin.getServer().getOfflinePlayer(meta.getOwner());
 						((Player) event.getWhoClicked()).sendMessage(plugin.prefix + ChatColor.RED + offlineSkullOwner.getName() + ChatColor.GOLD + " is offline!");
-					} else if (skullOwner.getAllowFlight() == true) {
+					}
+					else if (skullOwner.getAllowFlight() == true) {
 						((Player) event.getWhoClicked()).sendMessage(plugin.prefix + ChatColor.RED + skullOwner.getName() + ChatColor.GOLD + " is currently spectating!");
 					}
 				}
 			}
+			
 			// Manage showArenaGUI method selection
 			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.BOOK) {
 				ItemStack arenaBook = event.getCurrentItem();
@@ -258,6 +405,8 @@ public class SpectateListener implements Listener {
 					plugin.setArenaForPlayer((Player) event.getWhoClicked(), chosenArena);
 				}
 			}
+			
+			// Cancel the event to prevent the item to be taken
 			event.setCancelled(true);
 		}
 	}

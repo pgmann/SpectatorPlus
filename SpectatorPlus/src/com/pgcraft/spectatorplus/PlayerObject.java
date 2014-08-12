@@ -3,17 +3,57 @@ package com.pgcraft.spectatorplus;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
-public class PlayerObject {
-	public String arenaName;
+public class PlayerObject {	
+	/**
+	 * True if the player is currently spectating.
+	 */
 	public boolean spectating;
+	
+	/**
+	 * True if the player is currently teleporting.
+	 */
 	public boolean teleporting;
-	public int setup;
+	
+	/**
+	 * The ID of the current arena the spectator is in.
+	 */
 	public int arenaNum;
-	public Location pos1;
-	public Location pos2;
+	
+	/**
+	 * The saved inventory of the player.
+	 */
 	public ItemStack[] inventory;
+	
+	/**
+	 * The saved armour of the player.
+	 */
 	public ItemStack[] armour;
-	PlayerObject () {
+	
+	/**
+	 * The setup step.
+	 *  - 0: no setup in progress;
+	 *  - 1: first corner set;
+	 *  - 2: second corner set.
+	 */
+	public int setup;
+	
+	/**
+	 * If the player setup an arena, the entered name of this arena is stored here.
+	 */
+	public String arenaName;
+	
+	/**
+	 * The location of the first corner of an arena (in setup mode).
+	 */
+	public Location pos1;
+	
+	/**
+	 * The location of the second corner of an arena (in setup mode).
+	 */
+	public Location pos2;
+	
+	
+	PlayerObject() {
 		spectating = false;
 		arenaName = null;
 		teleporting = false;

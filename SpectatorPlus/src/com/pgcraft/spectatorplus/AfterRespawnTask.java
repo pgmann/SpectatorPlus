@@ -18,5 +18,4 @@ public class AfterRespawnTask extends BukkitRunnable {
 		plugin.enableSpectate(player, player);
 		this.cancel();
 	}
-
 }
