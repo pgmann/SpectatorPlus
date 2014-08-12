@@ -14,7 +14,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -30,35 +29,35 @@ import org.bukkit.scoreboard.Team;
 @SuppressWarnings("deprecation")
 public class SpectatorPlus extends JavaPlugin {
 	
-	HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
+	public HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
 	
-	String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
-	String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
+	public String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
+	public String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
 	
-	double version = 1.92; // Plugin version
+	private double version = 1.92; // Plugin version
 	
-	ConsoleCommandSender console;
+	public ConsoleCommandSender console;
 	
-	ConfigAccessor setup = null;
-	ConfigAccessor toggles = null;
-	ConfigAccessor specs = null;
+	public ConfigAccessor setup = null;
+	public ConfigAccessor toggles = null;
+	public ConfigAccessor specs = null;
 	
-	SpectateAPI api = null;
+	private SpectateAPI api = null;
 
 	// Manage toggles
-	boolean compass;
-	boolean clock;
-	boolean specChat;
-	boolean scoreboard;
-	boolean output;
-	boolean death;
-	boolean seeSpecs;
-	boolean blockCmds;
-	boolean adminBypass;
+	public boolean compass;
+	public boolean clock;
+	public boolean specChat;
+	public boolean scoreboard;
+	public boolean output;
+	public boolean death;
+	public boolean seeSpecs;
+	public boolean blockCmds;
+	public boolean adminBypass;
 
-	ScoreboardManager manager = null;
-	Scoreboard board = null;
-	Team team = null;
+	private ScoreboardManager manager = null;
+	public Scoreboard board = null;
+	public Team team = null;
 
 	
 	@Override
@@ -102,8 +101,12 @@ public class SpectatorPlus extends JavaPlugin {
 		scoreboard = toggles.getConfig().getBoolean("colouredtablist", true);
 		output = toggles.getConfig().getBoolean("outputmessages", true);
 		death = toggles.getConfig().getBoolean("deathspec", false);
+		
 		seeSpecs = toggles.getConfig().getBoolean("seespecs", false);
-		if (!scoreboard) seeSpecs = false;
+		if (!scoreboard) {
+			seeSpecs = false;
+		}
+		
 		blockCmds = toggles.getConfig().getBoolean("blockcmds", true);
 		adminBypass = toggles.getConfig().getBoolean("adminbypass", false);
 
@@ -113,6 +116,7 @@ public class SpectatorPlus extends JavaPlugin {
 			team = board.registerNewTeam("spec");
 			team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
 		}
+		
 		if (seeSpecs) {
 			team.setCanSeeFriendlyInvisibles(true);
 		}
@@ -120,8 +124,13 @@ public class SpectatorPlus extends JavaPlugin {
 		for (Player player : getServer().getOnlinePlayers()) {
 			user.put(player.getName(), new PlayerObject());
 		}
+		
 		getServer().getPluginManager().registerEvents(new SpectateListener(this), this);
-		if(output) {console.sendMessage(prefix + "Version " + ChatColor.RED + version + ChatColor.GOLD + " is enabled!");}
+		
+		if(output) {
+			console.sendMessage(prefix + "Version " + ChatColor.RED + version + ChatColor.GOLD + " is enabled!");
+		}
+		
 		this.getCommand("spectate").setExecutor(commands);
 		this.getCommand("spec").setExecutor(commands);
 	}
@@ -129,7 +138,9 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		if(output) {console.sendMessage(prefix + "Disabling...");}
+		if(output) {
+			console.sendMessage(prefix + "Disabling...");
+		}
 		for (Player player : getServer().getOnlinePlayers()) {
 			for (Player target : getServer().getOnlinePlayers()) {
 				target.showPlayer(player);
@@ -158,7 +169,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param player
 	 * @return true if the player was  teleported, false else.
 	 */
-	boolean spawnPlayer(Player player) {
+	public boolean spawnPlayer(Player player) {
 		player.setFireTicks(0);
 		if (setup.getConfig().getBoolean("active") == true) {
 			Location where = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos"), setup.getConfig().getDouble("zPos"));
@@ -192,7 +203,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The GUI will be open for this spectator.
 	 * @param region The arena to use to choose the players to display on the GUI. 0 if there isn't any arena set for this player.
 	 */
-	void showGUI(Player spectator, int region) {
+	public void showGUI(Player spectator, int region) {
 		Inventory gui = null;
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
@@ -255,7 +266,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param spectator The GUI will be open for this spectator.
 	 */
-	void showArenaGUI(Player spectator) {
+	public void showArenaGUI(Player spectator) {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, basePrefix);
 		
 		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
@@ -279,7 +290,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The spectator to teleport.
 	 * @param target The spectator will be teleported at the current location of this player.
 	 */
-	void choosePlayer(Player spectator, Player target) {
+	public void choosePlayer(Player spectator, Player target) {
 		spectator.teleport(target);
 		
 		if(output) {
@@ -291,7 +302,7 @@ public class SpectatorPlus extends JavaPlugin {
 	/**
 	 * Main SpectatorPlus CommandExecutor.
 	 */
-	CommandExecutor commands = new CommandExecutor() {
+	public CommandExecutor commands = new CommandExecutor() {
 		public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 			// On command: to the sender of the command
 			if (sender instanceof Player && sender.hasPermission("spectate.use")) {
@@ -561,7 +572,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param sender The help will be displayer for this sender.
 	 */
-	void printHelp(CommandSender sender) {
+	private void printHelp(CommandSender sender) {
 		sender.sendMessage(ChatColor.GOLD + "            ~~ " + ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus" + ChatColor.GOLD + " ~~            ");
 		sender.sendMessage(ChatColor.RED + "/spectate <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
 		if (sender instanceof Player) {
@@ -580,7 +591,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The player that will be a spectator.
 	 * @param sender The sender of the /spec on [player] command.
 	 */
-	void enableSpectate(Player spectator, CommandSender sender) {
+	public void enableSpectate(Player spectator, CommandSender sender) {
 		if (user.get(spectator.getName()).spectating) {
 			// Spectator mode was already on
 			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
@@ -671,7 +682,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The spectator that will be a normal player.
 	 * @param sender The sender of the /spec off [player] command.
 	 */
-	void disableSpectate(Player spectator, CommandSender sender) {
+	public void disableSpectate(Player spectator, CommandSender sender) {
 		if (user.get(spectator.getName()).spectating) {
 			// Show them to everyone
 			for (Player target : getServer().getOnlinePlayers()) {
@@ -736,7 +747,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @return True if the player was setting up an arena; false else.
 	 */
-	boolean arenaSetup(Player player, Block block) {
+	public boolean arenaSetup(Player player, Block block) {
 		if (user.get(player.getName()).setup == 2) {
 			user.get(player.getName()).pos2 = block.getLocation();
 			user.get(player.getName()).setup = 0;
@@ -811,7 +822,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param arenaName
 	 * @return True if the arena was removed; false else (non-existant arena).
 	 */
-	boolean removeArena(String arenaName) {
+	public boolean removeArena(String arenaName) {
 		int arenaNum = 0;
 		for (int i=1; i < setup.getConfig().getInt("nextarena"); i++) {
 			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
@@ -861,7 +872,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param player The player.
 	 * @param arenaName The name of the arena.
 	 */
-	void setArenaLobbyLoc(Player player, String arenaName) {
+	public void setArenaLobbyLoc(Player player, String arenaName) {
 		int arenaNum = 0;
 		for (int i=1; i<setup.getConfig().getInt("nextarena"); i++) {
 			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
@@ -893,7 +904,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param teleportToLobby If true the player will be teleported to the lobby (if a lobby is set).
 	 * @return True if the change was effective (i.e. the arena exists).
 	 */
-	boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
+	public boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
 		int arenaNum = 0;
 		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
 			if (setup.getConfig().getString("arena." + i + ".name") == arenaName) {
@@ -941,7 +952,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param arenaName The name of the arena.
 	 * @return True if the change was effective (i.e. the arena exists).
 	 */
-	boolean setArenaForPlayer(Player player, String arenaName) {
+	public boolean setArenaForPlayer(Player player, String arenaName) {
 		return setArenaForPlayer(player, arenaName, true);
 	}
 	
@@ -952,7 +963,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param player
 	 */
-	void removePlayerFromArena(Player player) {
+	public void removePlayerFromArena(Player player) {
 		user.get(player.getName()).arenaNum = 0;
 		
 		boolean teleported = spawnPlayer(player);
@@ -972,7 +983,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param player The concerned player.
 	 */
-	void savePlayerInv(Player player) {
+	public void savePlayerInv(Player player) {
 		user.get(player.getName()).inventory = player.getInventory().getContents();
 		user.get(player.getName()).armour = player.getInventory().getArmorContents();
 		
@@ -985,7 +996,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param player The concerned player.
 	 */
-	void loadPlayerInv(Player player) {
+	public void loadPlayerInv(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setContents(user.get(player.getName()).inventory);
 		player.getInventory().setArmorContents(user.get(player.getName()).armour);
@@ -1002,7 +1013,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param sender The sender of the message to be broadcasted.
 	 * @param message The message to broadcast.
 	 */
-	void broadcastToSpectators(CommandSender sender, String message) {
+	public void broadcastToSpectators(CommandSender sender, String message) {
 		String senderName = null;
 		if(sender instanceof Player) {
 			senderName = ChatColor.WHITE + ((Player) sender).getDisplayName();
@@ -1030,7 +1041,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param message The text of the message.
 	 * @param isAction If true, the message will be displayed as an action message (like /me <message>).
 	 */
-	void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
+	public void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
 		String playerName = null;
 		if(sender instanceof Player) {
 			playerName = ChatColor.WHITE + ((Player) sender).getDisplayName();
