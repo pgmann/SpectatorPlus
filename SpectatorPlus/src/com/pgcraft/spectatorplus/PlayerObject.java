@@ -53,7 +53,7 @@ public class PlayerObject {
 	public Location pos2;
 	
 	
-	PlayerObject() {
+	public PlayerObject() {
 		spectating = false;
 		arenaName = null;
 		teleporting = false;

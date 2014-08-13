@@ -544,7 +544,7 @@ public class SpectateCommand implements CommandExecutor {
 	
 	
 	/**
-	 * This command broadcasts a messages to the spectators.
+	 * This command broadcasts a message to the spectators.
 	 * Usage: /spec say <message>
 	 * 
 	 * @param sender
