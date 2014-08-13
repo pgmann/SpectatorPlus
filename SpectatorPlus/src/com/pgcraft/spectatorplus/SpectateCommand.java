@@ -241,7 +241,12 @@ public class SpectateCommand implements CommandExecutor {
 	private void doOn(CommandSender sender, Command command, String label, String[] args) {
 		
 		if (args.length == 1) { // /spec on
-			p.enableSpectate((Player) sender, sender);
+			if(sender instanceof Player) {
+				p.enableSpectate((Player) sender, sender);
+			}
+			else {
+				sender.sendMessage(p.prefix + "A name if needed from the console.");
+			}
 		}
 		
 		else { // /spec on <player>
@@ -267,7 +272,12 @@ public class SpectateCommand implements CommandExecutor {
 	@SuppressWarnings("unused")
 	private void doOff(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 1) { // /spec off
-			p.disableSpectate((Player) sender, sender);
+			if(sender instanceof Player) {
+				p.disableSpectate((Player) sender, sender);
+			}
+			else {
+				sender.sendMessage(p.prefix + "A name if needed from the console.");
+			}
 		}
 		
 		else { // /spec off <player>
