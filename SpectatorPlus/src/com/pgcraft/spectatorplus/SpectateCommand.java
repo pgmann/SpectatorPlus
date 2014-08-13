@@ -188,7 +188,43 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void unauthorized(CommandSender sender, Command command, String[] args) {
-		sender.sendMessage(p.prefix + "You are not allowed to use this command.");
+		if(args.length == 0) {
+			return; // will never happens, but just in case of a mistake...
+		}
+		
+		String message = null;
+		switch(args[0]) {
+			case "on":
+			case "off":
+				if(args.length >= 2) {
+					message = "You are not allowed to change the spectator mode of another player";
+				}
+				else {
+					message = "You are not allowed to change your own spectator mode";
+				}
+				break;
+			
+			case "arena":
+				message = "You don't have the permission to manage arenas.";
+				break;
+				
+			case "lobby":
+				message = "You don't have the permission to manage the main lobby.";
+				break;
+				
+			case "reload":
+				message = "You don't have the permission to reload the configuration.";
+				break;
+				
+			case "mode":
+				message = "You are not allowed to change the mode.";
+				
+			case "say":
+				message = "You are not allowed to broadcast a message to the spectators' chat.";
+				break;
+		}
+		
+		sender.sendMessage(p.prefix + message);
 	}
 	
 	
