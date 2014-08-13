@@ -27,35 +27,35 @@ import org.bukkit.scoreboard.Team;
 @SuppressWarnings("deprecation")
 public class SpectatorPlus extends JavaPlugin {
 	
-	public HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
+	protected HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
 	
-	public String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
-	public String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
+	protected String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
+	protected String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
 	
-	private double version = 1.92; // Plugin version
+	protected double version = 1.92; // Plugin version
 	
-	public ConsoleCommandSender console;
+	protected ConsoleCommandSender console;
 	
-	public ConfigAccessor setup = null;
-	public ConfigAccessor toggles = null;
-	public ConfigAccessor specs = null;
+	protected ConfigAccessor setup = null;
+	protected ConfigAccessor toggles = null;
+	protected ConfigAccessor specs = null;
 	
 	private SpectateAPI api = null;
 
 	// Manage toggles
-	public boolean compass;
-	public boolean clock;
-	public boolean specChat;
-	public boolean scoreboard;
-	public boolean output;
-	public boolean death;
-	public boolean seeSpecs;
-	public boolean blockCmds;
-	public boolean adminBypass;
+	protected boolean compass;
+	protected boolean clock;
+	protected boolean specChat;
+	protected boolean scoreboard;
+	protected boolean output;
+	protected boolean death;
+	protected boolean seeSpecs;
+	protected boolean blockCmds;
+	protected boolean adminBypass;
 
-	private ScoreboardManager manager = null;
-	public Scoreboard board = null;
-	public Team team = null;
+	protected ScoreboardManager manager = null;
+	protected Scoreboard board = null;
+	protected Team team = null;
 
 	
 	@Override
