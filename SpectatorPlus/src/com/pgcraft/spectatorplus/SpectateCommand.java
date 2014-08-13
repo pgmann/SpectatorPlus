@@ -411,6 +411,10 @@ public class SpectateCommand implements CommandExecutor {
 				
 				sender.sendMessage(p.prefix + "Spectator lobby location removed! Players will be teleported to spawn when they spectate.");
 			}
+			
+			else {
+				sender.sendMessage(p.prefix + "Unknown command. See " + ChatColor.DARK_RED + "/spectate lobby" + ChatColor.GOLD + " for usage.");
+			}
 		}
 	}
 	
@@ -538,6 +542,10 @@ public class SpectateCommand implements CommandExecutor {
 				
 				sender.sendMessage(p.prefix + "All arenas removed.");
 				
+			}
+			
+			else {
+				sender.sendMessage(p.prefix + "Unknown command. See " + ChatColor.DARK_RED + "/spectate arena" + ChatColor.GOLD + " for usage.");
 			}
 		}
 	}
