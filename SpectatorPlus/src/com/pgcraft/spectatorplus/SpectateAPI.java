@@ -250,7 +250,7 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	protected boolean unregisterArena(String name) {
+	public boolean unregisterArena(String name) {
 		return plugin.removeArena(name);
 	}
 	
@@ -264,7 +264,7 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	protected boolean setArenaLobbyLoc(Location location, String name) {
+	public boolean setArenaLobbyLoc(Location location, String name) {
 		return plugin.setArenaLobbyLoc(location, name);
 	}
 	
@@ -278,7 +278,7 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	protected boolean setArenaLobbyLoc(Player player, String arenaName) {
+	public boolean setArenaLobbyLoc(Player player, String arenaName) {
 		return setArenaLobbyLoc(player.getLocation(), arenaName);
 	}
 	
@@ -294,7 +294,7 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	protected boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
+	public boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
 		return plugin.setArenaForPlayer(player, arenaName, teleportToLobby);
 	}
 	
@@ -309,7 +309,7 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	protected boolean setArenaForPlayer(Player player, String arenaName) {
+	public boolean setArenaForPlayer(Player player, String arenaName) {
 		return setArenaForPlayer(player, arenaName, true);
 	}
 	
@@ -321,9 +321,36 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	protected void removePlayerFromArena(Player player) {
+	public void removePlayerFromArena(Player player) {
 		plugin.removePlayerFromArena(player);
 	}
 	
 	
+	
+	/**
+	 * Broadcasts a message to all players with spectator mode enabled, and the sender.
+	 * 
+	 * @param sender The sender of the message to be broadcasted.
+	 * @param message The message to broadcast.
+	 * 
+	 * @since 2.0
+	 */
+	public void broadcastToSpectators(CommandSender sender, String message) {
+		plugin.broadcastToSpectators(sender, message);
+	}
+	
+	
+	/**
+	 * Sends a spectator chat message, from one spectator to all other spectators. 
+	 * Includes "/me" actions
+	 * 
+	 * @param sender The sender of the message.
+	 * @param message The text of the message.
+	 * @param isAction If true, the message will be displayed as an action message (like /me <message>).
+	 * 
+	 * @since 2.0
+	 */
+	public void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
+		plugin.sendSpectatorMessage(sender, message, isAction);
+	}
 }
