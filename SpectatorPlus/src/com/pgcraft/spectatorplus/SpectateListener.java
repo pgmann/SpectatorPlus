@@ -37,7 +37,7 @@ public class SpectateListener implements Listener {
 	
 	private SpectatorPlus plugin; // Pointer to main class (see SpectatorPlus.java)
 
-	public SpectateListener(SpectatorPlus plugin) {
+	protected SpectateListener(SpectatorPlus plugin) {
 		this.plugin = plugin;
 	}
 	
@@ -51,7 +51,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
+	protected void onPlayerJoin(PlayerJoinEvent event) {
 		plugin.user.put(event.getPlayer().getName(), new PlayerObject());
 		
 		if (plugin.scoreboard) {
@@ -75,7 +75,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onChatSend(AsyncPlayerChatEvent event) {
+	protected void onChatSend(AsyncPlayerChatEvent event) {
 		if (plugin.specChat) {
 			if (plugin.user.get(event.getPlayer().getName()).spectating) {
 				event.setCancelled(true);
@@ -90,7 +90,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent event) {
+	protected void onBlockPlace(BlockPlaceEvent event) {
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 			if(plugin.output) {
@@ -105,7 +105,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
+	protected void onEntityDamageEvent(EntityDamageByEntityEvent event) {
 		// Manages spectators damaging players
 		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
 			if ((!event.getDamager().hasMetadata("NPC") && plugin.user.get(((Player) event.getDamager()).getName()).spectating) || (!event.getEntity().hasMetadata("NPC") && plugin.user.get(((Player) event.getEntity()).getName()).spectating)) {
@@ -134,7 +134,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent event) {
+	protected void onBlockBreak(BlockBreakEvent event) {
 		// Cancel if the player is a spectator. Fires only when the block is fully broken.
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
@@ -156,7 +156,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler(priority=EventPriority.HIGH)
-	public void onGamemodeChange(PlayerGameModeChangeEvent event) {
+	protected void onGamemodeChange(PlayerGameModeChangeEvent event) {
 		if (plugin.user.get(event.getPlayer().getName()).spectating && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
 			event.setCancelled(true);
 			event.getPlayer().setAllowFlight(true);
@@ -170,7 +170,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onPlayerDropItem(PlayerDropItemEvent event) {
+	protected void onPlayerDropItem(PlayerDropItemEvent event) {
 		// On player drop item - Cancel if the player is a spectator
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
@@ -183,7 +183,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+	protected void onPlayerPickupItem(PlayerPickupItemEvent event) {
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 		}
@@ -195,7 +195,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onEntityTarget(EntityTargetEvent event) {
+	protected void onEntityTarget(EntityTargetEvent event) {
 		// On entity target - Stop mobs targeting spectators
 		// Check to make sure it isn't an NPC (Citizens NPC's will be detectable using 'entity.hasMetadata("NPC")')
 		if (event.getTarget() != null && event.getTarget() instanceof Player && !event.getTarget().hasMetadata("NPC") && plugin.user.get(((Player) event.getTarget()).getName()).spectating) {
@@ -211,7 +211,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onBlockDamage(BlockDamageEvent event) {
+	protected void onBlockDamage(BlockDamageEvent event) {
 		// On block damage - Cancels the block damage animation
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
@@ -235,7 +235,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onEntityDamage(EntityDamageEvent event) {
+	protected void onEntityDamage(EntityDamageEvent event) {
 		// On entity damage - Stops users hitting players and mobs while spectating
 		// Check to make sure it isn't an NPC (Citizens NPC's will be detectable using 'entity.hasMetadata("NPC")')
 		if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC") && plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
@@ -254,7 +254,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onFoodLevelChange(FoodLevelChangeEvent event) {
+	protected void onFoodLevelChange(FoodLevelChangeEvent event) {
 		if (event.getEntityType() == EntityType.PLAYER && plugin.user.get(event.getEntity().getName()).spectating) {
 			event.setCancelled(true);
 			plugin.getServer().getPlayer(event.getEntity().getName()).setFoodLevel(20);
@@ -271,7 +271,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
+	protected void onPlayerQuit(PlayerQuitEvent event) {
 		Player spectator = event.getPlayer();
 		
 		if (plugin.scoreboard) {
@@ -302,7 +302,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) {
+	protected void onPlayerInteract(PlayerInteractEvent event) {
 		if (plugin.user.get(event.getPlayer().getName()).spectating == true && event.getMaterial() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			String mode = plugin.setup.getConfig().getString("mode"); 
 			if (mode.equals("arena")) {
@@ -332,7 +332,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
+	protected void onCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		if(plugin.specChat && event.getMessage().startsWith("/me") && plugin.user.get(event.getPlayer().getName()).spectating) {
 			plugin.sendSpectatorMessage(event.getPlayer(), event.getMessage().substring(4), true);
 			event.setCancelled(true);
@@ -355,7 +355,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onPlayerRespawn(PlayerRespawnEvent event) {
+	protected void onPlayerRespawn(PlayerRespawnEvent event) {
 		if(plugin.death) {
 			// prevent murdering clients! (force close bug if spec mode is enabled instantly)
 			new AfterRespawnTask(event.getPlayer(), plugin).runTaskLater(plugin, 20);
@@ -368,7 +368,7 @@ public class SpectateListener implements Listener {
 	 * @param event
 	 */
 	@EventHandler
-	public void onInventoryClick(InventoryClickEvent event) {
+	protected void onInventoryClick(InventoryClickEvent event) {
 		if (plugin.user.get(event.getWhoClicked().getName()).spectating) {
 			// Teleportation GUI
 			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.SKULL_ITEM && event.getCurrentItem().getDurability() == 3) {

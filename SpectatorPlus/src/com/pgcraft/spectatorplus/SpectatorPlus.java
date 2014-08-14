@@ -133,7 +133,6 @@ public class SpectatorPlus extends JavaPlugin {
 		this.getCommand("spec").setExecutor(new SpectateCommand(this));
 	}
 	
-	
 	@Override
 	public void onDisable() {
 		if(output) {
@@ -167,7 +166,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param player
 	 * @return true if the player was  teleported, false else.
 	 */
-	public boolean spawnPlayer(Player player) {
+	protected boolean spawnPlayer(Player player) {
 		player.setFireTicks(0);
 		if (setup.getConfig().getBoolean("active") == true) {
 			Location where = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos"), setup.getConfig().getDouble("zPos"));
@@ -201,7 +200,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The GUI will be open for this spectator.
 	 * @param region The arena to use to choose the players to display on the GUI. 0 if there isn't any arena set for this player.
 	 */
-	public void showGUI(Player spectator, int region) {
+	protected void showGUI(Player spectator, int region) {
 		Inventory gui = null;
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
@@ -264,7 +263,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param spectator The GUI will be open for this spectator.
 	 */
-	public void showArenaGUI(Player spectator) {
+	protected void showArenaGUI(Player spectator) {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, basePrefix);
 		
 		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
@@ -288,7 +287,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The spectator to teleport.
 	 * @param target The spectator will be teleported at the current location of this player.
 	 */
-	public void choosePlayer(Player spectator, Player target) {
+	protected void choosePlayer(Player spectator, Player target) {
 		spectator.teleport(target);
 		
 		if(output) {
@@ -303,7 +302,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The player that will be a spectator.
 	 * @param sender The sender of the /spec on [player] command.
 	 */
-	public void enableSpectate(Player spectator, CommandSender sender) {
+	protected void enableSpectate(Player spectator, CommandSender sender) {
 		if (user.get(spectator.getName()).spectating) {
 			// Spectator mode was already on
 			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
@@ -394,7 +393,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The spectator that will be a normal player.
 	 * @param sender The sender of the /spec off [player] command.
 	 */
-	public void disableSpectate(Player spectator, CommandSender sender) {
+	protected void disableSpectate(Player spectator, CommandSender sender) {
 		if (user.get(spectator.getName()).spectating) {
 			// Show them to everyone
 			for (Player target : getServer().getOnlinePlayers()) {
@@ -459,7 +458,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @return True if the player was setting up an arena; false else.
 	 */
-	public boolean arenaSetup(Player player, Block block) {
+	protected boolean arenaSetup(Player player, Block block) {
 		if (user.get(player.getName()).setup == 2) {
 			user.get(player.getName()).pos2 = block.getLocation();
 			user.get(player.getName()).setup = 0;
@@ -534,7 +533,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param arenaName
 	 * @return True if the arena was removed; false else (non-existant arena).
 	 */
-	public boolean removeArena(String arenaName) {
+	protected boolean removeArena(String arenaName) {
 		int arenaNum = 0;
 		for (int i=1; i < setup.getConfig().getInt("nextarena"); i++) {
 			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
@@ -584,7 +583,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param player The player.
 	 * @param arenaName The name of the arena.
 	 */
-	public void setArenaLobbyLoc(Player player, String arenaName) {
+	protected void setArenaLobbyLoc(Player player, String arenaName) {
 		int arenaNum = 0;
 		for (int i=1; i<setup.getConfig().getInt("nextarena"); i++) {
 			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
@@ -616,7 +615,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param teleportToLobby If true the player will be teleported to the lobby (if a lobby is set).
 	 * @return True if the change was effective (i.e. the arena exists).
 	 */
-	public boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
+	protected boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
 		int arenaNum = 0;
 		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
 			if (setup.getConfig().getString("arena." + i + ".name") == arenaName) {
@@ -664,7 +663,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param arenaName The name of the arena.
 	 * @return True if the change was effective (i.e. the arena exists).
 	 */
-	public boolean setArenaForPlayer(Player player, String arenaName) {
+	protected boolean setArenaForPlayer(Player player, String arenaName) {
 		return setArenaForPlayer(player, arenaName, true);
 	}
 	
@@ -675,7 +674,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param player
 	 */
-	public void removePlayerFromArena(Player player) {
+	protected void removePlayerFromArena(Player player) {
 		user.get(player.getName()).arenaNum = 0;
 		
 		boolean teleported = spawnPlayer(player);
@@ -695,7 +694,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param player The concerned player.
 	 */
-	public void savePlayerInv(Player player) {
+	protected void savePlayerInv(Player player) {
 		user.get(player.getName()).inventory = player.getInventory().getContents();
 		user.get(player.getName()).armour = player.getInventory().getArmorContents();
 		
@@ -708,7 +707,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @param player The concerned player.
 	 */
-	public void loadPlayerInv(Player player) {
+	protected void loadPlayerInv(Player player) {
 		player.getInventory().clear();
 		player.getInventory().setContents(user.get(player.getName()).inventory);
 		player.getInventory().setArmorContents(user.get(player.getName()).armour);
@@ -725,7 +724,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param sender The sender of the message to be broadcasted.
 	 * @param message The message to broadcast.
 	 */
-	public void broadcastToSpectators(CommandSender sender, String message) {
+	protected void broadcastToSpectators(CommandSender sender, String message) {
 		String senderName = null;
 		if(sender instanceof Player) {
 			senderName = ChatColor.WHITE + ((Player) sender).getDisplayName();
@@ -753,7 +752,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param message The text of the message.
 	 * @param isAction If true, the message will be displayed as an action message (like /me <message>).
 	 */
-	public void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
+	protected void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
 		String playerName = null;
 		if(sender instanceof Player) {
 			playerName = ChatColor.WHITE + ((Player) sender).getDisplayName();
