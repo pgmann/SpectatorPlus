@@ -12,6 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+@SuppressWarnings("deprecation")
 public class SpectateCommand implements CommandExecutor {
 
 	private SpectatorPlus p = null;
@@ -319,7 +320,6 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doPlayer(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player) { // A player...
 			if (p.user.get(sender.getName()).spectating) { // ...who is spectating...
@@ -450,7 +450,7 @@ public class SpectateCommand implements CommandExecutor {
 				}
 			}
 			else {
-				sender.sendMessage(p.prefix + "The mode can be “arena” or “any”.");
+				sender.sendMessage(p.prefix + "The mode can be \"arena\" or \"any\".");
 			}
 		}
 	}
