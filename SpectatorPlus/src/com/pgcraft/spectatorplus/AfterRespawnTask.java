@@ -5,8 +5,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class AfterRespawnTask extends BukkitRunnable {
 	
-	SpectatorPlus plugin;
-	Player player;
+	private SpectatorPlus plugin;
+	private Player player;
 	
 	public AfterRespawnTask(Player player, SpectatorPlus plugin) {
 		this.plugin = plugin;
@@ -18,5 +18,4 @@ public class AfterRespawnTask extends BukkitRunnable {
 		plugin.enableSpectate(player, player);
 		this.cancel();
 	}
-
 }
