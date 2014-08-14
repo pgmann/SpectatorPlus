@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 public class SpectateAPI {
 	private SpectatorPlus plugin;
 
-	public SpectateAPI(SpectatorPlus plugin) {
+	protected SpectateAPI(SpectatorPlus plugin) {
 		this.plugin = plugin;
 	}
 	
