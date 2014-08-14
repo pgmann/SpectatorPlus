@@ -2,10 +2,8 @@ package com.pgcraft.spectatorplus;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -77,17 +75,17 @@ public class SpectateListener implements Listener {
 	public void onEntityDamageEvent(EntityDamageByEntityEvent event) {
 		// On entity hit - are they a spectator or were they hit by a spectator?
 		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-			if (plugin.user.get(((Player) event.getDamager()).getName()).spectating || plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
+			if ((!event.getDamager().hasMetadata("NPC") && plugin.user.get(((Player) event.getDamager()).getName()).spectating) || (!event.getEntity().hasMetadata("NPC") && plugin.user.get(((Player) event.getEntity()).getName()).spectating)) {
 				event.setCancelled(true);
 			}
 			// Manage spectators damaging mobs
 		} else if (event.getEntity() instanceof Player == false && event.getDamager() instanceof Player) {
-			if (plugin.user.get(((Player) event.getDamager()).getName()).spectating == true) {
+			if (!event.getDamager().hasMetadata("NPC") && plugin.user.get(((Player) event.getDamager()).getName()).spectating == true) {
 				event.setCancelled(true);
 			}
 			// Manage mobs damaging spectators
 		} else if (event.getEntity() instanceof Player && event.getDamager() instanceof Player == false) {
-			if (plugin.user.get(((Player) event.getEntity()).getName()).spectating == true) {
+			if (!event.getEntity().hasMetadata("NPC") && plugin.user.get(((Player) event.getEntity()).getName()).spectating == true) {
 				event.setCancelled(true);
 			}
 		}
@@ -130,7 +128,8 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	void onEntityTarget(EntityTargetEvent event) {
 		// On entity target - Stop mobs targeting spectators
-		if (event.getTarget() != null && event.getTarget() instanceof Player && plugin.user.get(((Player) event.getTarget()).getName()).spectating) {
+		// Check to make sure it isn't an NPC (Citizens NPC's will be detectable using 'entity.hasMetadata("NPC")')
+		if (event.getTarget() != null && event.getTarget() instanceof Player && !event.getTarget().hasMetadata("NPC") && plugin.user.get(((Player) event.getTarget()).getName()).spectating) {
 			event.setCancelled(true);
 		}
 	}
@@ -149,11 +148,12 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	void onEntityDamage(EntityDamageEvent event) {
 		// On entity damage - Stops users hitting players and mobs while spectating
-		if (event.getEntity() instanceof Player && plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
+		// Check to make sure it isn't an NPC (Citizens NPC's will be detectable using 'entity.hasMetadata("NPC")')
+		if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC") && plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
 			event.setCancelled(true);
 			event.getEntity().setFireTicks(0);
 		}
-		if (event.getEntity() instanceof Player && plugin.user.get(((Player) event.getEntity()).getName()).teleporting) {
+		if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC") && plugin.user.get(((Player) event.getEntity()).getName()).teleporting) {
 			event.setCancelled(true);
 			event.getEntity().setFireTicks(0);
 		}
