@@ -1,12 +1,17 @@
 package com.pgcraft.spectatorplus;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,6 +23,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -28,9 +35,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 @SuppressWarnings("deprecation")
 public class SpectateListener implements Listener {
@@ -100,23 +111,28 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to cancel any damage taken or caused by a spectator.
+	 * Used to:
+	 *  - cancel any damage taken or caused by a spectator;
+	 *  - make arrows, snowballs and negative potions flew by the spectators.
 	 * 
 	 * @param event
 	 */
 	@EventHandler
-	protected void onEntityDamageEvent(EntityDamageByEntityEvent event) {
+	protected void onEntityDamageEvent(final EntityDamageByEntityEvent event) {		
+		
+		/** Cancels damages involving spectators **/
+		
 		// Manages spectators damaging players
 		if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
 			if ((!event.getDamager().hasMetadata("NPC") && plugin.user.get(((Player) event.getDamager()).getName()).spectating) || (!event.getEntity().hasMetadata("NPC") && plugin.user.get(((Player) event.getEntity()).getName()).spectating)) {
 				event.setCancelled(true);
 			}
-			// Manage spectators damaging mobs
+		// Manage spectators damaging mobs
 		} else if (event.getEntity() instanceof Player == false && event.getDamager() instanceof Player) {
 			if (!event.getDamager().hasMetadata("NPC") && plugin.user.get(((Player) event.getDamager()).getName()).spectating == true) {
 				event.setCancelled(true);
 			}
-			// Manage mobs damaging spectators
+		// Manage mobs damaging spectators
 		} else if (event.getEntity() instanceof Player && event.getDamager() instanceof Player == false) {
 			if (!event.getEntity().hasMetadata("NPC") && plugin.user.get(((Player) event.getEntity()).getName()).spectating == true) {
 				event.setCancelled(true);
@@ -124,6 +140,50 @@ public class SpectateListener implements Listener {
 		}
 		
 		// Otherwise both entities are mobs, ignore the event.
+		
+		
+		/** Makes negatives projectiles flew by the viewer **/
+		
+		if(event.getDamager() instanceof Projectile
+				&& !(event.getDamager() instanceof ThrownPotion) // splash potions are cancelled in PotionSplashEvent
+				&& event.getEntity() instanceof Player
+				&& plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
+			
+			event.setCancelled(true);
+			
+			final Player spectatorInvolved = (Player) event.getEntity();
+			final boolean wasFlying = spectatorInvolved.isFlying();
+			final Location initialSpectatorLocation = spectatorInvolved.getLocation();
+			
+			final Vector initialProjectileVelocity = event.getDamager().getVelocity();
+			final Location initialProjectileLocation = event.getDamager().getLocation();
+			
+			spectatorInvolved.setFlying(true);
+			spectatorInvolved.teleport(initialSpectatorLocation.clone().add(0, 6, 0), TeleportCause.PLUGIN);
+			
+			// Prevents the arrow from bouncing on the entity
+			Bukkit.getScheduler().runTaskLater(plugin, new BukkitRunnable() {
+				@Override
+				public void run() {
+					event.getDamager().teleport(initialProjectileLocation);
+					event.getDamager().setVelocity(initialProjectileVelocity);
+				}
+			}, 1L);
+			
+			// Teleports back the spectator
+			Bukkit.getScheduler().runTaskLater(plugin, new BukkitRunnable() {
+				@Override
+				public void run() {
+					spectatorInvolved.teleport(new Location(initialSpectatorLocation.getWorld(), initialSpectatorLocation.getX(), initialSpectatorLocation.getY(), initialSpectatorLocation.getZ(), spectatorInvolved.getLocation().getYaw(), spectatorInvolved.getLocation().getPitch()), TeleportCause.PLUGIN);
+					spectatorInvolved.setFlying(wasFlying);
+				}
+			}, 5L);
+		}
+	}
+	
+	@EventHandler
+	protected void onPotionSplash(PotionSplashEvent ev) {
+		
 	}
 	
 	/**
