@@ -40,7 +40,7 @@ public class SpectateAPI {
 	/**
 	 * Enables or disables the spectator mode on a player.
 	 * 
-	 * @param player The player.
+	 * @param spectator The player.
 	 * @param spectating True if the spectator mode needs to be enabled.
 	 * @param sender The player (or the console) who enabled spectate mode
 	 * 
@@ -257,7 +257,7 @@ public class SpectateAPI {
 	/**
 	 * Sets an arena's lobby location to the given location.
 	 * 
-	 * @param player The player.
+	 * @param location The location.
 	 * @param name The name of the arena.
 	 * 
 	 * @return true if the lobby was set (i.e. the arena exist); false else.

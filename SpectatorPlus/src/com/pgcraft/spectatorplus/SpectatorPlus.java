@@ -596,7 +596,7 @@ public class SpectatorPlus extends JavaPlugin {
 	/**
 	 * Sets an arena's lobby location to the given location.
 	 * 
-	 * @param player The player.
+	 * @param location The location.
 	 * @param arenaName The name of the arena.
 	 * 
 	 * @return true if the lobby was set (i.e. the arena exist); false else.
@@ -808,7 +808,7 @@ public class SpectatorPlus extends JavaPlugin {
 	/**
 	 * Returns the API.
 	 * 
-	 * @see {@link com.pgcraft.spectatorplus.SpectateAPI}.
+	 * @see SpectateAPI
 	 * 
 	 * @return The API.
 	 */
