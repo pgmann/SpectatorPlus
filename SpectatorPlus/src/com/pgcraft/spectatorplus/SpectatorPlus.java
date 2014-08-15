@@ -493,16 +493,8 @@ public class SpectatorPlus extends JavaPlugin {
 				lowPos.setZ(Math.floor(user.get(player.getName()).pos1.getZ()));
 				hiPos.setZ(Math.floor(user.get(player.getName()).pos2.getZ()));
 			}
-
-			setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.y", Math.floor(hiPos.getY()));
-			setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.x", Math.floor(hiPos.getX()));
-			setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.z", Math.floor(hiPos.getZ()));
-			setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.y", Math.floor(lowPos.getY()));
-			setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.x", Math.floor(lowPos.getX()));
-			setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.z", Math.floor(lowPos.getZ()));
-			setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".name", user.get(player.getName()).arenaName);
-			setup.getConfig().set("nextarena", setup.getConfig().getInt("nextarena") + 1);
-			setup.saveConfig();
+			
+			registerArena(user.get(player.getName()).arenaName, hiPos, lowPos);
 			
 			player.sendMessage(prefix + "Arena " + ChatColor.RED + user.get(player.getName()).arenaName + " (#" + (setup.getConfig().getInt("nextarena")-1) + ")" + ChatColor.GOLD + " successfully set up!");
 			
@@ -526,6 +518,29 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 		}
 	}
+	
+	
+	/**
+	 * Registers a new arena.
+	 * 
+	 * @param name The name of the new arena.
+	 * @param corner1 The location of a corner of the arena.
+	 * @param corner2 The location of the other corner of the arena.
+	 */
+	protected void registerArena(String name, Location corner1, Location corner2) {
+		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.y", Math.floor(corner1.getY()));
+		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.x", Math.floor(corner1.getX()));
+		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.z", Math.floor(corner1.getZ()));
+		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.y", Math.floor(corner2.getY()));
+		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.x", Math.floor(corner2.getX()));
+		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.z", Math.floor(corner2.getZ()));
+		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".name", name);
+		
+		setup.getConfig().set("nextarena", setup.getConfig().getInt("nextarena") + 1);
+		
+		setup.saveConfig();
+	}
+	
 	
 	/**
 	 * Removes an arena.
@@ -577,13 +592,16 @@ public class SpectatorPlus extends JavaPlugin {
 		return true;
 	}
 	
+	
 	/**
-	 * Sets an arena's lobby location to the position of the specified player.
+	 * Sets an arena's lobby location to the given location.
 	 * 
-	 * @param player The player.
+	 * @param location The location.
 	 * @param arenaName The name of the arena.
+	 * 
+	 * @return true if the lobby was set (i.e. the arena exist); false else.
 	 */
-	protected void setArenaLobbyLoc(Player player, String arenaName) {
+	protected boolean setArenaLobbyLoc(Location location, String arenaName) {
 		int arenaNum = 0;
 		for (int i=1; i<setup.getConfig().getInt("nextarena"); i++) {
 			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
@@ -592,17 +610,29 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		
 		if (arenaNum == 0) {
-			player.sendMessage(prefix + "Arena " + ChatColor.RED + arenaName + ChatColor.GOLD + " doesn't exist!");
+			return false;
 		}
 		else {
-			setup.getConfig().set("arena." + arenaNum + ".lobby.y", Math.floor(player.getLocation().getY()));
-			setup.getConfig().set("arena." + arenaNum + ".lobby.x", Math.floor(player.getLocation().getX()));
-			setup.getConfig().set("arena." + arenaNum + ".lobby.z", Math.floor(player.getLocation().getZ()));
-			setup.getConfig().set("arena." + arenaNum + ".lobby.world", player.getWorld().getName());
+			setup.getConfig().set("arena." + arenaNum + ".lobby.y", Math.floor(location.getY()));
+			setup.getConfig().set("arena." + arenaNum + ".lobby.x", Math.floor(location.getX()));
+			setup.getConfig().set("arena." + arenaNum + ".lobby.z", Math.floor(location.getZ()));
+			setup.getConfig().set("arena." + arenaNum + ".lobby.world", location.getWorld().getName());
 			setup.saveConfig();
 			
-			player.sendMessage(prefix + "Arena " + ChatColor.RED + arenaName + ChatColor.GOLD + "'s lobby location set to your location");
+			return true;
 		}
+	}
+	
+	/**
+	 * Sets an arena's lobby location to the position of the specified player.
+	 * 
+	 * @param player The player.
+	 * @param arenaName The name of the arena.
+	 * 
+	 * @return true if the lobby was set (i.e. the arena exist); false else.
+	 */
+	protected boolean setArenaLobbyLoc(Player player, String arenaName) {
+		return setArenaLobbyLoc(player.getLocation(), arenaName);
 	}
 	
 	
@@ -778,7 +808,7 @@ public class SpectatorPlus extends JavaPlugin {
 	/**
 	 * Returns the API.
 	 * 
-	 * @see {@link com.pgcraft.spectatorplus.SpectateAPI}.
+	 * @see SpectateAPI
 	 * 
 	 * @return The API.
 	 */

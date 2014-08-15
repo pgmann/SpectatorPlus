@@ -530,7 +530,12 @@ public class SpectateCommand implements CommandExecutor {
 					return;
 				}
 				
-				p.setArenaLobbyLoc((Player) sender, args[2]);
+				if(p.setArenaLobbyLoc((Player) sender, args[2])) {
+					sender.sendMessage(p.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + "'s lobby location set to your location");
+				}
+				else {
+					sender.sendMessage(p.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " doesn't exist!");
+				}
 				
 			}
 			
