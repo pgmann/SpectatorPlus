@@ -61,17 +61,34 @@ public class SpectateAPI {
 	 * @param spectator The spectator to be teleported.
 	 * @param target The target.
 	 * 
-	 * @return True if the player was effectively teleported.
+	 * @return True if the spectator was effectively teleported (aka if spectator was spectating, and target was not).
 	 * 
-	 * @since 1.9.2
+	 * @since 2.0
 	 */
-	public boolean spectatePlayer(Player spectator, Player target) {
+	public boolean teleportSpectatorToPlayer(Player spectator, Player target) {
 		if (plugin.user.get(spectator.getName()).spectating && !plugin.user.get(target.getName()).spectating) {
 			plugin.choosePlayer(spectator, target);
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Teleports a spectator to a player.
+	 * The teleportation fails if spectator is not spectating or if target is currently spectating.
+	 * 
+	 * @param spectator The spectator to be teleported.
+	 * @param target The target.
+	 * 
+	 * @return True if the spectator was effectively teleported (aka if spectator was spectating, and target was not).
+	 * 
+	 * @since 1.9.2
+	 * @deprecated Use {@link #teleportSpectatorToPlayer(Player, Player)} instead.
+	 */
+	@Deprecated
+	public boolean spectatePlayer(Player spectator, Player target) {
+		return teleportSpectatorToPlayer(spectator, target);
 	}
 	
 	/**
@@ -264,7 +281,7 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	public boolean setArenaLobbyLoc(Location location, String name) {
+	public boolean setArenaLobbyLocation(Location location, String name) {
 		return plugin.setArenaLobbyLoc(location, name);
 	}
 	
@@ -278,8 +295,8 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	public boolean setArenaLobbyLoc(Player player, String arenaName) {
-		return setArenaLobbyLoc(player.getLocation(), arenaName);
+	public boolean setArenaLobbyLocation(Player player, String arenaName) {
+		return setArenaLobbyLocation(player.getLocation(), arenaName);
 	}
 	
 	/**
