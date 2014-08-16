@@ -12,7 +12,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation","unused"})
 public class SpectateCommand implements CommandExecutor {
 
 	private SpectatorPlus p = null;
@@ -51,7 +51,7 @@ public class SpectateCommand implements CommandExecutor {
 			return false;
 		}
 		
-		if(args.length == 0) {
+		if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
 			help(sender);
 			return true;
 		}
@@ -60,7 +60,7 @@ public class SpectateCommand implements CommandExecutor {
 		
 		// First: subcommand existence.
 		if(!this.commands.contains(subcommandName)) {
-			help(sender);
+			sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
 			return true;
 		}
 		
@@ -83,11 +83,11 @@ public class SpectateCommand implements CommandExecutor {
 			
 		} catch (NoSuchMethodException e) {
 			// Unknown method => unknown subcommand.
-			help(sender);
+			sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
 			return true;
 			
 		} catch(SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			sender.sendMessage(p.prefix + "An error occured, see console for details. This is probably a bug, please report it!");
+			sender.sendMessage(p.prefix + ChatColor.DARK_RED + "An error occured, see console for details. This is probably a bug, please report it!");
 			e.printStackTrace();
 			return false;
 		}
@@ -108,17 +108,17 @@ public class SpectateCommand implements CommandExecutor {
 		
 		sender.sendMessage(ChatColor.GOLD + "            ~~ " + ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus" + ChatColor.GOLD + " ~~            ");
 		
-		sender.sendMessage(ChatColor.RED + "/spectate <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
+		sender.sendMessage(ChatColor.RED + "/spec <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
 		
-		sender.sendMessage(ChatColor.RED + "/spectate arena <" + playerOnly + "add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>" + ChatColor.GOLD + ": Manages arenas");
-		sender.sendMessage(ChatColor.RED + playerOnly + "/spectate lobby <set/del>" + ChatColor.GOLD + playerOnly + ": Adds/deletes the spectator lobby");		
-		sender.sendMessage(ChatColor.RED + "/spectate mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
+		sender.sendMessage(ChatColor.RED + "/spec arena <" + playerOnly + "add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>" + ChatColor.GOLD + ": Manages arenas");
+		sender.sendMessage(ChatColor.RED + playerOnly + "/spec lobby <set/del>" + ChatColor.GOLD + playerOnly + ": Adds/deletes the spectator lobby");		
+		sender.sendMessage(ChatColor.RED + "/spec mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
 		
-		sender.sendMessage(ChatColor.RED + playerOnly + "/spectate player <player>" + ChatColor.GOLD + playerOnly + ": Teleports the sender (spectator only) to <player>");
+		sender.sendMessage(ChatColor.RED + playerOnly + "/spec player <player>" + ChatColor.GOLD + playerOnly + ": Teleports the sender (spectator only) to <player>");
 		
-		sender.sendMessage(ChatColor.RED + "/spectate say <message>" + ChatColor.GOLD + ": Sends a message to spectator chat");
+		sender.sendMessage(ChatColor.RED + "/spec say <message>" + ChatColor.GOLD + ": Sends a message to spectator chat");
 
-		sender.sendMessage(ChatColor.RED + "/spectate reload" + ChatColor.GOLD + ": Reloads configuration");
+		sender.sendMessage(ChatColor.RED + "/spec reload" + ChatColor.GOLD + ": Reloads configuration");
 		
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.DARK_AQUA + "Strikethrough commands can only be executed as a player.");
@@ -198,30 +198,30 @@ public class SpectateCommand implements CommandExecutor {
 			case "on":
 			case "off":
 				if(args.length >= 2) {
-					message = "You are not allowed to change the spectator mode of another player";
+					message = "You can't change the spectate mode of others!";
 				}
 				else {
-					message = "You are not allowed to change your own spectator mode";
+					message = "You can't change your spectate mode!";
 				}
 				break;
 			
 			case "arena":
-				message = "You don't have the permission to manage arenas.";
+				message = "You can't manage arenas!";
 				break;
 				
 			case "lobby":
-				message = "You don't have the permission to manage the main lobby.";
+				message = "You can't manage the global lobby.";
 				break;
 				
 			case "reload":
-				message = "You don't have the permission to reload the configuration.";
+				message = "You can't reload the configuration.";
 				break;
 				
 			case "mode":
-				message = "You are not allowed to change the mode.";
+				message = "You can't change the plugin mode.";
 				
 			case "say":
-				message = "You are not allowed to broadcast a message to the spectators' chat.";
+				message = "You can't broadcast a message to the spectators' chat.";
 				break;
 		}
 		
@@ -238,7 +238,6 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doOn(CommandSender sender, Command command, String label, String[] args) {
 		
 		if (args.length == 1) { // /spec on
@@ -246,7 +245,7 @@ public class SpectateCommand implements CommandExecutor {
 				p.enableSpectate((Player) sender, sender);
 			}
 			else {
-				sender.sendMessage(p.prefix + "A name if needed from the console.");
+				sender.sendMessage(p.prefix + "Usage: "+ChatColor.RED+"/spec on <player>");
 			}
 		}
 		
@@ -256,7 +255,7 @@ public class SpectateCommand implements CommandExecutor {
 				p.enableSpectate(player, sender);
 			}
 			else {
-				sender.sendMessage(p.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
+				sender.sendMessage(p.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
 			}
 		}
 	}
@@ -270,14 +269,13 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doOff(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 1) { // /spec off
 			if(sender instanceof Player) {
 				p.disableSpectate((Player) sender, sender);
 			}
 			else {
-				sender.sendMessage(p.prefix + "A name if needed from the console.");
+				sender.sendMessage(p.prefix + "Usage: "+ChatColor.RED+"/spec off <player>");
 			}
 		}
 		
@@ -287,7 +285,7 @@ public class SpectateCommand implements CommandExecutor {
 				p.disableSpectate(player, sender);
 			}
 			else {
-				sender.sendMessage(p.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online");
+				sender.sendMessage(p.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
 			}
 		}
 	}
@@ -301,7 +299,6 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doReload(CommandSender sender, Command command, String label, String[] args) {
 		p.setup.reloadConfig();
 		p.toggles.reloadConfig();
@@ -330,11 +327,11 @@ public class SpectateCommand implements CommandExecutor {
 						p.choosePlayer((Player) sender, p.getServer().getPlayer(args[1]));
 					}
 					else {
-						sender.sendMessage(p.prefix + ChatColor.WHITE + args[1] + ChatColor.GOLD + " isn't online!");
+						sender.sendMessage(p.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
 					}
 					
 				} else {
-					sender.sendMessage(p.prefix + "Specify the player you want to spectate: /spec p <player>");
+					sender.sendMessage(p.prefix + "Usage: "+ChatColor.RED+"/spec p <player>");
 				}
 			} else {
 				sender.sendMessage(p.prefix + "You aren't spectating!");
@@ -355,7 +352,6 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doP(CommandSender sender, Command command, String label, String[] args) {
 		doPlayer(sender, command, label, args);
 	}
@@ -371,50 +367,48 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doLobby(CommandSender sender, Command command, String label, String[] args) {
+		boolean isEmptyCommand = false;
 		
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(p.prefix + "Cannot be executed from the console!");
 			return;
 		}
-		
+
 		if(args.length == 1) { // /spec lobby
-			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spectate lobby <set/del/delete>");
+			isEmptyCommand = true;
 		}
-		
+
+		String subcommand = args[1];
+
+		// /spec lobby set
+		if(!isEmptyCommand && subcommand.equalsIgnoreCase("set")) {
+			Location where = ((Player) sender).getLocation();
+
+			p.setup.getConfig().set("xPos", Math.floor(where.getX())+0.5);
+			p.setup.getConfig().set("yPos", Math.floor(where.getY()));
+			p.setup.getConfig().set("zPos", Math.floor(where.getZ())+0.5);
+			p.setup.getConfig().set("world", where.getWorld().getName());
+			p.setup.getConfig().set("active", true);
+			p.setup.saveConfig();
+
+			sender.sendMessage(p.prefix + "Global spectator lobby location set!");
+		}
+
+		// /spec lobby del|delete
+		else if(!isEmptyCommand && (subcommand.equalsIgnoreCase("del") || subcommand.equalsIgnoreCase("delete"))) {
+			p.setup.getConfig().set("xPos", 0);
+			p.setup.getConfig().set("yPos", 0);
+			p.setup.getConfig().set("zPos", 0);
+			p.setup.getConfig().set("world", null);
+			p.setup.getConfig().set("active", false);
+			p.setup.saveConfig();
+
+			sender.sendMessage(p.prefix + "Global spectator lobby location removed! Using "+ChatColor.WHITE+"/spawn"+ChatColor.GOLD+" instead.");
+		}
+
 		else {
-			String subcommand = args[1];
-			
-			// /spec lobby set
-			if(subcommand.equalsIgnoreCase("set")) {
-				Location where = ((Player) sender).getLocation();
-				
-				p.setup.getConfig().set("xPos", Math.floor(where.getX())+0.5);
-				p.setup.getConfig().set("yPos", Math.floor(where.getY()));
-				p.setup.getConfig().set("zPos", Math.floor(where.getZ())+0.5);
-				p.setup.getConfig().set("world", where.getWorld().getName());
-				p.setup.getConfig().set("active", true);
-				p.setup.saveConfig();
-				
-				sender.sendMessage(p.prefix + "Location saved! Players will be teleported here when they spectate");
-			}
-			
-			// /spec lobby del|delete
-			else if(subcommand.equalsIgnoreCase("del") || subcommand.equalsIgnoreCase("delete")) {
-				p.setup.getConfig().set("xPos", 0);
-				p.setup.getConfig().set("yPos", 0);
-				p.setup.getConfig().set("zPos", 0);
-				p.setup.getConfig().set("world", null);
-				p.setup.getConfig().set("active", false);
-				p.setup.saveConfig();
-				
-				sender.sendMessage(p.prefix + "Spectator lobby location removed! Players will be teleported to spawn when they spectate.");
-			}
-			
-			else {
-				sender.sendMessage(p.prefix + "Unknown command. See " + ChatColor.DARK_RED + "/spectate lobby" + ChatColor.GOLD + " for usage.");
-			}
+			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spec lobby <set/del[ete]>");
 		}
 	}
 	
@@ -430,11 +424,10 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doMode(CommandSender sender, Command command, String label, String[] args) {
 		
 		if(args.length == 1) { // /spec mode
-			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spectate mode <arena/any>");
+			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spec mode <arena/any>");
 		}
 		
 		else { // /spec mode <?>
@@ -465,88 +458,83 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doArena(CommandSender sender, Command command, String label, String[] args) {
-		
+		boolean isEmptyCommand = false;
 		if(args.length == 1) { // /spec arena
-			String playerOnly = "";
-			if(!(sender instanceof Player)) {
-				playerOnly = ChatColor.STRIKETHROUGH.toString();
-			}
-			
-			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spectate arena <" + playerOnly +"add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>");
+			isEmptyCommand = true;
 		}
+		String subcommand = args[1];
+
+		if(!isEmptyCommand && subcommand.equalsIgnoreCase("add")) { // /spec arena add ...
+
+			if(!(sender instanceof Player)) {
+				sender.sendMessage(p.prefix + "Cannot be executed from the console!");
+				return;
+			}
+
+			if(args.length == 2) { // /spec arena add
+				sender.sendMessage(p.prefix + "Usage: "+ChatColor.RED+"/spec arena add <arenaName>");
+			}
+			else { // /spec arena add <?>
+				p.user.get(sender.getName()).arenaName = args[2];
+				sender.sendMessage(p.prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - a corner of the arena");
+				p.user.get(sender.getName()).setup = 1;
+			}
+
+		}
+
+		else if(!isEmptyCommand && subcommand.equalsIgnoreCase("remove")) { // spec arena remove ...
+
+			if(args.length == 2) { // /spec arena remove
+				sender.sendMessage(p.prefix + "Usage: "+ChatColor.RED+"/spec arena remove <arenaName>");
+			}
+			else { // /spec arena remove <?>
+				if(p.removeArena(args[2])) {
+					sender.sendMessage(p.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " removed.");
+				}
+				else {
+					sender.sendMessage(p.prefix + "The arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " does not exist!");
+				}
+			}
+
+		}
+
+		else if(!isEmptyCommand && subcommand.equalsIgnoreCase("list")) { // /spec arena list
+
+			sender.sendMessage(ChatColor.GOLD + "          ~~ " + ChatColor.RED + "Arenas" + ChatColor.GOLD + " ~~          ");
+
+			for (int i = 1; i < p.setup.getConfig().getInt("nextarena"); i++) {
+				sender.sendMessage(ChatColor.RED + "(#" + i + ") " + p.setup.getConfig().getString("arena." + i + ".name") + ChatColor.GOLD + " Lobby x:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.x") + " y:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.y") + " z:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.z"));
+			}
+
+		}
+
+		else if(!isEmptyCommand && subcommand.equalsIgnoreCase("lobby")) { // /spec arena lobby
+
+			if(!(sender instanceof Player)) {
+				sender.sendMessage(p.prefix + "Cannot be executed from the console!");
+				return;
+			}
+
+			p.setArenaLobbyLoc((Player) sender, args[2]);
+
+		}
+
+		else if(!isEmptyCommand && subcommand.equalsIgnoreCase("reset")) { // /spec arena reset
+
+			p.setup.getConfig().set("arena", null);
+			p.setup.getConfig().set("nextarena", 1);
+			p.setup.saveConfig();
+
+			sender.sendMessage(p.prefix + "All arenas removed.");
+
+		}
+
 		else {
-			String subcommand = args[1];
-			
-			if(subcommand.equalsIgnoreCase("add")) { // /spec arena add ...
-				
-				if(!(sender instanceof Player)) {
-					sender.sendMessage(p.prefix + "Cannot be executed from the console!");
-					return;
-				}
-				
-				if(args.length == 2) { // /spec arena add
-					sender.sendMessage(p.prefix + "You need to specify a name for this arena.");
-				}
-				else { // /spec arena add <?>
-					p.user.get(sender.getName()).arenaName = args[2];
-					sender.sendMessage(p.prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - a corner of the arena");
-					p.user.get(sender.getName()).setup = 1;
-				}
-				
-			}
-			
-			else if(subcommand.equalsIgnoreCase("remove")) { // spec arena remove ...
-				
-				if(args.length == 2) { // /spec arena remove
-					sender.sendMessage(p.prefix + "You need to specify the name of the arena to remove.");
-				}
-				else { // /spec arena remove <?>
-					if(p.removeArena(args[2])) {
-						sender.sendMessage(p.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " removed.");
-					}
-					else {
-						sender.sendMessage(p.prefix + "The arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " does not exists!");
-					}
-				}
-				
-			}
-			
-			else if(subcommand.equalsIgnoreCase("list")) { // /spec arena list
-				
-				sender.sendMessage(ChatColor.GOLD + "          ~~ " + ChatColor.RED + "Arenas" + ChatColor.GOLD + " ~~          ");
-				
-				for (int i = 1; i < p.setup.getConfig().getInt("nextarena"); i++) {
-					sender.sendMessage(ChatColor.RED + "(#" + i + ") " + p.setup.getConfig().getString("arena." + i + ".name") + ChatColor.GOLD + " Lobby x:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.x") + " y:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.y") + " z:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.z"));
-				}
-				
-			}
-			
-			else if(subcommand.equalsIgnoreCase("lobby")) { // /spec arena lobby
-				
-				if(!(sender instanceof Player)) {
-					sender.sendMessage(p.prefix + "Cannot be executed from the console!");
-					return;
-				}
-				
-				p.setArenaLobbyLoc((Player) sender, args[2]);
-				
-			}
-			
-			else if(subcommand.equalsIgnoreCase("reset")) { // /spec arena reset
-				
-				p.setup.getConfig().set("arena", null);
-				p.setup.getConfig().set("nextarena", 1);
-				p.setup.saveConfig();
-				
-				sender.sendMessage(p.prefix + "All arenas removed.");
-				
-			}
-			
-			else {
-				sender.sendMessage(p.prefix + "Unknown command. See " + ChatColor.DARK_RED + "/spectate arena" + ChatColor.GOLD + " for usage.");
-			}
+			String playerOnly = "";
+			if(!(sender instanceof Player)) playerOnly = ChatColor.DARK_RED+""+ChatColor.STRIKETHROUGH;
+
+			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spec arena <" + playerOnly +"add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>");
 		}
 	}
 	
@@ -560,11 +548,10 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param label
 	 * @param args
 	 */
-	@SuppressWarnings("unused")
 	private void doSay(CommandSender sender, Command command, String label, String[] args) {
 		
 		if(args.length == 1) {
-			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spectate say <message>");
+			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spec say <message>");
 		}
 		
 		else {
