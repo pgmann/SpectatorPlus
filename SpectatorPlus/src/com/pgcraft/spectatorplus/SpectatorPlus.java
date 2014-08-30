@@ -20,6 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
@@ -109,8 +110,9 @@ public class SpectatorPlus extends JavaPlugin {
 		adminBypass = toggles.getConfig().getBoolean("adminbypass", false);
 
 		if (scoreboard) {
-			manager = Bukkit.getScoreboardManager();
+			manager = getServer().getScoreboardManager();
 			board = manager.getNewScoreboard();
+			board.registerNewObjective("health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
 			team = board.registerNewTeam("spec");
 			team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
 		}
@@ -168,7 +170,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	protected boolean spawnPlayer(Player player) {
 		player.setFireTicks(0);
-		if (setup.getConfig().getBoolean("active") == true) {
+		if (setup.getConfig().getBoolean("active")) {
 			Location where = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos"), setup.getConfig().getDouble("zPos"));
 			Location aboveWhere = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos") + 1, setup.getConfig().getDouble("zPos"));
 			Location belowWhere = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos") - 1, setup.getConfig().getDouble("zPos"));
@@ -360,6 +362,8 @@ public class SpectatorPlus extends JavaPlugin {
 			
 			// Set the prefix in the tab list if the toggle is on
 			if (scoreboard) {
+				user.get(spectator.getName()).oldScoreboard = spectator.getScoreboard();
+				spectator.setScoreboard(board);
 				team.addPlayer(spectator);
 			}
 			
@@ -415,6 +419,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Remove from spec team
 			if (scoreboard) {
+				spectator.setScoreboard(user.get(spectator.getName()).oldScoreboard);
 				team.removePlayer(spectator);
 			}
 

@@ -2,32 +2,33 @@ package com.pgcraft.spectatorplus;
 
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Scoreboard;
 
 public class PlayerObject {	
 	/**
 	 * True if the player is currently spectating.
 	 */
-	public boolean spectating;
+	protected boolean spectating;
 	
 	/**
 	 * True if the player is currently teleporting.
 	 */
-	public boolean teleporting;
+	protected boolean teleporting;
 	
 	/**
 	 * The ID of the current arena the spectator is in.
 	 */
-	public int arenaNum;
+	protected int arenaNum;
 	
 	/**
 	 * The saved inventory of the player.
 	 */
-	public ItemStack[] inventory;
+	protected ItemStack[] inventory;
 	
 	/**
 	 * The saved armour of the player.
 	 */
-	public ItemStack[] armour;
+	protected ItemStack[] armour;
 	
 	/**
 	 * The setup step.
@@ -35,25 +36,30 @@ public class PlayerObject {
 	 *  - 1: first corner set;
 	 *  - 2: second corner set.
 	 */
-	public int setup;
+	protected int setup;
 	
 	/**
 	 * If the player setup an arena, the entered name of this arena is stored here.
 	 */
-	public String arenaName;
+	protected String arenaName;
 	
 	/**
 	 * The location of the first corner of an arena (in setup mode).
 	 */
-	public Location pos1;
+	protected Location pos1;
 	
 	/**
 	 * The location of the second corner of an arena (in setup mode).
 	 */
-	public Location pos2;
+	protected Location pos2;
+	
+	/**
+	 * The original scoreboard the player had set before spectate mode was enabled (to restore after)
+	 */
+	protected Scoreboard oldScoreboard;
 	
 	
-	public PlayerObject() {
+	protected PlayerObject() {
 		spectating = false;
 		arenaName = null;
 		teleporting = false;
