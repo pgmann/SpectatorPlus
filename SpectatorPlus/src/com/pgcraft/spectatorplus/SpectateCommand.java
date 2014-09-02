@@ -90,7 +90,7 @@ public class SpectateCommand implements CommandExecutor {
 		} catch(SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sender.sendMessage(p.prefix + ChatColor.DARK_RED + "An error occured, see console for details. This is probably a bug, please report it!");
 			e.printStackTrace();
-			return false;
+			return true; // An error message has been printed, so command was technically handled.
 		}
 	}
 	
@@ -388,17 +388,18 @@ public class SpectateCommand implements CommandExecutor {
 	 */
 	private void doLobby(CommandSender sender, Command command, String label, String[] args) {
 		boolean isEmptyCommand = false;
+		String subcommand = null;
 		
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(p.prefix + "Cannot be executed from the console!");
 			return;
 		}
-
+		
 		if(args.length == 1) { // /spec lobby
 			isEmptyCommand = true;
+		} else {
+			subcommand = args[1];
 		}
-
-		String subcommand = args[1];
 
 		// /spec lobby set
 		if(!isEmptyCommand && subcommand.equalsIgnoreCase("set")) {
@@ -479,10 +480,13 @@ public class SpectateCommand implements CommandExecutor {
 	 */
 	private void doArena(CommandSender sender, Command command, String label, String[] args) {
 		boolean isEmptyCommand = false;
+		String subcommand = null;
+		
 		if(args.length == 1) { // /spec arena
 			isEmptyCommand = true;
+		} else {
+			subcommand = args[1];
 		}
-		String subcommand = args[1];
 
 		if(!isEmptyCommand && subcommand.equalsIgnoreCase("add")) { // /spec arena add ...
 
