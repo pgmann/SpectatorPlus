@@ -191,4 +191,19 @@ public class Arena implements ConfigurationSerializable {
 	protected void setRegistered(boolean registered) {
 		this.registered = registered;
 	}
+	
+	
+	@Override
+	public int hashCode() {
+		return this.getUUID().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(!(other instanceof Arena)) {
+			return false;
+		}
+		
+		return ((Arena) other).getUUID().equals(this.getUUID());
+	}
 }
