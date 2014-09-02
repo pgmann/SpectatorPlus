@@ -6,7 +6,7 @@ author: pgmann
 commands:
   spectate:
     description: 'See [/spec help] for help'
-    usage: 'Do /spectate help to see the plugin help'
+    usage: 'An error occurred while loading the plugin! Please file a bug report on BukkitDev.'
     aliases: spec
 permissions:
   spectate.*:
@@ -35,6 +35,7 @@ permissions:
       spectate.admin.arena: true
       spectate.admin.reload: true
       spectate.admin.say: true
+      spectate.admin.config: true
   spectate.admin.lobby:
     description: Allows you to set the global lobby
     default: op
@@ -47,6 +48,11 @@ permissions:
   spectate.admin.reload:
     description: Allows you to reload the plugin
     default: op
+  spectate.admin.config:
+    description: Allows you to edit the plugin configuration ingame
+    default: op
+    children:
+      spectate.admin.reload: true
   spectate.admin.say:
     description: Allows you to send a message only to the spectators
     default: op

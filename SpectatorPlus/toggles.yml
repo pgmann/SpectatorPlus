@@ -3,7 +3,7 @@ compass: true
 compassItem: compass
 # Enable the arena selector in arena mode (clock)?
 arenaclock: true
-clockItem: clock
+clockItem: watch
 # Enable spectator-only chat, invisible to non-specs?
 specchat: true
 # Show spectatorplus plugin messages to spectators?

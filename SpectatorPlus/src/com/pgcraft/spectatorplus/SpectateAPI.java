@@ -106,6 +106,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.compass = value;
+		plugin.reloadConfig(false);
 	}
 	
 	/**
@@ -123,6 +124,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.clock = value;
+		plugin.reloadConfig(false);
 	}
 	
 	/**
@@ -140,6 +142,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.specChat = value;
+		plugin.reloadConfig(false);
 	}
 	
 	/**
@@ -157,6 +160,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.output = value;
+		plugin.reloadConfig(false);
 	}
 	
 	/**
@@ -174,6 +178,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.death = value;
+		plugin.reloadConfig(false);
 	}
 	
 	/**
@@ -191,6 +196,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.scoreboard = value;
+		plugin.reloadConfig(false);
 	}
 	
 	/**
@@ -208,6 +214,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.seeSpecs = value;
+		plugin.reloadConfig(false);
 	}
 	
 	/**
@@ -225,6 +232,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.blockCmds = value;
+		plugin.reloadConfig(false);
 	}
 	
 	/**
@@ -242,6 +250,7 @@ public class SpectateAPI {
 		}
 		
 		plugin.adminBypass = value;
+		plugin.reloadConfig(false);
 	}
 	
 	

@@ -31,6 +31,7 @@ public class SpectateCommand implements CommandExecutor {
 		commands.add("reload");
 		commands.add("mode");
 		commands.add("say");
+		commands.add("config");
 	}
 	
 	
@@ -118,6 +119,7 @@ public class SpectateCommand implements CommandExecutor {
 		
 		sender.sendMessage(ChatColor.RED + "/spec say <message>" + ChatColor.GOLD + ": Sends a message to spectator chat");
 
+		sender.sendMessage(ChatColor.RED + "/spec config" + ChatColor.GOLD + ": Edit configuration from ingame");
 		sender.sendMessage(ChatColor.RED + "/spec reload" + ChatColor.GOLD + ": Reloads configuration");
 		
 		if (!(sender instanceof Player)) {
@@ -163,6 +165,7 @@ public class SpectateCommand implements CommandExecutor {
 				case "arena":
 				case "lobby":			
 				case "reload":
+				case "config":
 				case "mode":
 				case "say":
 					permission = "spectate.admin." + args[0];
@@ -217,6 +220,10 @@ public class SpectateCommand implements CommandExecutor {
 				message = "You can't reload the configuration.";
 				break;
 				
+			case "config":
+				message = "You can't edit the configuration.";
+				break;
+				
 			case "mode":
 				message = "You can't change the plugin mode.";
 				
@@ -225,7 +232,7 @@ public class SpectateCommand implements CommandExecutor {
 				break;
 		}
 		
-		sender.sendMessage(p.prefix + message);
+		sender.sendMessage(p.prefix + ChatColor.DARK_RED + message);
 	}
 	
 	
@@ -300,10 +307,22 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void doReload(CommandSender sender, Command command, String label, String[] args) {
-		p.setup.reloadConfig();
-		p.toggles.reloadConfig();
+		p.reloadConfig(true);
 		
 		sender.sendMessage(p.prefix + "Config reloaded!");
+	}
+	
+	/**
+	 * Edits the config from ingame.
+	 * Usage: /spec config <key> <value> [temp=false]
+	 * 
+	 * @param sender
+	 * @param command
+	 * @param label
+	 * @param args
+	 */
+	private void doConfig(CommandSender sender, Command command, String label, String[] args) {
+		sender.sendMessage(p.prefix + "Editing not added yet...");
 	}
 	
 	/**
