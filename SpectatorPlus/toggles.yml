@@ -1,7 +1,9 @@
 # Enable the teleporter (compass)?
 compass: true
+compassItem: compass
 # Enable the arena selector in arena mode (clock)?
 arenaclock: true
+clockItem: clock
 # Enable spectator-only chat, invisible to non-specs?
 specchat: true
 # Show spectatorplus plugin messages to spectators?
@@ -17,7 +19,7 @@ seespecs: false
 # Block commands while spectating?
 blockcmds: true
 # Allow anyone with spectate.admin to bypass command blocking?
-adminbypass: false
+adminbypass: true
 
 # Config version (do not alter)
-version: 1.92
+version: 2.0

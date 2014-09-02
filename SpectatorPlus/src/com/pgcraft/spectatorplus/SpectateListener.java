@@ -68,12 +68,8 @@ public class SpectateListener implements Listener {
 	protected void onPlayerJoin(PlayerJoinEvent event) {
 		plugin.user.put(event.getPlayer().getName(), new PlayerObject());
 		
-		if (plugin.scoreboard) {
-			event.getPlayer().setScoreboard(plugin.board);
-		}
-		
 		for (Player target : plugin.getServer().getOnlinePlayers()) {
-			if (plugin.user.get(target.getName()).spectating == true) {
+			if (plugin.user.get(target.getName()).spectating) {
 				event.getPlayer().hidePlayer(target);
 			}
 		}
@@ -150,6 +146,7 @@ public class SpectateListener implements Listener {
 		if(event.getDamager() instanceof Projectile
 				&& !(event.getDamager() instanceof ThrownPotion) // splash potions are cancelled in PotionSplashEvent
 				&& event.getEntity() instanceof Player
+				&& !event.getEntity().hasMetadata("NPC") // Check for NPC's, as they are instances of Players sometimes...
 				&& plugin.user.get(((Player) event.getEntity()).getName()).spectating) {
 			
 			event.setCancelled(true);
@@ -195,7 +192,7 @@ public class SpectateListener implements Listener {
 		final ArrayList<UUID> spectatorsAffected = new ArrayList<UUID>();
 		
 		for(LivingEntity player : event.getAffectedEntities()) {
-			if(player instanceof Player && plugin.user.get(((Player) player).getName()).spectating) {
+			if(player instanceof Player && !player.hasMetadata("NPC") && plugin.user.get(((Player) player).getName()).spectating) {
 				spectatorsAffected.add(player.getUniqueId());
 			}
 		}
@@ -215,7 +212,7 @@ public class SpectateListener implements Listener {
 			Boolean teleportationNeeded = false;
 			
 			for(Entity entity : event.getEntity().getNearbyEntities(2, 2, 2)) {
-				if(entity instanceof Player && plugin.user.get(((Player) entity).getName()).spectating) {
+				if(entity instanceof Player && !entity.hasMetadata("NPC") && plugin.user.get(((Player) entity).getName()).spectating) {
 					// The potion hits a spectator
 					teleportationNeeded = true;
 				}
@@ -327,7 +324,7 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler(priority=EventPriority.HIGH)
 	protected void onGamemodeChange(PlayerGameModeChangeEvent event) {
-		if (plugin.user.get(event.getPlayer().getName()).spectating && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
+		if (plugin.user.containsKey(event.getPlayer().getName()) && plugin.user.get(event.getPlayer().getName()).spectating && !event.getNewGameMode().equals(GameMode.ADVENTURE)) {
 			event.setCancelled(true);
 			event.getPlayer().setAllowFlight(true);
 		}
