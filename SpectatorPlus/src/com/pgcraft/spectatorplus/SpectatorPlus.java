@@ -185,7 +185,7 @@ public class SpectatorPlus extends JavaPlugin {
 					return;
 				}
 				else {
-					if (gui == null) gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + setup.getConfig().getString("arena." + region + ".name"));
+					if (gui == null) gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + arenasManager.getArena(region));
 					Location where = player.getLocation();
 					Arena currentArena = arenasManager.getArena(region);
 					int pos1y = currentArena.getCorner1().getBlockY();

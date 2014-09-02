@@ -17,11 +17,11 @@ public class SpectateCommand implements CommandExecutor {
 
 	private SpectatorPlus p = null;
 	private ArrayList<String> commands = new ArrayList<String>();
-	
-	
+
+
 	public SpectateCommand(SpectatorPlus plugin) {
 		this.p = plugin;
-		
+
 		commands.add("on");
 		commands.add("off");
 		commands.add("arena");
@@ -33,8 +33,8 @@ public class SpectateCommand implements CommandExecutor {
 		commands.add("say");
 		commands.add("config");
 	}
-	
-	
+
+
 	/**
 	 * Handles a command.
 	 * 
@@ -51,82 +51,82 @@ public class SpectateCommand implements CommandExecutor {
 		if (!command.getName().equalsIgnoreCase("spectate") && !command.getName().equalsIgnoreCase("spec")) {
 			return false;
 		}
-		
+
 		if(args.length == 0 || args[0].equalsIgnoreCase("help")) {
 			help(sender);
 			return true;
 		}
-		
+
 		String subcommandName = args[0].toLowerCase();
-		
+
 		// First: subcommand existence.
 		if(!this.commands.contains(subcommandName)) {
 			sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
 			return true;
 		}
-		
+
 		// Second: is the sender allowed?
 		if(!isAllowed(sender, command, args)) {
 			unauthorized(sender, command, args);
 			return true;
 		}
-		
+
 		// Third: instantiation
 		try {
 			Class<? extends SpectateCommand> cl = this.getClass();
 			Class[] parametersTypes = new Class[]{CommandSender.class, Command.class, String.class, String[].class};
-			
+
 			Method doMethod = cl.getDeclaredMethod("do" + WordUtils.capitalize(subcommandName), parametersTypes);
-			
+
 			doMethod.invoke(this, new Object[]{sender, command, label, args});
-			
+
 			return true;
-			
+
 		} catch (NoSuchMethodException e) {
 			// Unknown method => unknown subcommand.
 			sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
 			return true;
-			
+
 		} catch(SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			sender.sendMessage(p.prefix + ChatColor.DARK_RED + "An error occured, see console for details. This is probably a bug, please report it!");
 			e.printStackTrace();
 			return true; // An error message has been printed, so command was technically handled.
 		}
 	}
-	
+
 	/**
 	 * Prints the plugin main help page.
 	 * 
 	 * @param sender The help will be displayer for this sender.
 	 */
 	private void help(CommandSender sender) {
-		
+
 		String playerOnly = "";
 		if(!(sender instanceof Player)) {
 			playerOnly = ChatColor.STRIKETHROUGH.toString();
 		}
-		
-		
+
+
 		sender.sendMessage(ChatColor.GOLD + "            ~~ " + ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus" + ChatColor.GOLD + " ~~            ");
-		
+
 		sender.sendMessage(ChatColor.RED + "/spec <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
-		
+
 		sender.sendMessage(ChatColor.RED + "/spec arena <" + playerOnly + "add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>" + ChatColor.GOLD + ": Manages arenas");
 		sender.sendMessage(ChatColor.RED + playerOnly + "/spec lobby <set/del>" + ChatColor.GOLD + playerOnly + ": Adds/deletes the spectator lobby");		
 		sender.sendMessage(ChatColor.RED + "/spec mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
-		
+
 		sender.sendMessage(ChatColor.RED + playerOnly + "/spec player <player>" + ChatColor.GOLD + playerOnly + ": Teleports the sender (spectator only) to <player>");
-		
+
 		sender.sendMessage(ChatColor.RED + "/spec say <message>" + ChatColor.GOLD + ": Sends a message to spectator chat");
 
 		sender.sendMessage(ChatColor.RED + "/spec config" + ChatColor.GOLD + ": Edit configuration from ingame");
 		sender.sendMessage(ChatColor.RED + "/spec reload" + ChatColor.GOLD + ": Reloads configuration");
-		
+
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.DARK_AQUA + "Strikethrough commands can only be executed as a player.");
 		}
 	}
-	
+
 	/**
 	 * This method checks if an user is allowed to send a command.
 	 * 
@@ -137,53 +137,53 @@ public class SpectateCommand implements CommandExecutor {
 	 * @return boolean The allowance status.
 	 */
 	private boolean isAllowed(CommandSender sender, Command command, String[] args) {
-		
+
 		// The console is always allowed
 		if(!(sender instanceof Player)) {
 			return true;
 		}
-		
+
 		else {
-			
+
 			if(sender.isOp()) {
 				return true;
 			}
-			
+
 			if(args.length == 0) { // Help
 				return true;
 			}
-			
+
 			// Centralized way to manage permissions
 			String permission = null;
-			
+
 			switch(args[0]) {
-				case "on":
-				case "off":
-					permission = (args.length >= 2) ? "spectate.use.others" : "spectate.use"; 
-					break;
-				
-				case "arena":
-				case "lobby":			
-				case "reload":
-				case "config":
-				case "mode":
-				case "say":
-					permission = "spectate.admin." + args[0];
-					break;
-				
-				case "player":
-				case "p":
-					return true; // always allowed
-				
-				default:
-					permission = "spectate"; // Should never happens. But, just in case...
-					break;
+			case "on":
+			case "off":
+				permission = (args.length >= 2) ? "spectate.use.others" : "spectate.use"; 
+				break;
+
+			case "arena":
+			case "lobby":			
+			case "reload":
+			case "config":
+			case "mode":
+			case "say":
+				permission = "spectate.admin." + args[0];
+				break;
+
+			case "player":
+			case "p":
+				return true; // always allowed
+
+			default:
+				permission = "spectate"; // Should never happens. But, just in case...
+				break;
 			}
-			
+
 			return ((Player) sender).hasPermission(permission);
 		}
 	}
-	
+
 	/**
 	 * This method sends a message to a player who try to use a command without the permission.
 	 * 
@@ -195,47 +195,47 @@ public class SpectateCommand implements CommandExecutor {
 		if(args.length == 0) {
 			return; // will never happens, but just in case of a mistake...
 		}
-		
+
 		String message = null;
 		switch(args[0]) {
-			case "on":
-			case "off":
-				if(args.length >= 2) {
-					message = "You can't change the spectate mode of others!";
-				}
-				else {
-					message = "You can't change your spectate mode!";
-				}
-				break;
-			
-			case "arena":
-				message = "You can't manage arenas!";
-				break;
-				
-			case "lobby":
-				message = "You can't manage the global lobby.";
-				break;
-				
-			case "reload":
-				message = "You can't reload the configuration.";
-				break;
-				
-			case "config":
-				message = "You can't edit the configuration.";
-				break;
-				
-			case "mode":
-				message = "You can't change the plugin mode.";
-				
-			case "say":
-				message = "You can't broadcast a message to the spectators' chat.";
-				break;
+		case "on":
+		case "off":
+			if(args.length >= 2) {
+				message = "You can't change the spectate mode of others!";
+			}
+			else {
+				message = "You can't change your spectate mode!";
+			}
+			break;
+
+		case "arena":
+			message = "You can't manage arenas!";
+			break;
+
+		case "lobby":
+			message = "You can't manage the global lobby.";
+			break;
+
+		case "reload":
+			message = "You can't reload the configuration.";
+			break;
+
+		case "config":
+			message = "You can't edit the configuration.";
+			break;
+
+		case "mode":
+			message = "You can't change the plugin mode.";
+
+		case "say":
+			message = "You can't broadcast a message to the spectators' chat.";
+			break;
 		}
-		
+
 		sender.sendMessage(p.prefix + ChatColor.DARK_RED + message);
 	}
-	
-	
+
+
 	/**
 	 * This command enables the spectator mode on someone.
 	 * Usage: /spec on [player]
@@ -246,7 +246,7 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void doOn(CommandSender sender, Command command, String label, String[] args) {
-		
+
 		if (args.length == 1) { // /spec on
 			if(sender instanceof Player) {
 				p.enableSpectate((Player) sender, sender);
@@ -255,7 +255,7 @@ public class SpectateCommand implements CommandExecutor {
 				sender.sendMessage(p.prefix + "Usage: "+ChatColor.RED+"/spec on <player>");
 			}
 		}
-		
+
 		else { // /spec on <player>
 			Player player = p.getServer().getPlayer(args[1]);
 			if (player != null) {
@@ -266,7 +266,7 @@ public class SpectateCommand implements CommandExecutor {
 			}
 		}
 	}
-	
+
 	/**
 	 * This command disables the spectator mode on someone.
 	 * Usage: /spec off [player]
@@ -285,7 +285,7 @@ public class SpectateCommand implements CommandExecutor {
 				sender.sendMessage(p.prefix + "Usage: "+ChatColor.RED+"/spec off <player>");
 			}
 		}
-		
+
 		else { // /spec off <player>
 			Player player = p.getServer().getPlayer(args[1]);
 			if (player != null) {
@@ -296,7 +296,7 @@ public class SpectateCommand implements CommandExecutor {
 			}
 		}
 	}
-	
+
 	/**
 	 * Reloads the config from the files.
 	 * Usage: /spec reload
@@ -308,13 +308,13 @@ public class SpectateCommand implements CommandExecutor {
 	 */
 	private void doReload(CommandSender sender, Command command, String label, String[] args) {
 		p.reloadConfig(true);
-		
+
 		sender.sendMessage(p.prefix + "Config reloaded!");
 	}
-	
+
 	/**
 	 * Edits the config from ingame.
-	 * Usage: /spec config <key> <value> [temp=false]
+	 * Usage: /spec config <toggle> <value> [temp=false]
 	 * 
 	 * @param sender
 	 * @param command
@@ -322,9 +322,73 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void doConfig(CommandSender sender, Command command, String label, String[] args) {
-		sender.sendMessage(p.prefix + "Editing not added yet...");
+		if (args.length > 0) {
+			// Booleans
+			if (args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("false")) {
+				boolean value = args[1] != null;
+				boolean temp = false;
+				if (args[2] != null && args[2].equalsIgnoreCase("temp")) {
+					temp = true;
+				}
+				
+				switch(args[0]) {
+				case "compass":
+					p.getAPI().setCompass(value, temp);
+					break;
+				case "arenaclock":
+					p.getAPI().setArenaClock(value, temp);
+					break;
+				case "specchat":
+					p.getAPI().setSpectatorChatEnabled(value, temp);
+					break;
+				case "outputmessages":
+					p.getAPI().setOutputMessages(value, temp);
+					break;
+				case "deathspec":
+					p.getAPI().setSpectateOnDeath(value, temp);
+					break;
+				case "colouredtablist":
+					p.getAPI().setColouredTabList(value, temp);
+					break;
+				case "seespecs":
+					p.getAPI().setSeeSpectators(value, temp);
+					break;
+				case "blockcmds":
+					p.getAPI().setBlockCommands(value, temp);
+					break;
+				case "adminbypass":
+					p.getAPI().setAllowAdminBypassCommandBlocking(value, temp);
+					break;
+				default:
+					sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Invalid toggle "+ChatColor.RED+args[0]);
+					break;
+				}
+				
+			} else /* Strings */ {
+				boolean temp = false;
+				if (args[2] != null && args[2].equalsIgnoreCase("temp")) {
+					temp = true;
+				}
+				
+				switch(args[0]) {
+				case "compassItem":
+					p.getAPI().setCompassItem(args[1], temp);
+					break;
+				case "clockItem":
+					p.getAPI().setClockItem(args[1], temp);
+					break;
+				default:
+					sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Invalid toggle "+ChatColor.RED+args[0]);
+					break;
+					
+				}
+				
+			}
+		} else {
+			sender.sendMessage(p.prefix+"Usage: "+ChatColor.RED+"/spec config <toggle> <value> [temp]");
+		}
 	}
-	
+
 	/**
 	 * Teleports a spectator to a player, just like picking a head in the teleportation GUI.
 	 * Usage: /spec player <playerName>
@@ -341,14 +405,14 @@ public class SpectateCommand implements CommandExecutor {
 			if (p.user.get(sender.getName()).spectating) { // ...who is spectating...
 				if (args.length > 1) { // ... and specified a name...
 					Player target = p.getServer().getPlayer(args[1]);
-					
+
 					if (target != null && !p.user.get(target.getName()).spectating) { // ... of an online player
 						p.choosePlayer((Player) sender, p.getServer().getPlayer(args[1]));
 					}
 					else {
 						sender.sendMessage(p.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
 					}
-					
+
 				} else {
 					sender.sendMessage(p.prefix + "Usage: "+ChatColor.RED+"/spec p <player>");
 				}
@@ -359,7 +423,7 @@ public class SpectateCommand implements CommandExecutor {
 			sender.sendMessage(p.prefix + "Cannot be executed from the console!");
 		}
 	}
-	
+
 	/**
 	 * Teleports a spectator to a player, just like picking a head in the teleportation GUI.
 	 * Usage: /spec p <playerName>
@@ -374,7 +438,7 @@ public class SpectateCommand implements CommandExecutor {
 	private void doP(CommandSender sender, Command command, String label, String[] args) {
 		doPlayer(sender, command, label, args);
 	}
-	
+
 	/**
 	 * This command can set or unset the main lobby.
 	 * Usage: /spec lobby set|del|delete
@@ -389,12 +453,12 @@ public class SpectateCommand implements CommandExecutor {
 	private void doLobby(CommandSender sender, Command command, String label, String[] args) {
 		boolean isEmptyCommand = false;
 		String subcommand = null;
-		
+
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(p.prefix + "Cannot be executed from the console!");
 			return;
 		}
-		
+
 		if(args.length == 1) { // /spec lobby
 			isEmptyCommand = true;
 		} else {
@@ -431,7 +495,7 @@ public class SpectateCommand implements CommandExecutor {
 			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spec lobby <set/del[ete]>");
 		}
 	}
-	
+
 	/**
 	 * This command changes the current mode:
 	 *  - any: teleportation to any player;
@@ -445,18 +509,18 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void doMode(CommandSender sender, Command command, String label, String[] args) {
-		
+
 		if(args.length == 1) { // /spec mode
 			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spec mode <arena/any>");
 		}
-		
+
 		else { // /spec mode <?>
 			String mode = args[1];
-			
+
 			if(mode.equalsIgnoreCase("any") || mode.equalsIgnoreCase("arena")) {
 				p.setup.getConfig().set("mode", mode.toLowerCase());
 				p.setup.saveConfig();
-				
+
 				sender.sendMessage(p.prefix + "Mode set to " + ChatColor.RED + mode.toLowerCase());
 				if(mode.equalsIgnoreCase("arena")) {
 					sender.sendMessage(p.prefix + "Only players in arena regions can be teleported to by spectators.");
@@ -467,8 +531,8 @@ public class SpectateCommand implements CommandExecutor {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 * This command manages the arenas.
 	 * Usage: /spec arena add <name> | remove <name> | lobby <name> | reset | list
@@ -481,7 +545,7 @@ public class SpectateCommand implements CommandExecutor {
 	private void doArena(CommandSender sender, Command command, String label, String[] args) {
 		boolean isEmptyCommand = false;
 		String subcommand = null;
-		
+
 		if(args.length == 1) { // /spec arena
 			isEmptyCommand = true;
 		} else {
@@ -550,7 +614,7 @@ public class SpectateCommand implements CommandExecutor {
 			if(arena != null) {
 				arena.setLobby(((Player) sender).getLocation());
 				p.arenasManager.save();
-				
+
 				sender.sendMessage(p.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + "'s lobby location set to your location");
 			}
 			else {
@@ -574,8 +638,8 @@ public class SpectateCommand implements CommandExecutor {
 			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spec arena <" + playerOnly +"add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>");
 		}
 	}
-	
-	
+
+
 	/**
 	 * This command broadcasts a message to the spectators.
 	 * Usage: /spec say <message>
@@ -586,19 +650,19 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void doSay(CommandSender sender, Command command, String label, String[] args) {
-		
+
 		if(args.length == 1) {
 			sender.sendMessage(p.prefix + "Usage: " + ChatColor.RED + "/spec say <message>");
 		}
-		
+
 		else {
 			String message = "";
 			for(int i = 1; i < args.length; i++) {
 				message += args[i] + " ";
 			}
-			
+
 			p.broadcastToSpectators(sender, message);
 		}
-		
+
 	}
 }

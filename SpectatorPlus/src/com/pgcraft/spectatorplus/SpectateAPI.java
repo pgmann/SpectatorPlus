@@ -109,7 +109,25 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Enables (or disables) the arena selector in arena mode (clock).
+	 * Sets the item to be given as the teleporter (default: "compass").
+	 * 
+	 * @param value Item to be used instead of compass, invalid entries will default to "compass". Examples: "watch", "stone", "wool"
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setCompassItem(String value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("compassItem", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.compassItem = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
+	 * Enables (or disables) giving the arena selector in arena mode (clock).
 	 * 
 	 * @param value Enabled if true.
 	 * @param temp If true this change will not be saved in the config file.
@@ -123,6 +141,24 @@ public class SpectateAPI {
 		}
 		
 		plugin.clock = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
+	 * Sets the item to be given as the arena chooser (default: "watch" [clock]).
+	 * 
+	 * @param value Item to be used instead of "watch", invalid entries will default to "watch". Examples: "compass", "stone", "wool"
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setClockItem(String value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("clockItem", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.clockItem = value;
 		plugin.reloadConfig(false);
 	}
 	
