@@ -157,7 +157,7 @@ public class Arena implements ConfigurationSerializable {
 	}
 
 	/**
-	 * Returns the location of the lobby.
+	 * Returns the location of the lobby, or null if there isn't any lobby set.
 	 * 
 	 * @return the lobby
 	 */
@@ -168,7 +168,7 @@ public class Arena implements ConfigurationSerializable {
 	/**
 	 * Sets the location of the lobby.
 	 * 
-	 * @param lobby the location of the lobby.
+	 * @param lobby the location of the lobby. Null to delete the lobby.
 	 */
 	public void setLobby(Location lobby) {
 		this.lobby = lobby;

@@ -1,5 +1,7 @@
 package com.pgcraft.spectatorplus;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,9 +17,9 @@ public class PlayerObject {
 	public boolean teleporting;
 	
 	/**
-	 * The ID of the current arena the spectator is in.
+	 * The UUID of the current arena the spectator is in.
 	 */
-	public int arenaNum;
+	public UUID arena;
 	
 	/**
 	 * The saved inventory of the player.

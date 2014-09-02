@@ -1,5 +1,6 @@
 package com.pgcraft.spectatorplus;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -47,7 +48,7 @@ public class ArenasManager {
 	 * Saves all registered arenas in the configuration file.
 	 */
 	public void save() {
-		// The configuration is rewrite every time, to take deletions into account.
+		// The configuration is rewrote every time, to take deletions into account.
 		if(p.setup.getConfig().isConfigurationSection(STORAGE_KEY)) {
 			p.setup.getConfig().set(STORAGE_KEY, null);
 		}
@@ -59,6 +60,21 @@ public class ArenasManager {
 		}
 		
 		p.setup.saveConfig();
+	}
+	
+	/**
+	 * Removes all the registered arenas.
+	 * 
+	 * WARNING - CANNOT BE CANCELLED.
+	 */
+	public void reset() {
+		for(Arena arena : getArenas()) {
+			arena.setRegistered(false);
+		}
+		
+		arenas = new HashMap<UUID,Arena>();
+		
+		save();
 	}
 	
 	/**
@@ -90,9 +106,16 @@ public class ArenasManager {
 	}
 	
 	/**
-	 * Registers an arena.
+	 * Returns a collection of the registered arenas.
 	 * 
-	 * This arena will be saved into the configuration file when {@link #save()} will be called.
+	 * @return the collection.
+	 */
+	public Collection<Arena> getArenas() {
+		return arenas.values();
+	}
+	
+	/**
+	 * Registers an arena.
 	 * 
 	 * @param arena The arena to register.
 	 * @throws IllegalArgumentException if an arena with the same UUID is already registered.
@@ -108,20 +131,21 @@ public class ArenasManager {
 		}
 		
 		arenas.put(arena.getUUID(), arena);
-		
 		arena.setRegistered(true);
+		
+		save();
 	}
 	
 	/**
 	 * Unregisters an arena.
-	 * 
-	 * This arena will be deleted from the configuration file when {@link #save()} will be called.
 	 * 
 	 * @param arena The arena to unregister.
 	 */
 	public void unregisterArena(Arena arena) {
 		arenas.remove(arena.getUUID());
 		arena.setRegistered(false);
+		
+		save();
 	}
 	
 	
