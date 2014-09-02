@@ -20,6 +20,8 @@ public class Arena implements ConfigurationSerializable {
 	
 	private Location lobby = null;
 	
+	private Boolean registered = false;
+	
 	/**
 	 * Standard constructor.
 	 * This constructor is <em>only</em> used to create a new arena.
@@ -52,8 +54,12 @@ public class Arena implements ConfigurationSerializable {
 		this.corner1 = ((Vector) serialized.get("corner1")).toLocation(world);
 		this.corner2 = ((Vector) serialized.get("corner2")).toLocation(world);
 		
-		World worldLobby = Bukkit.getWorld((String) serialized.get("lobby.world"));
-		this.lobby = ((Vector) serialized.get("lobby.vector")).toLocation(worldLobby);
+		if(serialized.get("lobby.vector") != null) {
+			World worldLobby = Bukkit.getWorld((String) serialized.get("lobby.world"));
+			this.lobby = ((Vector) serialized.get("lobby.vector")).toLocation(worldLobby);
+		}
+		
+		this.registered = (Boolean) serialized.get("registered");
 		
 	}
 	
@@ -69,11 +75,20 @@ public class Arena implements ConfigurationSerializable {
 		
 		serialized.put("id", id.toString());
 		serialized.put("name", name);
-		serialized.put("world", corner1.getWorld().toString());
+		serialized.put("world", corner1.getWorld().getName());
 		serialized.put("corner1", corner1.toVector());
 		serialized.put("corner2", corner2.toVector());
-		serialized.put("lobby.vector", lobby.toVector());
-		serialized.put("lobby.world", lobby.getWorld().toString());
+		
+		if(lobby != null) {
+			serialized.put("lobby.vector", lobby.toVector());
+			serialized.put("lobby.world", lobby.getWorld().getName());
+		}
+		else {
+			serialized.put("lobby.vector", null);
+			serialized.put("lobby.world", null);
+		}
+		
+		serialized.put("registered", registered);
 		
 		return serialized;
 	}
@@ -157,5 +172,23 @@ public class Arena implements ConfigurationSerializable {
 	 */
 	public void setLobby(Location lobby) {
 		this.lobby = lobby;
+	}
+	
+	/**
+	 * Returns true if the arena is registered into the ArenasManager, and is available to the players.
+	 * 
+	 * @return true if the arena is registered.
+	 */
+	public boolean isRegistered() {
+		return registered;
+	}
+	
+	/**
+	 * Sets the registration state of this Arena.
+	 * 
+	 * @param registered
+	 */
+	protected void setRegistered(boolean registered) {
+		this.registered = registered;
 	}
 }

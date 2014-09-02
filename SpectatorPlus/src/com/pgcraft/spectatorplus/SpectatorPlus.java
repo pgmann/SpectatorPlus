@@ -40,6 +40,8 @@ public class SpectatorPlus extends JavaPlugin {
 	protected ConfigAccessor toggles = null;
 	protected ConfigAccessor specs = null;
 	
+	protected ArenasManager arenasManager = null;
+	
 	private SpectateAPI api = null;
 
 	// Manage toggles
@@ -69,7 +71,9 @@ public class SpectatorPlus extends JavaPlugin {
 		specs.saveDefaultConfig();
 		
 		console = getServer().getConsoleSender();
+		
 		api = new SpectateAPI(this);
+		arenasManager = new ArenasManager(this);
 		
 		// Fix config if from previous version
 		if (toggles.getConfig().contains("version") && toggles.getConfig().getDouble("version")<version) {
