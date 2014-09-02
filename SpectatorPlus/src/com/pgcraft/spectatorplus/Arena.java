@@ -54,9 +54,9 @@ public class Arena implements ConfigurationSerializable {
 		this.corner1 = ((Vector) serialized.get("corner1")).toLocation(world);
 		this.corner2 = ((Vector) serialized.get("corner2")).toLocation(world);
 		
-		if(serialized.get("lobby.vector") != null) {
+		if(serialized.get("lobby.location") != null) {
 			World worldLobby = Bukkit.getWorld((String) serialized.get("lobby.world"));
-			this.lobby = ((Vector) serialized.get("lobby.vector")).toLocation(worldLobby);
+			this.lobby = ((Vector) serialized.get("lobby.location")).toLocation(worldLobby);
 		}
 		
 		this.registered = (Boolean) serialized.get("registered");
@@ -80,11 +80,11 @@ public class Arena implements ConfigurationSerializable {
 		serialized.put("corner2", corner2.toVector());
 		
 		if(lobby != null) {
-			serialized.put("lobby.vector", lobby.toVector());
+			serialized.put("lobby.location", lobby.toVector());
 			serialized.put("lobby.world", lobby.getWorld().getName());
 		}
 		else {
-			serialized.put("lobby.vector", null);
+			serialized.put("lobby.location", null);
 			serialized.put("lobby.world", null);
 		}
 		
