@@ -202,7 +202,7 @@ public class SpectateListener implements Listener {
 		// So, in this case, we don't care about the event.
 		if(!spectatorsAffected.isEmpty()) {
 			
-			// If there is some spectators involved, we try to find how they are involved.
+			// If there are some spectators involved, we try to find how they are involved.
 			// If all the spectators involved are far away from the impact point, there isn't
 			// any needed action.
 			// Else, if a spectator is the impact point, he perturbed the launch of the potion, and
@@ -473,10 +473,10 @@ public class SpectateListener implements Listener {
 		if (plugin.user.get(event.getPlayer().getName()).spectating == true && event.getMaterial() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			String mode = plugin.setup.getConfig().getString("mode"); 
 			if (mode.equals("arena")) {
-				int region = plugin.user.get(event.getPlayer().getName()).arenaNum;
+				UUID region = plugin.user.get(event.getPlayer().getName()).arena;
 				plugin.showGUI(event.getPlayer(), region);
 			} else {
-				plugin.showGUI(event.getPlayer(), 0);
+				plugin.showGUI(event.getPlayer(), null);
 			}
 		}
 		

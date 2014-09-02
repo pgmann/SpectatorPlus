@@ -244,59 +244,13 @@ public class SpectateAPI {
 		plugin.adminBypass = value;
 	}
 	
-	
 	/**
-	 * Registers a new arena.
+	 * Returns the {@link ArenasManager arenas manager}. Use this to manage the arenas.
 	 * 
-	 * @param name The name of the new arena.
-	 * @param corner1 The location of a corner of the arena.
-	 * @param corner2 The location of the other corner of the arena.
-	 * 
-	 * @since 2.0
+	 * @return The {@link ArenasManager}.
 	 */
-	public void registerArena(String name, Location corner1, Location corner2) {
-		plugin.registerArena(name, corner1, corner2);
-	}
-	
-	/**
-	 * Unregisters an arena.
-	 * 
-	 * @param name The name of the arena to be removed.
-	 * 
-	 * @return True if the arena was removed; false else (non-existant arena).
-	 * 
-	 * @since 2.0
-	 */
-	public boolean unregisterArena(String name) {
-		return plugin.removeArena(name);
-	}
-	
-	/**
-	 * Sets an arena's lobby location to the given location.
-	 * 
-	 * @param location The location.
-	 * @param name The name of the arena.
-	 * 
-	 * @return true if the lobby was set (i.e. the arena exist); false else.
-	 * 
-	 * @since 2.0
-	 */
-	public boolean setArenaLobbyLocation(Location location, String name) {
-		return plugin.setArenaLobbyLoc(location, name);
-	}
-	
-	/**
-	 * Sets an arena's lobby location to the position of the specified player.
-	 * 
-	 * @param player The player.
-	 * @param arenaName The name of the arena.
-	 * 
-	 * @return true if the lobby was set (i.e. the arena exist); false else.
-	 * 
-	 * @since 2.0
-	 */
-	public boolean setArenaLobbyLocation(Player player, String arenaName) {
-		return setArenaLobbyLocation(player.getLocation(), arenaName);
+	public ArenasManager getArenasManager() {
+		return plugin.arenasManager;
 	}
 	
 	/**
@@ -311,8 +265,8 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	public boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
-		return plugin.setArenaForPlayer(player, arenaName, teleportToLobby);
+	public boolean setArenaForPlayer(Player player, Arena arena, boolean teleportToLobby) {
+		return plugin.setArenaForPlayer(player, arena.getName(), teleportToLobby);
 	}
 	
 	/**
@@ -326,8 +280,8 @@ public class SpectateAPI {
 	 * 
 	 * @since 2.0
 	 */
-	public boolean setArenaForPlayer(Player player, String arenaName) {
-		return setArenaForPlayer(player, arenaName, true);
+	public boolean setArenaForPlayer(Player player, Arena arena) {
+		return setArenaForPlayer(player, arena, true);
 	}
 	
 	/**
