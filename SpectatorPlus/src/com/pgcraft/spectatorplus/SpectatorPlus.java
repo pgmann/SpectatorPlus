@@ -96,7 +96,7 @@ public class SpectatorPlus extends JavaPlugin {
 		} else if (toggles.getConfig().contains("version") && toggles.getConfig().getDouble("version")>version) {
 			console.sendMessage(ChatColor.GOLD+"Version "+ChatColor.RED+toggles.getConfig().getDouble("version")+ChatColor.GOLD+" available!");
 		}
-
+		
 		compass = toggles.getConfig().getBoolean("compass", true);
 		clock = toggles.getConfig().getBoolean("arenaclock", true);
 		specChat = toggles.getConfig().getBoolean("specchat", true);
