@@ -1,5 +1,7 @@
 package com.pgcraft.spectatorplus;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
@@ -18,7 +20,7 @@ public class PlayerObject {
 	/**
 	 * The ID of the current arena the spectator is in.
 	 */
-	protected int arenaNum;
+	protected UUID arena;
 	
 	/**
 	 * The saved inventory of the player.

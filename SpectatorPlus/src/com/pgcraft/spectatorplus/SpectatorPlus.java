@@ -1,17 +1,16 @@
 package com.pgcraft.spectatorplus;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -40,7 +39,9 @@ public class SpectatorPlus extends JavaPlugin {
 	protected ConfigAccessor setup = null;
 	protected ConfigAccessor toggles = null;
 	protected ConfigAccessor specs = null;
-
+	
+	protected ArenasManager arenasManager = null;
+	
 	private SpectateAPI api = null;
 
 	// Manage toggles
@@ -62,11 +63,12 @@ public class SpectatorPlus extends JavaPlugin {
 		specs = new ConfigAccessor(this, "spectators");
 
 		console = getServer().getConsoleSender();
+		arenasManager = new ArenasManager(this);
 		
 		reloadConfig(true); // Load config values.
 
 		api = new SpectateAPI(this);
-
+		
 		// Add players already online to this plugin's database
 		for (Player player : getServer().getOnlinePlayers()) {
 			user.put(player.getName(), new PlayerObject());
@@ -110,6 +112,9 @@ public class SpectatorPlus extends JavaPlugin {
 				user.get(player.getName()).spectating = false;
 			}
 		}
+		
+		// Just in case
+		arenasManager.save();
 	}
 
 	// ---------------
@@ -154,9 +159,9 @@ public class SpectatorPlus extends JavaPlugin {
 	 * Opens the player head GUI, to allow spectators to choose a player to teleport to.
 	 * 
 	 * @param spectator The GUI will be open for this spectator.
-	 * @param region The arena to use to choose the players to display on the GUI. 0 if there isn't any arena set for this player.
+	 * @param region The UUID of the arena to use to choose the players to display on the GUI. Null if there isn't any arena set for this player.
 	 */
-	protected void showGUI(Player spectator, int region) {
+	protected void showGUI(Player spectator, UUID region) {
 		Inventory gui = null;
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
@@ -175,19 +180,20 @@ public class SpectatorPlus extends JavaPlugin {
 
 			}
 			else if (setup.getConfig().getString("mode").equals("arena")) {
-				if (region == 0) {
+				if (region == null) {
 					if(output) {spectator.sendMessage(prefix + "Pick an arena first using the clock!");}
 					return;
 				}
 				else {
 					if (gui == null) gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + setup.getConfig().getString("arena." + region + ".name"));
 					Location where = player.getLocation();
-					int pos1y = setup.getConfig().getInt("arena." + region + ".1.y");
-					int pos2y = setup.getConfig().getInt("arena." + region + ".2.y");
-					int pos1x = setup.getConfig().getInt("arena." + region + ".1.x");
-					int pos2x = setup.getConfig().getInt("arena." + region + ".2.x");
-					int pos1z = setup.getConfig().getInt("arena." + region + ".1.z");
-					int pos2z = setup.getConfig().getInt("arena." + region + ".2.z");
+					Arena currentArena = arenasManager.getArena(region);
+					int pos1y = currentArena.getCorner1().getBlockY();
+					int pos2y = currentArena.getCorner2().getBlockY();
+					int pos1x = currentArena.getCorner1().getBlockX();
+					int pos2x = currentArena.getCorner2().getBlockX();
+					int pos1z = currentArena.getCorner1().getBlockZ();
+					int pos2z = currentArena.getCorner2().getBlockZ();
 					// pos1 should have the highest co-ords of the arena, pos2 the lowest
 					if (player.hasPermission("spectate.hide") == false && user.get(player.getName()).spectating == false) {
 						if (Math.floor(where.getY()) < Math.floor(pos1y) && Math.floor(where.getY()) > Math.floor(pos2y)) {
@@ -222,12 +228,12 @@ public class SpectatorPlus extends JavaPlugin {
 	protected void showArenaGUI(Player spectator) {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, basePrefix);
 
-		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
+		
+		for (Arena arena : arenasManager.getArenas()) {
 			ItemStack arenaBook = new ItemStack(Material.BOOK, 1);
 
 			ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
-			meta.setDisplayName(setup.getConfig().getString("arena." + i + ".name"));
-
+			meta.setDisplayName(arena.getName());
 			arenaBook.setItemMeta(meta);
 
 			gui.addItem(arenaBook);
@@ -415,6 +421,10 @@ public class SpectatorPlus extends JavaPlugin {
 			setup.saveDefaultConfig();
 			toggles.saveDefaultConfig();
 			specs.saveDefaultConfig();
+			
+			setup.reloadConfig();
+			toggles.reloadConfig();
+			specs.reloadConfig();
 
 			// Update config & add default values in
 			if (toggles.getConfig().contains("version") && toggles.getConfig().getDouble("version")<version) {
@@ -567,9 +577,8 @@ public class SpectatorPlus extends JavaPlugin {
 				lowPos.setZ(Math.floor(user.get(player.getName()).pos1.getZ()));
 				hiPos.setZ(Math.floor(user.get(player.getName()).pos2.getZ()));
 			}
-
-			registerArena(user.get(player.getName()).arenaName, hiPos, lowPos);
-
+			
+			arenasManager.registerArena(new Arena(user.get(player.getName()).arenaName, hiPos, lowPos));
 			player.sendMessage(prefix + "Arena " + ChatColor.RED + user.get(player.getName()).arenaName + " (#" + (setup.getConfig().getInt("nextarena")-1) + ")" + ChatColor.GOLD + " successfully set up!");
 
 			// returns true: Cancels breaking of the block that was punched
@@ -595,118 +604,30 @@ public class SpectatorPlus extends JavaPlugin {
 
 
 	/**
-	 * Registers a new arena.
-	 * 
-	 * @param name The name of the new arena.
-	 * @param corner1 The location of a corner of the arena.
-	 * @param corner2 The location of the other corner of the arena.
-	 */
-	protected void registerArena(String name, Location corner1, Location corner2) {
-		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.y", Math.floor(corner1.getY()));
-		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.x", Math.floor(corner1.getX()));
-		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".1.z", Math.floor(corner1.getZ()));
-		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.y", Math.floor(corner2.getY()));
-		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.x", Math.floor(corner2.getX()));
-		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".2.z", Math.floor(corner2.getZ()));
-		setup.getConfig().set("arena." + setup.getConfig().getInt("nextarena") + ".name", name);
-
-		setup.getConfig().set("nextarena", setup.getConfig().getInt("nextarena") + 1);
-
-		setup.saveConfig();
-	}
-
-
-	/**
 	 * Removes an arena.
 	 * 
 	 * @param arenaName
 	 * @return True if the arena was removed; false else (non-existant arena).
 	 */
 	protected boolean removeArena(String arenaName) {
-		int arenaNum = 0;
-		for (int i=1; i < setup.getConfig().getInt("nextarena"); i++) {
-			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
-				arenaNum = i;
-			}
-		}
-
-		if(arenaNum == 0) { // Not found
+		
+		Arena arenaToBeRemoved = arenasManager.getArena(arenaName);
+		if(arenaToBeRemoved == null) {
 			return false;
 		}
 
-		// The arena is replaced by the last arena
-		int lastArenaNum = setup.getConfig().getInt("nextarena") - 1;
-		ConfigurationSection movedArena = setup.getConfig().getConfigurationSection("arena." + lastArenaNum);
-
-		for(String key : movedArena.getValues(true).keySet()) {
-			setup.getConfig().set("arena." + arenaNum + "." + key, movedArena.get(key));
-		}
-
-		// The last arena is removed
-		setup.getConfig().set("arena." + lastArenaNum, null);
-		setup.getConfig().set("nextarena", lastArenaNum);
-
-		// The players in the last arena are moved to the pseudo-new one
-		// and the players in the deleted arena are removed to the arena
+		arenasManager.unregisterArena(arenasManager.getArena(arenaName));
+		
+		// The players in the deleted arena are removed to the arena
 		for(Player player : this.getServer().getOnlinePlayers()) {
 			if(user.get(player.getName()).spectating) {
-
-				if(user.get(player.getName()).arenaNum == arenaNum) {
+				if(user.get(player.getName()).arena.equals(arenaToBeRemoved.getUUID())) {
 					removePlayerFromArena(player);
 				}
-				else if(user.get(player.getName()).arenaNum == lastArenaNum) {
-					setArenaForPlayer(player, setup.getConfig().getString("arena." + arenaNum + ".name"), false);
-				}
 			}
-
 		}
-
-		setup.saveConfig();
-
+		
 		return true;
-	}
-
-
-	/**
-	 * Sets an arena's lobby location to the given location.
-	 * 
-	 * @param location The location.
-	 * @param arenaName The name of the arena.
-	 * 
-	 * @return true if the lobby was set (i.e. the arena exist); false else.
-	 */
-	protected boolean setArenaLobbyLoc(Location location, String arenaName) {
-		int arenaNum = 0;
-		for (int i=1; i<setup.getConfig().getInt("nextarena"); i++) {
-			if (setup.getConfig().getString("arena." + i + ".name").equals(arenaName)) {
-				arenaNum = i;
-			}
-		}
-
-		if (arenaNum == 0) {
-			return false;
-		}
-		else {
-			setup.getConfig().set("arena." + arenaNum + ".lobby.y", Math.floor(location.getY()));
-			setup.getConfig().set("arena." + arenaNum + ".lobby.x", Math.floor(location.getX()));
-			setup.getConfig().set("arena." + arenaNum + ".lobby.z", Math.floor(location.getZ()));
-			setup.getConfig().set("arena." + arenaNum + ".lobby.world", location.getWorld().getName());
-			setup.saveConfig();
-
-			return true;
-		}
-	}
-
-	/**
-	 * Sets an arena's lobby location to the position of the specified player.
-	 * 
-	 * @param player The player.
-	 * @param arenaName The name of the arena.
-	 * 
-	 * @return true if the lobby was set (i.e. the arena exist); false else.
-	 */
-	protected boolean setArenaLobbyLoc(Player player, String arenaName) {
-		return setArenaLobbyLoc(player.getLocation(), arenaName);
 	}
 
 
@@ -720,39 +641,22 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @return True if the change was effective (i.e. the arena exists).
 	 */
 	protected boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
-		int arenaNum = 0;
-		for (int i = 1; i < setup.getConfig().getInt("nextarena"); i++) {
-			if (setup.getConfig().getString("arena." + i + ".name") == arenaName) {
-				arenaNum = i;
-				break;
-			}
-		}
-
-		if(arenaNum == 0) { // Not found
-			return false;
-		}
-
-		user.get(player.getName()).arenaNum = arenaNum;
-
+		Arena arena = arenasManager.getArena(arenaName);
+		
+		user.get(player.getName()).arena = arena.getUUID();
 		if(teleportToLobby) {
-			// The coordinate 40000000 can't be set by the player, because the maximum coordinate allowed by Minecraft is 30000000.
-			Double tpPosY = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.y", 40000000d);
-			Double tpPosX = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.x", 40000000d);
-			Double tpPosZ = setup.getConfig().getDouble("arena." + user.get(player.getName()).arenaNum + ".lobby.z", 40000000d);
-			World tpWorld = getServer().getWorld(setup.getConfig().getString("arena." + user.get(player.getName()).arenaNum + ".lobby.world", player.getWorld().getName()));
-
-			if(tpPosX == 40000000d || tpPosY == 40000000d || tpPosZ == 40000000d) { // No lobby set
+			Location lobbyLocation = arena.getLobby();
+			
+			if(lobbyLocation == null) { // No lobby set
 				player.sendMessage(prefix + "No lobby location set for " + ChatColor.RED + arenaName);
 				return true;
 			}
-
-			Location where = new Location(tpWorld, tpPosX, tpPosY, tpPosZ);
 
 			if(output) {
 				player.sendMessage(prefix + "Teleported you to " + ChatColor.RED + arenaName);
 			}
 
-			player.teleport(where);
+			player.teleport(lobbyLocation);
 		}
 
 		return true;
@@ -779,8 +683,8 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param player
 	 */
 	protected void removePlayerFromArena(Player player) {
-		user.get(player.getName()).arenaNum = 0;
 
+		user.get(player.getName()).arena = null;
 		boolean teleported = spawnPlayer(player);
 
 		if(output) {

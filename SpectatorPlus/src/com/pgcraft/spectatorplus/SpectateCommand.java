@@ -522,8 +522,15 @@ public class SpectateCommand implements CommandExecutor {
 
 			sender.sendMessage(ChatColor.GOLD + "          ~~ " + ChatColor.RED + "Arenas" + ChatColor.GOLD + " ~~          ");
 
-			for (int i = 1; i < p.setup.getConfig().getInt("nextarena"); i++) {
-				sender.sendMessage(ChatColor.RED + "(#" + i + ") " + p.setup.getConfig().getString("arena." + i + ".name") + ChatColor.GOLD + " Lobby x:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.x") + " y:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.y") + " z:" + p.setup.getConfig().getDouble("arena." + i + ".lobby.z"));
+			for(Arena arena : p.arenasManager.getArenas()) {
+				String arenaDescription = ChatColor.RED + arena.getName();
+				if(arena.getLobby() != null) {
+					arenaDescription += ChatColor.GOLD + " - Lobby: " + arena.getLobby().getBlockX() + ";" + arena.getLobby().getBlockY() + ";" + arena.getLobby().getBlockZ();  
+				}
+				else {
+					arenaDescription += ChatColor.GOLD + " - Lobby not configured";
+				}
+				sender.sendMessage(arenaDescription);
 			}
 
 		}
@@ -535,7 +542,11 @@ public class SpectateCommand implements CommandExecutor {
 				return;
 			}
 
-			if(p.setArenaLobbyLoc((Player) sender, args[2])) {
+			Arena arena = p.arenasManager.getArena(args[2]);
+			if(arena != null) {
+				arena.setLobby(((Player) sender).getLocation());
+				p.arenasManager.save();
+				
 				sender.sendMessage(p.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + "'s lobby location set to your location");
 			}
 			else {
@@ -546,9 +557,7 @@ public class SpectateCommand implements CommandExecutor {
 
 		else if(!isEmptyCommand && subcommand.equalsIgnoreCase("reset")) { // /spec arena reset
 
-			p.setup.getConfig().set("arena", null);
-			p.setup.getConfig().set("nextarena", 1);
-			p.setup.saveConfig();
+			p.arenasManager.reset();
 
 			sender.sendMessage(p.prefix + "All arenas removed.");
 
