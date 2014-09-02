@@ -158,6 +158,9 @@ public class SpectatorPlus extends JavaPlugin {
 				user.get(player.getName()).spectating = false;
 			}
 		}
+		
+		// Just in case
+		arenasManager.save();
 	}
 
 	// --------------
