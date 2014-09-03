@@ -322,16 +322,18 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void doConfig(CommandSender sender, Command command, String label, String[] args) {
-		if (args.length > 0) {
+		if (args.length >= 3) {
+			String entry = args[1];
+			boolean temp = (args.length > 3 && args[3] != null && args[3].equalsIgnoreCase("temp")) ? true : false;
+			boolean success = true;
+			String displayValue;
+			String displayTemp = (temp) ? " until next reload" : "";
 			// Booleans
-			if (args[1].equalsIgnoreCase("true") || args[1].equalsIgnoreCase("false")) {
-				boolean value = args[1] != null;
-				boolean temp = false;
-				if (args[2] != null && args[2].equalsIgnoreCase("temp")) {
-					temp = true;
-				}
+			if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false")) {
+				boolean value = args[2] != null;
+				displayValue = value+"";
 				
-				switch(args[0]) {
+				switch(entry) {
 				case "compass":
 					p.getAPI().setCompass(value, temp);
 					break;
@@ -360,29 +362,31 @@ public class SpectateCommand implements CommandExecutor {
 					p.getAPI().setAllowAdminBypassCommandBlocking(value, temp);
 					break;
 				default:
-					sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Invalid toggle "+ChatColor.RED+args[0]);
+					success = false;
 					break;
 				}
 				
 			} else /* Strings */ {
-				boolean temp = false;
-				if (args[2] != null && args[2].equalsIgnoreCase("temp")) {
-					temp = true;
-				}
+				String value = args[2];
+				displayValue = value;
 				
-				switch(args[0]) {
+				switch(entry) {
 				case "compassItem":
-					p.getAPI().setCompassItem(args[1], temp);
+					p.getAPI().setCompassItem(value, temp);
 					break;
 				case "clockItem":
-					p.getAPI().setClockItem(args[1], temp);
+					p.getAPI().setClockItem(value, temp);
 					break;
 				default:
-					sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Invalid toggle "+ChatColor.RED+args[0]);
+					success = false;
 					break;
-					
 				}
 				
+			}
+			if (success) {
+				sender.sendMessage(p.prefix+"Set "+ChatColor.RED+entry+ChatColor.GOLD+" to "+ChatColor.RED+displayValue+ChatColor.GOLD+displayTemp);
+			} else {
+				sender.sendMessage(p.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+entry+ChatColor.DARK_RED+" does not exist!");
 			}
 		} else {
 			sender.sendMessage(p.prefix+"Usage: "+ChatColor.RED+"/spec config <toggle> <value> [temp]");
