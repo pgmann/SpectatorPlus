@@ -36,6 +36,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -491,6 +492,12 @@ public class SpectateListener implements Listener {
 			plugin.showArenaGUI(event.getPlayer());
 		}
 		
+		// Usage of the inspector
+		if (plugin.user.get(event.getPlayer().getName()).spectating && event.getMaterial() == Material.BOOK && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(plugin.prefix + "Right-click a player to see his inventory, and more");
+		}
+		
 		// Cancel chest opening animation, doors, anything when the player right clicks.
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
@@ -513,6 +520,22 @@ public class SpectateListener implements Listener {
 				copy.setContents(original.getContents());
 				event.getPlayer().openInventory(copy);
 			}
+		}
+	}
+	
+	/**
+	 * Used to display the inventory of a player when the spectator right-clicks.
+	 * 
+	 * @param event
+	 */
+	@EventHandler
+	protected void onPlayerInteractEntity(PlayerInteractEntityEvent event) {		
+		if(plugin.user.get(event.getPlayer().getName()).spectating && event.getRightClicked() instanceof Player) {
+			if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.BOOK)) {
+				plugin.showPlayerInventoryGUI(event.getPlayer(), (Player) event.getRightClicked());
+			}
+			
+			event.setCancelled(true);
 		}
 	}
 	

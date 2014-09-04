@@ -4,6 +4,10 @@ compassItem: compass
 # Enable the arena selector in arena mode (clock)?
 arenaclock: true
 clockItem: watch
+# Enable the player inspector (book)?
+inspector: true
+inspectorItem: book
+
 # Enable spectator-only chat, invisible to non-specs?
 specchat: true
 # Show spectatorplus plugin messages to spectators?

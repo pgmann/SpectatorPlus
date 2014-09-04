@@ -57,6 +57,8 @@ public class SpectatorPlus extends JavaPlugin {
 	protected String compassItem;
 	protected boolean clock;
 	protected String clockItem;
+	protected boolean inspector;
+	protected String inspectorItem;
 	protected boolean specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
 
 	protected ScoreboardManager manager = null;
@@ -424,12 +426,25 @@ public class SpectatorPlus extends JavaPlugin {
 			if (clock) {
 				String mode = setup.getConfig().getString("mode");
 				if (mode.equals("arena")) {
-					ItemStack book = new ItemStack(Material.WATCH, 1);
-					ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
-					bookMeta.setDisplayName(ChatColor.DARK_RED + "Arena chooser");
-					book.setItemMeta(bookMeta);
-					spectator.getInventory().addItem(book);
+					ItemStack watch = new ItemStack(Material.WATCH, 1);
+					ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
+					watchMeta.setDisplayName(ChatColor.DARK_RED + "Arena chooser");
+					watch.setItemMeta(watchMeta);
+					spectator.getInventory().addItem(watch);
 				}
+			}
+			
+			// Give them book in the toggle is on
+			if(inspector) {
+				ItemStack book = new ItemStack(Material.BOOK, 1);
+				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
+					bookMeta.setDisplayName(ChatColor.BLUE + "Inspector");
+					List<String> lore = new ArrayList<String>();
+					lore.add("Right-click a player to see his");
+					lore.add("inventory, and more");
+					bookMeta.setLore(lore);
+				book.setItemMeta(bookMeta);
+				spectator.getInventory().setItem(8, book);
 			}
 
 			// Set the prefix in the tab list if the toggle is on
@@ -566,6 +581,17 @@ public class SpectatorPlus extends JavaPlugin {
 				toggles.getConfig().set("clockItem", "watch");
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"clockItem: watch"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
+			
+			// Inspector: true/false
+			if (!toggles.getConfig().contains("inspector")) {
+				toggles.getConfig().set("inspector", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspector: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			// -> Inspector item: <item name>
+			if (!toggles.getConfig().contains("inspectorItem")) {
+				toggles.getConfig().set("inspectorItem", "book");
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspectorItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
 
 			// Spectator chat: true/false
 			if (!toggles.getConfig().contains("specchat")) {
@@ -615,6 +641,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			compass = toggles.getConfig().getBoolean("compass", true);
 			clock = toggles.getConfig().getBoolean("arenaclock", true);
+			inspector = toggles.getConfig().getBoolean("inspector", true);
 			specChat = toggles.getConfig().getBoolean("specchat", true);
 			output = toggles.getConfig().getBoolean("outputmessages", true);
 			death = toggles.getConfig().getBoolean("deathspec", false);
