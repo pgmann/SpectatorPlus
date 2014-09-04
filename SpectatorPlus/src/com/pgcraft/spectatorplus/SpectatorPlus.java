@@ -1,6 +1,8 @@
 package com.pgcraft.spectatorplus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -12,14 +14,19 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -246,6 +253,104 @@ public class SpectatorPlus extends JavaPlugin {
 			gui.addItem(arenaBook);
 		}
 
+		spectator.openInventory(gui);
+	}
+	
+	/**
+	 * Shows a representation of the inventory, the armor, the health, the XP, the poption effects
+	 * and the feed state of the player.
+	 * 
+	 * @param spectator The GUI will be open for this spectator.
+	 * @param inventoryOwner The analyzed player is this player.
+	 */
+	protected void showPlayerInventoryGUI(Player spectator, Player inventoryOwner) {
+		
+		PlayerInventory inventory = inventoryOwner.getInventory(); 
+		
+		// + 18: a separator row, and a row with armor, XP, potion effects, health and feed level.
+		Inventory gui = Bukkit.getServer().createInventory(spectator, inventory.getSize() + 18, "Inventory of " + inventoryOwner.getDisplayName());
+		ItemStack[] GUIContent = gui.getContents();
+		
+		// Player's inventory
+		// The hotbar is 0-8
+		// The inventory is 9-35
+		for(int i = 9; i < inventory.getSize(); i++) {
+			GUIContent[i - 9] = inventory.getItem(i);
+		}
+		for(int i = 0; i < 9; i++) {
+			GUIContent[i + 27] = inventory.getItem(i);
+		}
+		
+		// Separator
+		for(int i = inventory.getSize(); i < inventory.getSize() + 9; i++) {
+			GUIContent[i] = new ItemStack(Material.WATER, 1);
+		}
+		
+		// Armor
+		GUIContent[inventory.getSize() +  9] = inventory.getHelmet();
+		GUIContent[inventory.getSize() + 10] = inventory.getChestplate();
+		GUIContent[inventory.getSize() + 11] = inventory.getLeggings();
+		GUIContent[inventory.getSize() + 12] = inventory.getBoots();
+		
+		// Separator
+		GUIContent[inventory.getSize() + 13] = new ItemStack(Material.WATER, 1);
+		
+		// XP
+		if(inventoryOwner.getLevel() > 0) {
+			GUIContent[inventory.getSize() + 14] = new ItemStack(Material.EXP_BOTTLE, inventoryOwner.getLevel());
+		}
+		else {
+			GUIContent[inventory.getSize() + 14] = new ItemStack(Material.EXP_BOTTLE, 1);
+		}
+		
+		ItemMeta xpMeta = GUIContent[inventory.getSize() + 14].getItemMeta();
+			xpMeta.setDisplayName(ChatColor.RESET + "Experience");
+			List<String> lore = new ArrayList<String>();
+				lore.add(inventoryOwner.getLevel() + " XP levels");
+				lore.add(inventoryOwner.getExp() + "% of the current level");
+			xpMeta.setLore(lore);
+		GUIContent[inventory.getSize() + 14].setItemMeta(xpMeta);
+		
+		// Potion effects
+		if(inventoryOwner.getActivePotionEffects().size() == 0) {
+			GUIContent[inventory.getSize() + 15] = new ItemStack(Material.GLASS_BOTTLE, 1);
+		}
+		else {
+			GUIContent[inventory.getSize() + 15] = new Potion(PotionType.FIRE_RESISTANCE).toItemStack(1);
+			PotionMeta effectsMeta = (PotionMeta) GUIContent[51].getItemMeta();
+				effectsMeta.clearCustomEffects();
+				for(PotionEffect effect : inventoryOwner.getActivePotionEffects()) {
+					effectsMeta.addCustomEffect(effect, true);
+				}
+			GUIContent[inventory.getSize() + 15].setItemMeta(effectsMeta);
+		}
+		
+		ItemMeta effectsMeta = GUIContent[inventory.getSize() + 15].getItemMeta();
+			effectsMeta.setDisplayName(ChatColor.RESET + "Potion effects");
+		GUIContent[inventory.getSize() + 15].setItemMeta(effectsMeta);
+		
+		// Health
+		if(((Damageable) inventoryOwner).getHealth() > 0) {
+			GUIContent[inventory.getSize() + 16] = new ItemStack(Material.GOLDEN_APPLE, (int) Math.ceil(((Damageable) inventoryOwner).getHealth()));
+			ItemMeta healthMeta = GUIContent[inventory.getSize() + 16].getItemMeta();
+				healthMeta.setDisplayName(ChatColor.RESET + "Health");
+			GUIContent[inventory.getSize() + 16].setItemMeta(healthMeta);
+		}
+		
+		// Food level
+		if(inventoryOwner.getFoodLevel() > 0) {
+			GUIContent[inventory.getSize() + 17] = new ItemStack(Material.COOKIE, inventoryOwner.getFoodLevel());
+			ItemMeta foodMeta = GUIContent[inventory.getSize() + 17].getItemMeta();
+				foodMeta.setDisplayName(ChatColor.RESET + "Food level");
+				lore = new ArrayList<String>();
+					lore.add("Food level: " + inventoryOwner.getFoodLevel());
+					lore.add("Saturation: " + inventoryOwner.getSaturation());
+				foodMeta.setLore(lore);
+			GUIContent[inventory.getSize() + 17].setItemMeta(foodMeta);
+		}
+		
+		gui.setContents(GUIContent);
+		
 		spectator.openInventory(gui);
 	}
 
