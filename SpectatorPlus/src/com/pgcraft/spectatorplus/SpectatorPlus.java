@@ -179,6 +179,9 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	protected void showGUI(Player spectator, UUID region) {
 		Inventory gui = null;
+		List<String> lore = new ArrayList<String>();
+		lore.add("Right-click to be teleported");
+		lore.add("Left-click to see this player's inventory");
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
 				if (gui == null) {
@@ -189,7 +192,8 @@ public class SpectatorPlus extends JavaPlugin {
 					ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 					SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
 					meta.setOwner(player.getName());
-					meta.setDisplayName(player.getName());
+					meta.setDisplayName(ChatColor.RESET + player.getDisplayName());
+					meta.setLore(lore);
 					playerhead.setItemMeta(meta);
 					gui.addItem(playerhead);
 				}
@@ -219,7 +223,8 @@ public class SpectatorPlus extends JavaPlugin {
 
 									SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
 									meta.setOwner(player.getName());
-									meta.setDisplayName(player.getName());
+									meta.setDisplayName(ChatColor.RESET + player.getDisplayName());
+									meta.setLore(lore);
 
 									playerhead.setItemMeta(meta);
 
@@ -434,7 +439,7 @@ public class SpectatorPlus extends JavaPlugin {
 				}
 			}
 			
-			// Give them book in the toggle is on
+			// Give them book if the toggle is on
 			if(inspector) {
 				ItemStack book = new ItemStack(Material.BOOK, 1);
 				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
