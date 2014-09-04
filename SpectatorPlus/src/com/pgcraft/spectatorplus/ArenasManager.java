@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 public class ArenasManager {
 	
@@ -21,8 +20,7 @@ public class ArenasManager {
 	public ArenasManager(SpectatorPlus plugin) {
 		this.p = plugin;
 		
-		// Registers the Arena class as a serializable one.
-		ConfigurationSerialization.registerClass(Arena.class);
+		// The Arena class is registered as a serializable one in the onLoad method of the main class.
 		
 		// Loads the arenas from the config
 		reload();

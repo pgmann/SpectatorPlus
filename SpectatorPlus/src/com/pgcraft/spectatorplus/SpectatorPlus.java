@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -56,6 +57,12 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Team team = null;
 
 
+	@Override
+	public void onLoad() {
+		// Registers the Arena class as a serializable one.
+		ConfigurationSerialization.registerClass(Arena.class);
+	}
+	
 	@Override
 	public void onEnable() {
 		setup = new ConfigAccessor(this, "setup");
