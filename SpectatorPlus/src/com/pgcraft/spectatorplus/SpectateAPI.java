@@ -302,7 +302,7 @@ public class SpectateAPI {
 	 * Teleports the player to the lobby of that arena, if a lobby is available.
 	 * 
 	 * @param player The player.
-	 * @param arenaName The name of the arena.
+	 * @param arena The arena.
 	 * @param teleportToLobby If true the player will be teleported to the lobby (if a lobby is set).
 	 * 
 	 * @return True if the change was effective (i.e. the arena exists).
@@ -318,7 +318,7 @@ public class SpectateAPI {
 	 * Teleports the player to the lobby of that arena, if a lobby is available.
 	 * 
 	 * @param player The player.
-	 * @param arenaName The name of the arena.
+	 * @param arena The arena.
 	 * 
 	 * @return True if the change was effective (i.e. the arena exists).
 	 * 
