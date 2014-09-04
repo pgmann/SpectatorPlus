@@ -30,6 +30,8 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -40,6 +42,8 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -465,13 +469,14 @@ public class SpectateListener implements Listener {
 	/**
 	 * Used to:
 	 *  - display the various GUIs (teleportation, arenas) when the player right-click with the good item;
-	 *  - prevent the player from opening chests, doors...
+	 *  - open a read-only GUI for the chests, etc.;
+	 *  - cancel the use of the doors, etc.
 	 * 
 	 * @param event
 	 */
 	@EventHandler
 	protected void onPlayerInteract(PlayerInteractEvent event) {
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true && event.getMaterial() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (plugin.user.get(event.getPlayer().getName()).spectating && event.getMaterial() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			String mode = plugin.setup.getConfig().getString("mode"); 
 			if (mode.equals("arena")) {
 				UUID region = plugin.user.get(event.getPlayer().getName()).arena;
@@ -481,14 +486,33 @@ public class SpectateListener implements Listener {
 			}
 		}
 		
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true && event.getMaterial() == Material.WATCH && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (plugin.user.get(event.getPlayer().getName()).spectating && event.getMaterial() == Material.WATCH && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			event.setCancelled(true);
 			plugin.showArenaGUI(event.getPlayer());
 		}
 		
-		// Cancel chest opening, doors, anything when the player right clicks.
-		if (plugin.user.get(event.getPlayer().getName()).spectating == true) {
+		// Cancel chest opening animation, doors, anything when the player right clicks.
+		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
+			
+			// Opens the inventory of the blocks with an inventory without the opening animation
+			// The players are unable to take anything due to the InventoryClickEvent & InventoryDragEvent being cancelled.
+			if(event.hasBlock() && event.getClickedBlock().getState() instanceof InventoryHolder) {
+				
+				Inventory original = ((InventoryHolder) event.getClickedBlock().getState()).getInventory();
+				Inventory copy = null;
+				
+				if(original.getType().equals(InventoryType.CHEST) && original.getSize() > 27) {
+					// Double chest. Using the same method lead to an exception (because InventoryType.CHEST is limited to 27 items).
+					copy = Bukkit.getServer().createInventory(event.getPlayer(), original.getSize(), original.getTitle());
+				}
+				else {
+					copy = Bukkit.getServer().createInventory(event.getPlayer(), original.getType(), original.getTitle());
+				}
+				
+				copy.setContents(original.getContents());
+				event.getPlayer().openInventory(copy);
+			}
 		}
 	}
 	
@@ -572,6 +596,17 @@ public class SpectateListener implements Listener {
 			}
 			
 			// Cancel the event to prevent the item to be taken
+			event.setCancelled(true);
+		}
+	}
+	
+	/**
+	 * Used to cancel an item to be moved from/to an inventory if the player is spectating.
+	 * 
+	 * @param event
+	 */
+	public void onInventoryDrag(InventoryDragEvent event) {
+		if (plugin.user.get(event.getWhoClicked().getName()).spectating) {
 			event.setCancelled(true);
 		}
 	}
