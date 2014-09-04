@@ -84,7 +84,8 @@ public class SpectateListener implements Listener {
 	 * 
 	 * @param event
 	 */
-	@EventHandler
+	// Ignore cancelled, so another plugin can implement a private chat without conflicts.
+	@EventHandler(ignoreCancelled = true)
 	protected void onChatSend(AsyncPlayerChatEvent event) {
 		if (plugin.specChat) {
 			if (plugin.user.get(event.getPlayer().getName()).spectating) {
