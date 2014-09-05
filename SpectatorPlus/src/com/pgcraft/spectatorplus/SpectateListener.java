@@ -428,9 +428,10 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onFoodLevelChange(FoodLevelChangeEvent event) {
-		if (event.getEntityType() == EntityType.PLAYER && plugin.user.get(event.getEntity().getName()).spectating) {
+		if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC") && plugin.user.get(event.getEntity().getName()).spectating) {
 			event.setCancelled(true);
-			plugin.getServer().getPlayer(event.getEntity().getName()).setFoodLevel(20);
+			((Player) event.getEntity()).setFoodLevel(20);
+			((Player) event.getEntity()).setSaturation(14);
 		}
 	}
 	
