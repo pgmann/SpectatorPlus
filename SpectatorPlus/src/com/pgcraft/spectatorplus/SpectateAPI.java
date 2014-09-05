@@ -163,6 +163,42 @@ public class SpectateAPI {
 	}
 	
 	/**
+	 * Enables (or disables) the inspector (book).
+	 * 
+	 * @param value Enabled if true.
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setInspector(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("inspector", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.inspector = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
+	 * Sets the item to be given as the inspector (default: "book").
+	 * 
+	 * @param value Item to be used instead of "book", invalid entries will default to "book". Examples: "compass", "stone", "wool"
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setInspectorItem(String value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("inspectorItem", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.inspectorItem = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
 	 * Enables (or disables) spectator-only chat, invisible to non-specs.
 	 * 
 	 * @param value Enabled if true.
