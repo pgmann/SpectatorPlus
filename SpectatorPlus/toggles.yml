@@ -4,6 +4,13 @@ compassItem: compass
 # Enable the arena selector in arena mode (clock)?
 arenaclock: true
 clockItem: watch
+# Enable the player inspector (book)?
+inspector: true
+inspectorItem: book
+
+# Right-click on a head on the TP menu to see the inventory of this player?
+inspectPlayerFromTeleportationMenu: true
+
 # Enable spectator-only chat, invisible to non-specs?
 specchat: true
 # Show spectatorplus plugin messages to spectators?

@@ -36,6 +36,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -427,9 +428,10 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onFoodLevelChange(FoodLevelChangeEvent event) {
-		if (event.getEntityType() == EntityType.PLAYER && plugin.user.get(event.getEntity().getName()).spectating) {
+		if (event.getEntity() instanceof Player && !event.getEntity().hasMetadata("NPC") && plugin.user.get(event.getEntity().getName()).spectating) {
 			event.setCancelled(true);
-			plugin.getServer().getPlayer(event.getEntity().getName()).setFoodLevel(20);
+			((Player) event.getEntity()).setFoodLevel(20);
+			((Player) event.getEntity()).setSaturation(14);
 		}
 	}
 	
@@ -491,6 +493,12 @@ public class SpectateListener implements Listener {
 			plugin.showArenaGUI(event.getPlayer());
 		}
 		
+		// Usage of the inspector
+		if (plugin.user.get(event.getPlayer().getName()).spectating && event.getMaterial() == Material.BOOK && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(plugin.prefix + "Right-click a player to see his inventory, and more");
+		}
+		
 		// Cancel chest opening animation, doors, anything when the player right clicks.
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
@@ -513,6 +521,22 @@ public class SpectateListener implements Listener {
 				copy.setContents(original.getContents());
 				event.getPlayer().openInventory(copy);
 			}
+		}
+	}
+	
+	/**
+	 * Used to display the inventory of a player when the spectator right-clicks.
+	 * 
+	 * @param event
+	 */
+	@EventHandler
+	protected void onPlayerInteractEntity(PlayerInteractEntityEvent event) {		
+		if(plugin.user.get(event.getPlayer().getName()).spectating && event.getRightClicked() instanceof Player && !event.getRightClicked().hasMetadata("NPC")) {
+			if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.BOOK)) {
+				plugin.showPlayerInventoryGUI(event.getPlayer(), (Player) event.getRightClicked());
+			}
+			
+			event.setCancelled(true);
 		}
 	}
 	
@@ -570,8 +594,14 @@ public class SpectateListener implements Listener {
 				event.getWhoClicked().closeInventory();
 				
 				if (skullOwner != null && skullOwner.isOnline() && !plugin.user.get(skullOwner.getName()).spectating) {
-					plugin.choosePlayer((Player) event.getWhoClicked(), skullOwner);
+					if(event.isLeftClick()) {
+						plugin.choosePlayer((Player) event.getWhoClicked(), skullOwner);
+					}
+					else if(plugin.inspectFromTPMenu) {
+						plugin.showPlayerInventoryGUI((Player) event.getWhoClicked(), skullOwner);
+					}
 				}
+				
 				else {
 					if (skullOwner == null) {
 						OfflinePlayer offlineSkullOwner = plugin.getServer().getOfflinePlayer(meta.getOwner());

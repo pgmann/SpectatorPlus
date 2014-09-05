@@ -340,6 +340,12 @@ public class SpectateCommand implements CommandExecutor {
 				case "arenaclock":
 					p.getAPI().setArenaClock(value, temp);
 					break;
+				case "inspector":
+					p.getAPI().setInspector(value, temp);
+					break;
+				case "inspectPlayerFromTeleportationMenu":
+					p.getAPI().setInspectPlayerFromTeleportationMenu(value, temp);
+					break;
 				case "specchat":
 					p.getAPI().setSpectatorChatEnabled(value, temp);
 					break;
@@ -376,6 +382,9 @@ public class SpectateCommand implements CommandExecutor {
 					break;
 				case "clockItem":
 					p.getAPI().setClockItem(value, temp);
+					break;
+				case "inspectorItem":
+					p.getAPI().setInspectorItem(value, temp);
 					break;
 				default:
 					success = false;
