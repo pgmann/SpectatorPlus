@@ -8,6 +8,9 @@ clockItem: watch
 inspector: true
 inspectorItem: book
 
+# Left-click on a head on the TP menu to see the inventory of this player?
+inspectPlayerFromTeleportationMenu: true
+
 # Enable spectator-only chat, invisible to non-specs?
 specchat: true
 # Show spectatorplus plugin messages to spectators?

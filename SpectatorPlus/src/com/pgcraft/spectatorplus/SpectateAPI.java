@@ -198,6 +198,16 @@ public class SpectateAPI {
 		plugin.reloadConfig(false);
 	}
 	
+	public void setInspectPlayerFromTeleportationMenu(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("inspectPlayerFromTeleportationMenu", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.inspectFromTPMenu = value;
+		plugin.reloadConfig(false);
+	}
+	
 	/**
 	 * Enables (or disables) spectator-only chat, invisible to non-specs.
 	 * 

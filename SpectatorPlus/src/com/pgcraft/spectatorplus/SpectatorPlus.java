@@ -60,7 +60,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected String clockItem;
 	protected boolean inspector;
 	protected String inspectorItem;
-	protected boolean specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
+	protected boolean inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
 
 	protected ScoreboardManager manager = null;
 	protected Scoreboard board = null;
@@ -180,9 +180,13 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	protected void showGUI(Player spectator, UUID region) {
 		Inventory gui = null;
+		
 		List<String> lore = new ArrayList<String>();
 		lore.add("Right-click to be teleported");
-		lore.add("Left-click to see this player's inventory");
+		if(this.inspectFromTPMenu) {
+			lore.add("Left-click to see this player's inventory");
+		}
+		
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
 				if (gui == null) {
@@ -598,6 +602,11 @@ public class SpectatorPlus extends JavaPlugin {
 				toggles.getConfig().set("inspectorItem", "book");
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspectorItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
+			// -> Inspect from teleportation menu
+			if (!toggles.getConfig().contains("inspectPlayerFromTeleportationMenu")) {
+				toggles.getConfig().set("inspectPlayerFromTeleportationMenu", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspectPlayerFromTeleportationMenu: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
 
 			// Spectator chat: true/false
 			if (!toggles.getConfig().contains("specchat")) {
@@ -648,6 +657,7 @@ public class SpectatorPlus extends JavaPlugin {
 			compass = toggles.getConfig().getBoolean("compass", true);
 			clock = toggles.getConfig().getBoolean("arenaclock", true);
 			inspector = toggles.getConfig().getBoolean("inspector", true);
+			inspectFromTPMenu = toggles.getConfig().getBoolean("inspectPlayerFromTeleportationMenu", true);
 			specChat = toggles.getConfig().getBoolean("specchat", true);
 			output = toggles.getConfig().getBoolean("outputmessages", true);
 			death = toggles.getConfig().getBoolean("deathspec", false);

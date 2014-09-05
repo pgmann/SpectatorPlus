@@ -596,10 +596,11 @@ public class SpectateListener implements Listener {
 					if(event.isRightClick()) {
 						plugin.choosePlayer((Player) event.getWhoClicked(), skullOwner);
 					}
-					else {
+					else if(plugin.inspectFromTPMenu) {
 						plugin.showPlayerInventoryGUI((Player) event.getWhoClicked(), skullOwner);
 					}
 				}
+				
 				else {
 					if (skullOwner == null) {
 						OfflinePlayer offlineSkullOwner = plugin.getServer().getOfflinePlayer(meta.getOwner());
