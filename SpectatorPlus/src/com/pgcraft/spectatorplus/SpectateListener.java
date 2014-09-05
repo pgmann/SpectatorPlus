@@ -593,7 +593,7 @@ public class SpectateListener implements Listener {
 				event.getWhoClicked().closeInventory();
 				
 				if (skullOwner != null && skullOwner.isOnline() && !plugin.user.get(skullOwner.getName()).spectating) {
-					if(event.isRightClick()) {
+					if(event.isLeftClick()) {
 						plugin.choosePlayer((Player) event.getWhoClicked(), skullOwner);
 					}
 					else if(plugin.inspectFromTPMenu) {

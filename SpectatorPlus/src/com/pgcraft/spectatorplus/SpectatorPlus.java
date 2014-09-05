@@ -182,9 +182,9 @@ public class SpectatorPlus extends JavaPlugin {
 		Inventory gui = null;
 		
 		List<String> lore = new ArrayList<String>();
-		lore.add("Right-click to be teleported");
+		lore.add("Left-click to be teleported");
 		if(this.inspectFromTPMenu) {
-			lore.add("Left-click to see this player's inventory");
+			lore.add("Right-click to see this player's inventory");
 		}
 		
 		for (Player player : getServer().getOnlinePlayers()) {
