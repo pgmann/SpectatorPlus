@@ -12,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -248,7 +247,7 @@ public class SpectateListener implements Listener {
 				final Vector initialProjectileVelocity = event.getEntity().getVelocity();
 				
 				// Prevents the potion from splashing on the entity
-				Bukkit.getScheduler().runTaskLater(plugin, new BukkitRunnable() {
+				plugin.getServer().getScheduler().runTaskLater(plugin, new BukkitRunnable() {
 					@Override
 					public void run() {
 						// Because the original entity is, one tick later, destroyed, we need to spawn a new one
@@ -276,7 +275,7 @@ public class SpectateListener implements Listener {
 				}, 1L);
 				
 				// Teleports back the spectators
-				Bukkit.getScheduler().runTaskLater(plugin, new BukkitRunnable() {
+				plugin.getServer().getScheduler().runTaskLater(plugin, new BukkitRunnable() {
 					@Override
 					public void run() {
 						for(UUID spectatorUUID : spectatorsAffected) {
@@ -512,10 +511,10 @@ public class SpectateListener implements Listener {
 				
 				if(original.getType().equals(InventoryType.CHEST) && original.getSize() > 27) {
 					// Double chest. Using the same method lead to an exception (because InventoryType.CHEST is limited to 27 items).
-					copy = Bukkit.getServer().createInventory(event.getPlayer(), original.getSize(), original.getTitle());
+					copy = plugin.getServer().createInventory(event.getPlayer(), original.getSize(), original.getTitle());
 				}
 				else {
-					copy = Bukkit.getServer().createInventory(event.getPlayer(), original.getType(), original.getTitle());
+					copy = plugin.getServer().createInventory(event.getPlayer(), original.getType(), original.getTitle());
 				}
 				
 				copy.setContents(original.getContents());
