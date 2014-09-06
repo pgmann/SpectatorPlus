@@ -329,9 +329,9 @@ public class SpectateCommand implements CommandExecutor {
 			String displayValue;
 			String displayTemp = (temp) ? " until next reload" : "";
 			// Booleans
-			if (args[2].equalsIgnoreCase("true") || args[2].equalsIgnoreCase("false")) {
-				boolean value = args[2] != null;
-				displayValue = value+"";
+			if (p.parseBoolean(args[2]) != null) {
+				boolean value = (boolean) p.parseBoolean(args[2]);
+				displayValue = String.valueOf(value);
 				
 				switch(entry) {
 				case "compass":

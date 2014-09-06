@@ -78,12 +78,12 @@ public class SpectatorPlus extends JavaPlugin {
 		setup = new ConfigAccessor(this, "setup");
 		toggles = new ConfigAccessor(this, "toggles");
 		specs = new ConfigAccessor(this, "spectators");
-
+		
 		console = getServer().getConsoleSender();
-		arenasManager = new ArenasManager(this);
 		
 		reloadConfig(true); // Load config values.
-
+		
+		arenasManager = new ArenasManager(this);
 		api = new SpectateAPI(this);
 		
 		// Add players already online to this plugin's database
@@ -182,9 +182,9 @@ public class SpectatorPlus extends JavaPlugin {
 		Inventory gui = null;
 		
 		List<String> lore = new ArrayList<String>();
-		lore.add("Left-click to be teleported");
+		lore.add(ChatColor.GOLD+""+ChatColor.ITALIC+"Left click"+ ChatColor.DARK_GRAY+ChatColor.ITALIC +" to be teleported");
 		if(this.inspectFromTPMenu) {
-			lore.add("Right-click to see this player's inventory");
+			lore.add(ChatColor.GOLD+""+ChatColor.ITALIC+"Right click"+ ChatColor.DARK_GRAY+ChatColor.ITALIC +" to see inventory");
 		}
 		
 		for (Player player : getServer().getOnlinePlayers()) {
@@ -206,7 +206,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			else if (setup.getConfig().getString("mode").equals("arena")) {
 				if (region == null) {
-					if(output) {spectator.sendMessage(prefix + "Pick an arena first using the clock!");}
+					if(output) {spectator.sendMessage(prefix + "Pick an arena first using the arena selector!");}
 					return;
 				}
 				else {
@@ -278,9 +278,11 @@ public class SpectatorPlus extends JavaPlugin {
 	protected void showPlayerInventoryGUI(Player spectator, Player inventoryOwner) {
 		
 		PlayerInventory inventory = inventoryOwner.getInventory(); 
+		ItemStack separator = new ItemStack(Material.WATER, 1);
+		separator.getItemMeta().setDisplayName("");
 		
 		// + 18: a separator row, and a row with armor, XP, potion effects, health and feed level.
-		Inventory gui = Bukkit.getServer().createInventory(spectator, inventory.getSize() + 18, "Inventory of " + inventoryOwner.getDisplayName());
+		Inventory gui = Bukkit.getServer().createInventory(spectator, inventory.getSize() + 18, (inventoryOwner.getDisplayName().length() > 22) ? inventoryOwner.getName() : inventoryOwner.getDisplayName() + ChatColor.RESET + "'s stats");
 		ItemStack[] GUIContent = gui.getContents();
 		
 		// Player's inventory
@@ -295,7 +297,7 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		// Separator
 		for(int i = inventory.getSize(); i < inventory.getSize() + 9; i++) {
-			GUIContent[i] = new ItemStack(Material.WATER, 1);
+			GUIContent[i] = separator;
 		}
 		
 		// Armor
@@ -305,7 +307,7 @@ public class SpectatorPlus extends JavaPlugin {
 		GUIContent[inventory.getSize() + 12] = inventory.getBoots();
 		
 		// Separator
-		GUIContent[inventory.getSize() + 13] = new ItemStack(Material.WATER, 1);
+		GUIContent[inventory.getSize() + 13] = separator;
 		
 		// XP
 		if(inventoryOwner.getLevel() > 0) {
@@ -316,10 +318,10 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		
 		ItemMeta xpMeta = GUIContent[inventory.getSize() + 14].getItemMeta();
-			xpMeta.setDisplayName(ChatColor.RESET + "Experience");
+			xpMeta.setDisplayName(ChatColor.GREEN +""+ ChatColor.BOLD + "Experience");
 			List<String> lore = new ArrayList<String>();
-				lore.add(inventoryOwner.getLevel() + " XP levels");
-				lore.add(new DecimalFormat("#.##").format(inventoryOwner.getExp()) + "% of the current level");
+				lore.add(ChatColor.DARK_GRAY + "Level " + ChatColor.GOLD + inventoryOwner.getLevel());
+				lore.add(ChatColor.DARK_GRAY + "(" + ChatColor.GOLD + new DecimalFormat("#.##").format(inventoryOwner.getExp()) + ChatColor.DARK_GRAY + "% towards level " + ChatColor.GOLD + inventoryOwner.getLevel()+1 + ChatColor.DARK_GRAY + ")");
 			xpMeta.setLore(lore);
 		GUIContent[inventory.getSize() + 14].setItemMeta(xpMeta);
 		
@@ -331,6 +333,9 @@ public class SpectatorPlus extends JavaPlugin {
 			GUIContent[inventory.getSize() + 15] = new Potion(PotionType.FIRE_RESISTANCE).toItemStack(1);
 			PotionMeta effectsMeta = (PotionMeta) GUIContent[51].getItemMeta();
 				effectsMeta.clearCustomEffects();
+				lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ inventoryOwner.getActivePotionEffects().size() + ChatColor.DARK_GRAY + " active effects");
+				xpMeta.setLore(lore);
 				for(PotionEffect effect : inventoryOwner.getActivePotionEffects()) {
 					effectsMeta.addCustomEffect(effect, true);
 				}
@@ -338,14 +343,17 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		
 		ItemMeta effectsMeta = GUIContent[inventory.getSize() + 15].getItemMeta();
-			effectsMeta.setDisplayName(ChatColor.RESET + "Potion effects");
+			effectsMeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Potion effects");
 		GUIContent[inventory.getSize() + 15].setItemMeta(effectsMeta);
 		
 		// Health
 		if(((Damageable) inventoryOwner).getHealth() > 0) {
 			GUIContent[inventory.getSize() + 16] = new ItemStack(Material.GOLDEN_APPLE, (int) Math.ceil(((Damageable) inventoryOwner).getHealth()));
 			ItemMeta healthMeta = GUIContent[inventory.getSize() + 16].getItemMeta();
-				healthMeta.setDisplayName(ChatColor.RESET + "Health");
+				healthMeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Health");
+				lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD + "" + (int) Math.ceil(((Damageable) inventoryOwner).getHealth()) + ChatColor.DARK_GRAY + "/20");
+				healthMeta.setLore(lore);
 			GUIContent[inventory.getSize() + 16].setItemMeta(healthMeta);
 		}
 		
@@ -353,10 +361,10 @@ public class SpectatorPlus extends JavaPlugin {
 		if(inventoryOwner.getFoodLevel() > 0) {
 			GUIContent[inventory.getSize() + 17] = new ItemStack(Material.COOKIE, inventoryOwner.getFoodLevel());
 			ItemMeta foodMeta = GUIContent[inventory.getSize() + 17].getItemMeta();
-				foodMeta.setDisplayName(ChatColor.RESET + "Food level");
+				foodMeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Food");
 				lore = new ArrayList<String>();
-					lore.add("Food level: " + inventoryOwner.getFoodLevel());
-					lore.add("Saturation: " + inventoryOwner.getSaturation());
+					lore.add(ChatColor.DARK_GRAY + "Food level: " + ChatColor.GOLD + inventoryOwner.getFoodLevel() + ChatColor.DARK_GRAY + "/20");
+					lore.add(ChatColor.DARK_GRAY + "Saturation: " + ChatColor.GOLD + inventoryOwner.getSaturation());
 				foodMeta.setLore(lore);
 			GUIContent[inventory.getSize() + 17].setItemMeta(foodMeta);
 		}
@@ -450,16 +458,18 @@ public class SpectatorPlus extends JavaPlugin {
 				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
 					bookMeta.setDisplayName(ChatColor.BLUE + "Inspector");
 					List<String> lore = new ArrayList<String>();
-					lore.add("Right-click a player to see his");
-					lore.add("inventory, and more");
+						lore.add(ChatColor.GOLD + "Right click" + ChatColor.DARK_GRAY + " a player to see his");
+						lore.add(ChatColor.DARK_GRAY + "inventory, stats and armour");
 					bookMeta.setLore(lore);
 				book.setItemMeta(bookMeta);
 				spectator.getInventory().setItem(8, book);
 			}
+			
+			spectator.updateInventory();
 
 			// Set the prefix in the tab list if the toggle is on
 			if (scoreboard) {
-				user.get(spectator.getName()).oldScoreboard = spectator.getScoreboard();
+				if (spectator.getScoreboard() != null) user.get(spectator.getName()).oldScoreboard = spectator.getScoreboard(); else user.get(spectator.getName()).oldScoreboard = getServer().getScoreboardManager().getMainScoreboard();
 				spectator.setScoreboard(board);
 				team.addPlayer(spectator);
 			}
@@ -516,7 +526,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Remove from spec team
 			if (scoreboard) {
-				spectator.setScoreboard(user.get(spectator.getName()).oldScoreboard);
+				if(user.get(spectator.getName()).oldScoreboard != null) spectator.setScoreboard(user.get(spectator.getName()).oldScoreboard);
 				team.removePlayer(spectator);
 			}
 
@@ -673,13 +683,18 @@ public class SpectatorPlus extends JavaPlugin {
 			board.registerNewObjective("health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
 			team = board.registerNewTeam("spec");
 			team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
+			for (Player target : getServer().getOnlinePlayers()) {
+				if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
+					team.addPlayer(target);
+				}
+			}
 		} else {
 			// seeSpecs relies on using scoreboard teams. Force-disable seeSpecs if scoreboard is disabled.
 			seeSpecs = false;
 			// remove players already spectating from the scoreboard (if not null)
 			if (manager != null) {
 				for (Player target : getServer().getOnlinePlayers()) {
-					if (user.get(target.getName()).spectating) {
+					if (user.get(target.getName()).spectating && user.get(target.getName()).oldScoreboard != null) {
 						target.setScoreboard(user.get(target.getName()).oldScoreboard);
 					}
 				}
@@ -947,5 +962,15 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	public SpectateAPI getAPI() {
 		return api;
+	}
+	
+	public Object parseBoolean(String input) {
+		if (input.equalsIgnoreCase("on") || input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("y") || input.equalsIgnoreCase("true")) {
+			return true;
+		} else if (input.equalsIgnoreCase("off") || input.equalsIgnoreCase("no") || input.equalsIgnoreCase("n") || input.equalsIgnoreCase("false")) {
+			return false;
+		} else {
+			return null; 
+		}
 	}
 }
