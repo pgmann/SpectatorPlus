@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -679,25 +680,48 @@ public class SpectatorPlus extends JavaPlugin {
 			adminBypass = toggles.getConfig().getBoolean("adminbypass", true);
 		} // ...end hardReload
 
-		if (scoreboard && manager==null) { // After a reload, if 'scoreboard' is kept on, the same scoreboard will be used.
-			manager = getServer().getScoreboardManager();
-			board = manager.getNewScoreboard();
-			board.registerNewObjective("health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
-			team = board.registerNewTeam("spec");
-			team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
+		if (scoreboard) {
+			if (manager==null) { // After a reload, if 'scoreboard' is kept on, the same scoreboard will be used.
+				manager = getServer().getScoreboardManager();
+				board = manager.getNewScoreboard();
+				board.registerNewObjective("health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
+				team = board.registerNewTeam("spec");
+				team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
+				for (Player target : getServer().getOnlinePlayers()) {
+					if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
+					}
+				}
+			}
+			
+			// Make sure the team is empty
+			for (OfflinePlayer target : team.getPlayers()) {
+				team.removePlayer(target);
+			}
+			
+			// Add players who are spectating & set their scoreboard
 			for (Player target : getServer().getOnlinePlayers()) {
 				if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
+					target.setScoreboard(board);
 					team.addPlayer(target);
 				}
 			}
 		} else {
 			// seeSpecs relies on using scoreboard teams. Force-disable seeSpecs if scoreboard is disabled.
 			seeSpecs = false;
-			// remove players already spectating from the scoreboard (if not null)
+			// Do we need to worry about the scoreboard being previously enabled?
 			if (manager != null) {
+				// Remove all players from spectator team
+				for (OfflinePlayer target : team.getPlayers()) {
+					team.removePlayer(target);
+				}
+				// Reset each spectator's scoreboard to default/previous
 				for (Player target : getServer().getOnlinePlayers()) {
-					if (user.get(target.getName()).spectating && user.get(target.getName()).oldScoreboard != null) {
-						target.setScoreboard(user.get(target.getName()).oldScoreboard);
+					if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
+						if (user.get(target.getName()).oldScoreboard != null) {
+							target.setScoreboard(user.get(target.getName()).oldScoreboard);
+						} else {
+							target.setScoreboard(getServer().getScoreboardManager().getMainScoreboard());
+						}
 					}
 				}
 			}
