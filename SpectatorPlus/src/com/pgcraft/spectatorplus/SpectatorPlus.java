@@ -277,9 +277,13 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	protected void showPlayerInventoryGUI(Player spectator, Player inventoryOwner) {
 		
-		PlayerInventory inventory = inventoryOwner.getInventory(); 
+		PlayerInventory inventory = inventoryOwner.getInventory();
+		
+		// Remove item name from the inventory separator.
 		ItemStack separator = new ItemStack(Material.WATER, 1);
-		separator.getItemMeta().setDisplayName("");
+		ItemMeta separatorMeta = separator.getItemMeta();
+		separatorMeta.setDisplayName("");
+		separator.setItemMeta(separatorMeta);
 		
 		// + 18: a separator row, and a row with armor, XP, potion effects, health and feed level.
 		Inventory gui = Bukkit.getServer().createInventory(spectator, inventory.getSize() + 18, (inventoryOwner.getDisplayName().length() > 22) ? inventoryOwner.getName() : inventoryOwner.getDisplayName() + ChatColor.RESET + "'s stats");
