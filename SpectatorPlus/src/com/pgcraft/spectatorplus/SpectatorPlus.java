@@ -286,7 +286,7 @@ public class SpectatorPlus extends JavaPlugin {
 		separator.setItemMeta(separatorMeta);
 		
 		// + 18: a separator row, and a row with armor, XP, potion effects, health and feed level.
-		Inventory gui = Bukkit.getServer().createInventory(spectator, inventory.getSize() + 18, (inventoryOwner.getDisplayName().length() > 22) ? inventoryOwner.getName() : inventoryOwner.getDisplayName() + ChatColor.RESET + "'s stats");
+		Inventory gui = Bukkit.getServer().createInventory(spectator, inventory.getSize() + 18, (inventoryOwner.getDisplayName().length() > 22) ? inventoryOwner.getName() : inventoryOwner.getDisplayName() + ChatColor.RESET + "'s state");
 		ItemStack[] GUIContent = gui.getContents();
 		
 		// Player's inventory
@@ -462,8 +462,8 @@ public class SpectatorPlus extends JavaPlugin {
 				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
 					bookMeta.setDisplayName(ChatColor.BLUE + "Inspector");
 					List<String> lore = new ArrayList<String>();
-						lore.add(ChatColor.GOLD + "Right click" + ChatColor.DARK_GRAY + " a player to see his");
-						lore.add(ChatColor.DARK_GRAY + "inventory, stats and armour");
+						lore.add(ChatColor.GOLD + "Right click" + ChatColor.DARK_GRAY + " a player to see their");
+						lore.add(ChatColor.DARK_GRAY + "inventory, armour, health & more!");
 					bookMeta.setLore(lore);
 				book.setItemMeta(bookMeta);
 				spectator.getInventory().setItem(8, book);
