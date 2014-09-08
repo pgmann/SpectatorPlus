@@ -968,7 +968,7 @@ public class SpectatorPlus extends JavaPlugin {
 		return api;
 	}
 	
-	public Object parseBoolean(String input) {
+	public Boolean parseBoolean(String input) {
 		if (input.equalsIgnoreCase("on") || input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("y") || input.equalsIgnoreCase("true")) {
 			return true;
 		} else if (input.equalsIgnoreCase("off") || input.equalsIgnoreCase("no") || input.equalsIgnoreCase("n") || input.equalsIgnoreCase("false")) {
