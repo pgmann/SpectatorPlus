@@ -1,6 +1,5 @@
 package com.pgcraft.spectatorplus;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -324,8 +323,7 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemMeta xpMeta = GUIContent[inventory.getSize() + 14].getItemMeta();
 			xpMeta.setDisplayName(ChatColor.GREEN +""+ ChatColor.BOLD + "Experience");
 			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.DARK_GRAY + "Level " + ChatColor.GOLD + inventoryOwner.getLevel());
-				lore.add(ChatColor.DARK_GRAY + "(" + ChatColor.GOLD + new DecimalFormat("#.##").format(inventoryOwner.getExp()) + ChatColor.DARK_GRAY + "% towards level " + ChatColor.GOLD + inventoryOwner.getLevel()+1 + ChatColor.DARK_GRAY + ")");
+				lore.add(ChatColor.DARK_GRAY + "Level " + ChatColor.GOLD + inventoryOwner.getLevel() + ChatColor.DARK_GRAY + " (" + ChatColor.GOLD + inventoryOwner.getExp()*100 + ChatColor.DARK_GRAY + "% towards level " + ChatColor.GOLD + inventoryOwner.getLevel()+1 + ChatColor.DARK_GRAY + ")");
 			xpMeta.setLore(lore);
 		GUIContent[inventory.getSize() + 14].setItemMeta(xpMeta);
 		
