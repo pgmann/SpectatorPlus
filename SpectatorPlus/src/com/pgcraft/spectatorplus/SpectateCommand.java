@@ -237,7 +237,7 @@ public class SpectateCommand implements CommandExecutor {
 
 
 	/**
-	 * This command enables the spectator mode on someone.
+	 * This command enables the spectator mode on someone.<br>
 	 * Usage: /spec on [player]
 	 * 
 	 * @param sender
@@ -268,7 +268,7 @@ public class SpectateCommand implements CommandExecutor {
 	}
 
 	/**
-	 * This command disables the spectator mode on someone.
+	 * This command disables the spectator mode on someone.<br>
 	 * Usage: /spec off [player]
 	 * 
 	 * @param sender
@@ -298,7 +298,7 @@ public class SpectateCommand implements CommandExecutor {
 	}
 
 	/**
-	 * Reloads the config from the files.
+	 * Reloads the config from the files.<br>
 	 * Usage: /spec reload
 	 * 
 	 * @param sender
@@ -313,8 +313,8 @@ public class SpectateCommand implements CommandExecutor {
 	}
 
 	/**
-	 * Edits the config from ingame.
-	 * Usage: /spec config <toggle> <value> [temp=false]
+	 * Edits the config from ingame.<br>
+	 * Usage: /spec config &lt;toggle> &lt;value> [temp=false]
 	 * 
 	 * @param sender
 	 * @param command
@@ -403,10 +403,10 @@ public class SpectateCommand implements CommandExecutor {
 	}
 
 	/**
-	 * Teleports a spectator to a player, just like picking a head in the teleportation GUI.
-	 * Usage: /spec player <playerName>
-	 * 
-	 * TODO add argument to allow the console to teleport spectators to players.
+	 * Teleports a spectator to a player, just like picking a head in the teleportation GUI.<br>
+	 * Usage: /spec player &lt;playerName>
+	 * <p>
+	 * <i>(TODO: add argument to allow the console to teleport spectators to players.)</i>
 	 * 
 	 * @param sender
 	 * @param command
@@ -438,9 +438,9 @@ public class SpectateCommand implements CommandExecutor {
 	}
 
 	/**
-	 * Teleports a spectator to a player, just like picking a head in the teleportation GUI.
-	 * Usage: /spec p <playerName>
-	 * 
+	 * Teleports a spectator to a player, just like picking a head in the teleportation GUI.<br>
+	 * Usage: /spec p &lt;playerName>
+	 * <p>
 	 * Alias of /spec player.
 	 * 
 	 * @param sender
@@ -453,8 +453,8 @@ public class SpectateCommand implements CommandExecutor {
 	}
 
 	/**
-	 * This command can set or unset the main lobby.
-	 * Usage: /spec lobby set|del|delete
+	 * This command can set or unset the main lobby.<br>
+	 * Usage: /spec lobby &lt;set|del|delete>
 	 * 
 	 * This cannot be executed from the console.
 	 * 
@@ -510,11 +510,11 @@ public class SpectateCommand implements CommandExecutor {
 	}
 
 	/**
-	 * This command changes the current mode:
-	 *  - any: teleportation to any player;
+	 * This command changes the current mode:<br>
+	 *  - any: teleportation to any player;<br>
 	 *  - arena: teleportation to the players inside the current arena. Players outside an arena are unreachable.
-	 * 
-	 * Usage: /spec mode any|arena
+	 * <p>
+	 * Usage: /spec mode &lt;any|arena>
 	 * 
 	 * @param sender
 	 * @param command
@@ -547,8 +547,8 @@ public class SpectateCommand implements CommandExecutor {
 
 
 	/**
-	 * This command manages the arenas.
-	 * Usage: /spec arena add <name> | remove <name> | lobby <name> | reset | list
+	 * This command manages the arenas.<br>
+	 * Usage: /spec arena &lt;add &lt;name> | remove &lt;name> | lobby &lt;name> | reset | list>
 	 * 
 	 * @param sender
 	 * @param command
@@ -654,8 +654,8 @@ public class SpectateCommand implements CommandExecutor {
 
 
 	/**
-	 * This command broadcasts a message to the spectators.
-	 * Usage: /spec say <message>
+	 * This command broadcasts a message to the spectators.<br>
+	 * Usage: /spec say &lt;message>
 	 * 
 	 * @param sender
 	 * @param command

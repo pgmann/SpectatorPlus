@@ -15,7 +15,7 @@ public class SpectateAPI {
 	 * 
 	 * @param player The player to check.
 	 * 
-	 * @return True if the player is spectating.
+	 * @return <b>true</b> if the player is spectating.
 	 * 
 	 * @since 1.9.2
 	 */
@@ -24,7 +24,8 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Enables or disables the spectator mode on a player.
+	 * Enables or disables the spectator mode for a player.<br>
+	 * Since this method provides no <i>sender</i>, the console is used by default.
 	 * 
 	 * @param player The player.
 	 * @param spectating True if the spectator mode needs to be enabled.
@@ -37,7 +38,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Enables or disables the spectator mode on a player.
+	 * Enables or disables the spectator mode for a player.
 	 * 
 	 * @param spectator The player.
 	 * @param spectating True if the spectator mode needs to be enabled.
@@ -54,13 +55,13 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Teleports a spectator to a player.
+	 * Teleports a spectator to a player.<br>
 	 * The teleportation fails if spectator is not spectating or if target is currently spectating.
 	 * 
 	 * @param spectator The spectator to be teleported.
 	 * @param target The target.
 	 * 
-	 * @return True if the spectator was effectively teleported (aka if spectator was spectating, and target was not).
+	 * @return True if the spectator was successfully teleported - <i>spectator</i> was spectating, and <i>target</i> was not.
 	 * 
 	 * @since 2.0
 	 */
@@ -74,16 +75,16 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Teleports a spectator to a player.
+	 * Teleports a spectator to a player.<br>
 	 * The teleportation fails if spectator is not spectating or if target is currently spectating.
 	 * 
 	 * @param spectator The spectator to be teleported.
 	 * @param target The target.
 	 * 
-	 * @return True if the spectator was effectively teleported (aka if spectator was spectating, and target was not).
+	 * @return True if the spectator was successfully teleported - <i>spectator</i> was spectating, and <i>target</i> was not.
 	 * 
 	 * @since 1.9.2
-	 * @deprecated Use {@link #teleportSpectatorToPlayer(Player, Player)} instead.
+	 * @deprecated Use {@link #teleportSpectatorToPlayer(Player spectator, Player target)} instead.
 	 */
 	@Deprecated
 	public boolean spectatePlayer(Player spectator, Player target) {
@@ -335,7 +336,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Returns the {@link ArenasManager arenas manager}. Use this to manage the arenas.
+	 * Returns the {@link ArenasManager Arenas manager}. Use this to manage the arenas.
 	 * 
 	 * @return The {@link ArenasManager}.
 	 */
@@ -344,7 +345,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Sets the arena for the given player.
+	 * Sets the arena for the given player.<br>
 	 * Teleports the player to the lobby of that arena, if a lobby is available.
 	 * 
 	 * @param player The player.
@@ -360,7 +361,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Sets the arena for the given player.
+	 * Sets the arena for the given player.<br>
 	 * Teleports the player to the lobby of that arena, if a lobby is available.
 	 * 
 	 * @param player The player.
@@ -375,7 +376,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Removes a player from his arena.
+	 * Removes a player from his arena.<br>
 	 * The player is teleported to the main lobby, if such a lobby is set.
 	 * 
 	 * @param player The player to be removed from his arena.
@@ -402,7 +403,7 @@ public class SpectateAPI {
 	
 	
 	/**
-	 * Sends a spectator chat message, from one spectator to all other spectators. 
+	 * Sends a spectator chat message, from one spectator to all other spectators.<br> 
 	 * Includes "/me" actions
 	 * 
 	 * @param sender The sender of the message.

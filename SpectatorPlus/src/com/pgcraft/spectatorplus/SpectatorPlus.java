@@ -210,7 +210,7 @@ public class SpectatorPlus extends JavaPlugin {
 					return;
 				}
 				else {
-					if (gui == null) gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + arenasManager.getArena(region));
+					if (gui == null) gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + arenasManager.getArena(region).getName());
 					Location where = player.getLocation();
 					Arena currentArena = arenasManager.getArena(region);
 					int pos1y = currentArena.getCorner1().getBlockY();
@@ -269,7 +269,7 @@ public class SpectatorPlus extends JavaPlugin {
 	}
 	
 	/**
-	 * Shows a representation of the inventory, the armor, the health, the XP, the poption effects
+	 * Shows a representation of the inventory, the armour, the health, the XP, the potion effects
 	 * and the feed state of the player.
 	 * 
 	 * @param spectator The GUI will be open for this spectator.
@@ -324,7 +324,7 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemMeta xpMeta = GUIContent[inventory.getSize() + 14].getItemMeta();
 			xpMeta.setDisplayName(ChatColor.GREEN +""+ ChatColor.BOLD + "Experience");
 			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.DARK_GRAY + "Level " + ChatColor.GOLD + inventoryOwner.getLevel() + ChatColor.DARK_GRAY + " (" + ChatColor.GOLD + inventoryOwner.getExp()*100 + ChatColor.DARK_GRAY + "% towards level " + ChatColor.GOLD + inventoryOwner.getLevel()+1 + ChatColor.DARK_GRAY + ")");
+				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Level " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getLevel() + ChatColor.DARK_GRAY + ChatColor.ITALIC + " (" + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getExp()*100 + ChatColor.DARK_GRAY + ChatColor.ITALIC + "% towards level " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getLevel()+1 + ChatColor.DARK_GRAY + ChatColor.ITALIC + ")");
 			xpMeta.setLore(lore);
 		GUIContent[inventory.getSize() + 14].setItemMeta(xpMeta);
 		
@@ -337,7 +337,7 @@ public class SpectatorPlus extends JavaPlugin {
 			PotionMeta effectsMeta = (PotionMeta) GUIContent[51].getItemMeta();
 				effectsMeta.clearCustomEffects();
 				lore = new ArrayList<String>();
-					lore.add(ChatColor.GOLD +""+ inventoryOwner.getActivePotionEffects().size() + ChatColor.DARK_GRAY + " active effects");
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + inventoryOwner.getActivePotionEffects().size() + ChatColor.DARK_GRAY + ChatColor.ITALIC + " active effects");
 				xpMeta.setLore(lore);
 				for(PotionEffect effect : inventoryOwner.getActivePotionEffects()) {
 					effectsMeta.addCustomEffect(effect, true);
@@ -355,7 +355,7 @@ public class SpectatorPlus extends JavaPlugin {
 			ItemMeta healthMeta = GUIContent[inventory.getSize() + 16].getItemMeta();
 				healthMeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Health");
 				lore = new ArrayList<String>();
-					lore.add(ChatColor.GOLD + "" + (int) Math.ceil(((Damageable) inventoryOwner).getHealth()) + ChatColor.DARK_GRAY + "/20");
+					lore.add(ChatColor.GOLD +"" + ChatColor.ITALIC + (int) Math.ceil(((Damageable) inventoryOwner).getHealth()) + ChatColor.DARK_GRAY + ChatColor.ITALIC + "/20");
 				healthMeta.setLore(lore);
 			GUIContent[inventory.getSize() + 16].setItemMeta(healthMeta);
 		}
@@ -366,8 +366,8 @@ public class SpectatorPlus extends JavaPlugin {
 			ItemMeta foodMeta = GUIContent[inventory.getSize() + 17].getItemMeta();
 				foodMeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Food");
 				lore = new ArrayList<String>();
-					lore.add(ChatColor.DARK_GRAY + "Food level: " + ChatColor.GOLD + inventoryOwner.getFoodLevel() + ChatColor.DARK_GRAY + "/20");
-					lore.add(ChatColor.DARK_GRAY + "Saturation: " + ChatColor.GOLD + inventoryOwner.getSaturation());
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Food level: " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getFoodLevel() + ChatColor.DARK_GRAY + ChatColor.ITALIC + "/20");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Saturation: " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getSaturation());
 				foodMeta.setLore(lore);
 			GUIContent[inventory.getSize() + 17].setItemMeta(foodMeta);
 		}
@@ -379,7 +379,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 
 	/**
-	 * Teleports the spectator to the player they have chosen using "/spec p <target>"
+	 * Teleports the spectator to the player they have chosen using "/spec p &lt;target>"
 	 * 
 	 * @param spectator The spectator to teleport.
 	 * @param target The spectator will be teleported at the current location of this player.
@@ -449,7 +449,7 @@ public class SpectatorPlus extends JavaPlugin {
 				if (mode.equals("arena")) {
 					ItemStack watch = new ItemStack(Material.WATCH, 1);
 					ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
-					watchMeta.setDisplayName(ChatColor.DARK_RED + "Arena chooser");
+					watchMeta.setDisplayName(ChatColor.DARK_RED + "Arena selector");
 					watch.setItemMeta(watchMeta);
 					spectator.getInventory().addItem(watch);
 				}
@@ -461,8 +461,8 @@ public class SpectatorPlus extends JavaPlugin {
 				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
 					bookMeta.setDisplayName(ChatColor.BLUE + "Inspector");
 					List<String> lore = new ArrayList<String>();
-						lore.add(ChatColor.GOLD + "Right click" + ChatColor.DARK_GRAY + " a player to see their");
-						lore.add(ChatColor.DARK_GRAY + "inventory, armour, health & more!");
+						lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " a player to see their");
+						lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "inventory, armour, health & more!");
 					bookMeta.setLore(lore);
 				book.setItemMeta(bookMeta);
 				spectator.getInventory().setItem(8, book);
@@ -565,7 +565,7 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 	}
 
-	public void reloadConfig(boolean hardReload) {
+	protected void reloadConfig(boolean hardReload) {
 		// 'hardReload': true/false; a hard reload will reload the config values from file.
 		if (hardReload) {
 			setup.saveDefaultConfig();
@@ -775,7 +775,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			
 			arenasManager.registerArena(new Arena(user.get(player.getName()).arenaName, hiPos, lowPos));
-			player.sendMessage(prefix + "Arena " + ChatColor.RED + user.get(player.getName()).arenaName + " (#" + (setup.getConfig().getInt("nextarena")-1) + ")" + ChatColor.GOLD + " successfully set up!");
+			player.sendMessage(prefix + "Arena " + ChatColor.RED + user.get(player.getName()).arenaName + ChatColor.GOLD + " successfully set up!");
 
 			// returns true: Cancels breaking of the block that was punched
 			return true;
@@ -812,7 +812,7 @@ public class SpectatorPlus extends JavaPlugin {
 			return false;
 		}
 
-		arenasManager.unregisterArena(arenasManager.getArena(arenaName));
+		arenasManager.unregisterArena(arenaToBeRemoved);
 		
 		// The players in the deleted arena are removed to the arena
 		for(Player player : this.getServer().getOnlinePlayers()) {
@@ -986,11 +986,11 @@ public class SpectatorPlus extends JavaPlugin {
 	 * 
 	 * @return The API.
 	 */
-	public SpectateAPI getAPI() {
+	public final SpectateAPI getAPI() {
 		return api;
 	}
 	
-	public Boolean parseBoolean(String input) {
+	protected Boolean parseBoolean(String input) {
 		if (input.equalsIgnoreCase("on") || input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("y") || input.equalsIgnoreCase("true")) {
 			return true;
 		} else if (input.equalsIgnoreCase("off") || input.equalsIgnoreCase("no") || input.equalsIgnoreCase("n") || input.equalsIgnoreCase("false")) {

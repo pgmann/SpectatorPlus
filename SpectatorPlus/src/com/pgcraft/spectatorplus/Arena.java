@@ -23,7 +23,7 @@ public class Arena implements ConfigurationSerializable {
 	private Boolean registered = false;
 	
 	/**
-	 * Standard constructor.
+	 * Standard constructor.<br>
 	 * This constructor is <em>only</em> used to create a new arena.
 	 * 
 	 * @param name The name of the arena.
@@ -64,7 +64,7 @@ public class Arena implements ConfigurationSerializable {
 	}
 	
 	/**
-	 * Returns a map representing this object.
+	 * Returns a map representing this object.<br>
 	 * Required by ConfigurationSerializable.
 	 * 
 	 * @return A representation of the object.

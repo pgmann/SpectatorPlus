@@ -60,10 +60,10 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:
-	 *  - save the player in the internal list of players;
-	 *  - set the internal scoreboard for this player;
-	 *  - hide spectators from the joining player;
+	 * Used to:<br>
+	 *  - save the player in the internal list of players;<br>
+	 *  - set the internal scoreboard for this player;<br>
+	 *  - hide spectators from the joining player;<br>
 	 *  - enable the spectator mode if the player is registered as a spectator.
 	 * 
 	 * @param event
@@ -115,8 +115,8 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:
-	 *  - cancel any damage taken or caused by a spectator;
+	 * Used to:<br>
+	 *  - cancel any damage taken or caused by a spectator;<br>
 	 *  - make non-potions projectiles flew by the spectators.
 	 * 
 	 * @param event
@@ -299,8 +299,8 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:
-	 *  - prevent spectator from breaking blocks;
+	 * Used to:<br>
+	 *  - prevent spectator from breaking blocks;<br>
 	 *  - setup an arena, if the command was sent before by this player.
 	 * 
 	 * @param event
@@ -325,6 +325,7 @@ public class SpectateListener implements Listener {
 	
 	/**
 	 * Used to prevent spectators from changing their gamemove whilst spectating.
+	 * 
 	 * @param event
 	 */
 	@EventHandler(priority=EventPriority.HIGH)
@@ -376,8 +377,8 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:
-	 *  - prevent the damage block animation to be displayed, if the player is a spectator;
+	 * Used to:<br>
+	 *  - prevent the damage block animation to be displayed, if the player is a spectator;<br>
 	 *  - setup an arena (if the command was sent before by the sender).
 	 * 
 	 * @param event
@@ -400,8 +401,8 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:
-	 *  - prevent players & mobs from damaging spectators;
+	 * Used to:<br>
+	 *  - prevent players & mobs from damaging spectators;<br>
 	 *  - stop the fire display when a spectator go out of a fire/lava block.
 	 * 
 	 * @param event
@@ -435,10 +436,10 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:
-	 *  - removes the player from the internal scoreboard;
-	 *  - disable the 'hidden' state of the spectator;
-	 *  - put the player back in the server's default gamemode;
+	 * Used to:<br>
+	 *  - removes the player from the internal scoreboard;<br>
+	 *  - disable the 'hidden' state of the spectator;<br>
+	 *  - put the player back in the server's default gamemode;<br>
 	 *  - disable the spectator mode and reload the inventory, to avoid this inventory to be destroyed on server restart.
 	 * 
 	 * @param event
@@ -468,9 +469,9 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:
-	 *  - display the various GUIs (teleportation, arenas) when the player right-click with the good item;
-	 *  - open a read-only GUI for the chests, etc.;
+	 * Used to:<br>
+	 *  - display the various GUIs (teleportation, arenas) when the player right-click with the good item;<br>
+	 *  - open a read-only GUI for the chests, etc.;<br>
 	 *  - cancel the use of the doors, etc.
 	 * 
 	 * @param event
@@ -490,12 +491,6 @@ public class SpectateListener implements Listener {
 		if (plugin.user.get(event.getPlayer().getName()).spectating && event.getMaterial() == Material.WATCH && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			event.setCancelled(true);
 			plugin.showArenaGUI(event.getPlayer());
-		}
-		
-		// Usage of the inspector
-		if (plugin.user.get(event.getPlayer().getName()).spectating && event.getMaterial() == Material.BOOK && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
-			event.setCancelled(true);
-			event.getPlayer().sendMessage(plugin.prefix + "Right-click a player to see his inventory, and more");
 		}
 		
 		// Cancel chest opening animation, doors, anything when the player right clicks.
@@ -540,8 +535,8 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:
-	 *  - prevent a command to be executed if the player is a spectator and the option is set in the config;
+	 * Used to:<br>
+	 *  - prevent a command to be executed if the player is a spectator and the option is set in the config;<br>
 	 *  - catch /me commands to show them into the spectator chat.
 	 * 
 	 * @param event
@@ -572,7 +567,7 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onPlayerRespawn(PlayerRespawnEvent event) {
 		if(plugin.death) {
-			// prevent murdering clients! (force close bug if spec mode is enabled instantly)
+			// Prevent murdering clients! (force close bug if spec mode is enabled instantly)
 			new AfterRespawnTask(event.getPlayer(), plugin).runTaskLater(plugin, 20);
 		}
 	}
@@ -585,6 +580,10 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onInventoryClick(InventoryClickEvent event) {
 		if (plugin.user.get(event.getWhoClicked().getName()).spectating) {
+			
+			// Cancel the event to prevent the item from being taken
+			event.setCancelled(true);
+			
 			// Teleportation GUI
 			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.SKULL_ITEM && event.getCurrentItem().getDurability() == 3) {
 				ItemStack playerhead = event.getCurrentItem();
@@ -617,20 +616,20 @@ public class SpectateListener implements Listener {
 				ItemStack arenaBook = event.getCurrentItem();
 				ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
 				String chosenArena = meta.getDisplayName();
-				event.getWhoClicked().closeInventory();
+				if (!meta.hasLore()) { // If the book has lore, it is the inspector book, and should not be used.
+					event.getWhoClicked().closeInventory();
 
-				if (arenaBook != null) {
-					plugin.setArenaForPlayer((Player) event.getWhoClicked(), chosenArena);
+					if (arenaBook != null) {
+						plugin.setArenaForPlayer((Player) event.getWhoClicked(), chosenArena);
+					}
 				}
 			}
-			
-			// Cancel the event to prevent the item to be taken
-			event.setCancelled(true);
 		}
 	}
 	
 	/**
-	 * Used to cancel an item to be moved from/to an inventory if the player is spectating.
+	 * Used to cancel an item to be moved from/to an inventory if the player is spectating.<br>
+	 * This method is required <b>as well as</b> InventoryClickEvent in order to completely prevent the player from moving items.
 	 * 
 	 * @param event
 	 */
