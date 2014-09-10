@@ -154,7 +154,7 @@ public class ArenasManager {
 		final String OLD_STORAGE_KEY = "arena";
 		final String NEXT_ARENA_KEY = "nextarena";
 		
-		if(p.setup.getConfig().isConfigurationSection(OLD_STORAGE_KEY)) {
+		if(p.setup.getConfig().isConfigurationSection(OLD_STORAGE_KEY) && p.setup.getConfig().contains(NEXT_ARENA_KEY)) {
 			
 			int lastNumericID = p.setup.getConfig().getInt(NEXT_ARENA_KEY);
 			
