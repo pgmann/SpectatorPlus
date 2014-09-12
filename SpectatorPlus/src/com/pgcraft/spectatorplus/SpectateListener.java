@@ -21,6 +21,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -100,16 +101,31 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to prevent spectators from placing blocks.
+	 * Used to prevent spectators from placing blocks, and stop spectators blocking players from placing blocks.
 	 * 
 	 * @param event
 	 */
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST) // This event is the last to be executed, as lower priorities are executed first.
 	protected void onBlockPlace(BlockPlaceEvent event) {
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 			if(plugin.output) {
 				event.getPlayer().sendMessage(plugin.prefix + "You cannot place blocks while in spectate mode!");
+			}
+		}
+	}
+	
+	@EventHandler
+	protected void onBlockCanBuild(BlockCanBuildEvent event) {
+		plugin.getServer().getLogger().info("BlockCanBuildEvent fired.");
+		// Teleport any spectators that are in the way to the player that placed the block, only if necessary (event not cancelled)
+		for (Player target : plugin.getServer().getOnlinePlayers()) { // For each online player...
+			if (plugin.user.get(target.getName()).spectating && target.getWorld().equals(event.getBlock().getWorld())) { // Check if the entity is in the same world & is a spectator
+				if (target.getLocation().distance(event.getBlock().getLocation()) <= 1) {
+					//TODO target.teleport(event.?, TeleportCause.PLUGIN);
+					target.sendMessage(plugin.prefix + "You were teleported away from a placed block.");
+					if(!event.isBuildable()) event.setBuildable(true);
+				}
 			}
 		}
 	}
@@ -146,7 +162,7 @@ public class SpectateListener implements Listener {
 		// Otherwise both entities are mobs, ignore the event.
 		
 		
-		/** Makes negatives projectiles flew by the viewer **/
+		/** Make projectiles fly through spectators **/
 		
 		if(event.getDamager() instanceof Projectile
 				&& !(event.getDamager() instanceof ThrownPotion) // splash potions are cancelled in PotionSplashEvent
