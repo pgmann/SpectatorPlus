@@ -555,7 +555,10 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Gamemode, 'ghost' and inventory
 			spectator.setGameMode(GameMode.ADVENTURE);
+			
 			savePlayerInv(spectator);
+			user.get(spectator.getName()).effects = spectator.getActivePotionEffects();
+			
 			spectator.setAllowFlight(true);
 			spectator.setFoodLevel(20);
 			spectator.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
@@ -662,9 +665,18 @@ public class SpectatorPlus extends JavaPlugin {
 			user.get(spectator.getName()).spectating = false;
 			spectator.setGameMode(getServer().getDefaultGameMode());
 			spectator.setAllowFlight(false);
+			
 			loadPlayerInv(spectator);
+			
+			// Restore effects
 			spectator.removePotionEffect(PotionEffectType.INVISIBILITY);
-
+			spectator.removePotionEffect(PotionEffectType.SPEED);
+			spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
+			spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
+			spectator.addPotionEffects(user.get(spectator.getName()).effects);
+			
+			spectator.setFlySpeed(0.1f);
+			
 			// Remove from spec team
 			if (scoreboard) {
 				if(user.get(spectator.getName()).oldScoreboard != null) spectator.setScoreboard(user.get(spectator.getName()).oldScoreboard);
