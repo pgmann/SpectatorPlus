@@ -653,20 +653,27 @@ public class SpectateListener implements Listener {
 				ItemStack toolSelected = event.getCurrentItem();
 				Player spectator = (Player) event.getWhoClicked();
 				try {
+					// The fly speed values are experimental; the difference between the fly speed and the run speed
+					// matches approximately the vanilla difference.
 					if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NORMAL_SPEED_NAME)) {
 						spectator.removePotionEffect(PotionEffectType.SPEED);
+						spectator.setFlySpeed(0.10f); // default fly speed
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_I_NAME)) {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), true);
+						spectator.setFlySpeed(0.13f);
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_II_NAME)) {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
+						spectator.setFlySpeed(0.16f);
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_III_NAME)) {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
+						spectator.setFlySpeed(0.19f);
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_IV_NAME)) {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
+						spectator.setFlySpeed(0.22f);
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_UNDERWATER_VISION_NAME)) {
 						if(spectator.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
