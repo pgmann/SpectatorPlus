@@ -652,40 +652,45 @@ public class SpectateListener implements Listener {
 			if(event.getCurrentItem() != null) {
 				ItemStack toolSelected = event.getCurrentItem();
 				Player spectator = (Player) event.getWhoClicked();
-				
-				if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NORMAL_SPEED_NAME)) {
-					spectator.removePotionEffect(PotionEffectType.SPEED);
-				}
-				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_I_NAME)) {
-					spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), true);
-				}
-				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_II_NAME)) {
-					spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
-				}
-				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_III_NAME)) {
-					spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
-				}
-				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_IV_NAME)) {
-					spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
-				}
-				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_UNDERWATER_VISION_NAME)) {
-					if(spectator.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
-						spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
+				try {
+					if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NORMAL_SPEED_NAME)) {
+						spectator.removePotionEffect(PotionEffectType.SPEED);
 					}
-					else {
-						spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_I_NAME)) {
+						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), true);
 					}
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_II_NAME)) {
+						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
+					}
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_III_NAME)) {
+						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
+					}
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_IV_NAME)) {
+						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
+					}
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_UNDERWATER_VISION_NAME)) {
+						if(spectator.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
+							spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
+						}
+						else {
+							spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
+						}
+					}
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_NAME)) {
+						if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
+							spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
+						}
+						else {
+							spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
+						}
+					}
+					
+					spectator.closeInventory();
+				} catch(NullPointerException e) {
+					// This happens if there isn't any meta, aka here if the spectator
+					// clicks on an empty slot.
+					// In this case, nothing happens, and the inventory is not closed.
 				}
-				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_NAME)) {
-					if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
-						spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
-					}
-					else {
-						spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
-					}
-				}
-				
-				spectator.closeInventory();
 			}
 		}
 	}
