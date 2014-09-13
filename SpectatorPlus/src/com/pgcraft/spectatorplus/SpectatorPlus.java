@@ -554,6 +554,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 
 			// Gamemode, 'ghost' and inventory
+			user.get(spectator.getName()).oldGameMode = spectator.getGameMode();
 			spectator.setGameMode(GameMode.ADVENTURE);
 			
 			savePlayerInv(spectator);
@@ -663,7 +664,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Allow interaction
 			user.get(spectator.getName()).spectating = false;
-			spectator.setGameMode(getServer().getDefaultGameMode());
+			spectator.setGameMode(user.get(spectator.getName()).oldGameMode);
 			spectator.setAllowFlight(false);
 			
 			loadPlayerInv(spectator);
