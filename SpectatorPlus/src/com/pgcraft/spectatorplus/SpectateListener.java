@@ -48,6 +48,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -509,6 +511,11 @@ public class SpectateListener implements Listener {
 			plugin.showArenaGUI(event.getPlayer());
 		}
 		
+		if (plugin.user.get(event.getPlayer().getName()).spectating && event.getMaterial() == Material.MAGMA_CREAM && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+			event.setCancelled(true);
+			plugin.showSpectatorsOptionsGUI(event.getPlayer());
+		}
+		
 		// Cancel chest opening animation, doors, anything when the player right clicks.
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
@@ -639,6 +646,46 @@ public class SpectateListener implements Listener {
 						plugin.setArenaForPlayer((Player) event.getWhoClicked(), chosenArena);
 					}
 				}
+			}
+			
+			// Manage spectators' tools
+			if(event.getCurrentItem() != null) {
+				ItemStack toolSelected = event.getCurrentItem();
+				Player spectator = (Player) event.getWhoClicked();
+				
+				if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NORMAL_SPEED_NAME)) {
+					spectator.removePotionEffect(PotionEffectType.SPEED);
+				}
+				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_I_NAME)) {
+					spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), true);
+				}
+				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_II_NAME)) {
+					spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
+				}
+				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_III_NAME)) {
+					spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
+				}
+				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_IV_NAME)) {
+					spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
+				}
+				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_UNDERWATER_VISION_NAME)) {
+					if(spectator.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
+						spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
+					}
+					else {
+						spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
+					}
+				}
+				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_NAME)) {
+					if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
+						spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
+					}
+					else {
+						spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
+					}
+				}
+				
+				spectator.closeInventory();
 			}
 		}
 	}

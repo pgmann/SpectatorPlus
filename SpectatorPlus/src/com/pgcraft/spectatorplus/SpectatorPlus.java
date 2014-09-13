@@ -58,6 +58,8 @@ public class SpectatorPlus extends JavaPlugin {
 	protected String compassItem;
 	protected boolean clock;
 	protected String clockItem;
+	protected boolean spectatorsTools;
+	protected String spectatorsToolsItem;
 	protected boolean inspector;
 	protected String inspectorItem;
 	protected boolean inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
@@ -68,13 +70,13 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	
 	// Constants used for identification of the spectators' tools in the listener
-	protected final String TOOL_NORMAL_SPEED_NAME = ChatColor.DARK_AQUA + "Normal speed";
-	protected final String TOOL_SPEED_I_NAME   = ChatColor.AQUA + "Speed I";
-	protected final String TOOL_SPEED_II_NAME  = ChatColor.AQUA + "Speed II";
-	protected final String TOOL_SPEED_III_NAME = ChatColor.AQUA + "Speed III";
-	protected final String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
-	protected final String TOOL_UNDERWATER_VISION_NAME = ChatColor.GOLD + "Underwater vision";
-	protected final String TOOL_NIGHT_VISION_NAME = ChatColor.GOLD + "Night vision";
+	protected final static String TOOL_NORMAL_SPEED_NAME = ChatColor.DARK_AQUA + "Normal speed";
+	protected final static String TOOL_SPEED_I_NAME   = ChatColor.AQUA + "Speed I";
+	protected final static String TOOL_SPEED_II_NAME  = ChatColor.AQUA + "Speed II";
+	protected final static String TOOL_SPEED_III_NAME = ChatColor.AQUA + "Speed III";
+	protected final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
+	protected final static String TOOL_UNDERWATER_VISION_NAME = ChatColor.GOLD + "Underwater vision";
+	protected final static String TOOL_NIGHT_VISION_NAME = ChatColor.GOLD + "Night vision";
 
 
 	@Override
@@ -395,35 +397,35 @@ public class SpectatorPlus extends JavaPlugin {
 		// Normal speed: string
 		ItemStack normalSpeed = new ItemStack(Material.STRING);
 		ItemMeta meta = normalSpeed.getItemMeta();
-		meta.setDisplayName(this.TOOL_NORMAL_SPEED_NAME);
+		meta.setDisplayName(TOOL_NORMAL_SPEED_NAME);
 		normalSpeed.setItemMeta(meta);
 		GUIContent[0] = normalSpeed;
 		
 		// Speed I
 		ItemStack speedI = new ItemStack(Material.FEATHER);
 		meta = speedI.getItemMeta();
-		meta.setDisplayName(this.TOOL_SPEED_I_NAME);
+		meta.setDisplayName(TOOL_SPEED_I_NAME);
 		speedI.setItemMeta(meta);
 		GUIContent[1] = speedI;
 		
 		// Speed II
 		ItemStack speedII = new ItemStack(Material.FEATHER, 2);
 		meta = speedII.getItemMeta();
-		meta.setDisplayName(this.TOOL_SPEED_II_NAME);
+		meta.setDisplayName(TOOL_SPEED_II_NAME);
 		speedII.setItemMeta(meta);
 		GUIContent[2] = speedII;
 		
 		// Speed III
 		ItemStack speedIII = new ItemStack(Material.FEATHER, 3);
 		meta = speedIII.getItemMeta();
-		meta.setDisplayName(this.TOOL_SPEED_III_NAME);
+		meta.setDisplayName(TOOL_SPEED_III_NAME);
 		speedIII.setItemMeta(meta);
 		GUIContent[3] = speedIII;
 		
 		// Speed IV
 		ItemStack speedIV = new ItemStack(Material.FEATHER, 4);
 		meta = speedIV.getItemMeta();
-		meta.setDisplayName(this.TOOL_SPEED_IV_NAME);
+		meta.setDisplayName(TOOL_SPEED_IV_NAME);
 		speedIV.setItemMeta(meta);
 		GUIContent[4] = speedIV;
 		
@@ -431,14 +433,14 @@ public class SpectatorPlus extends JavaPlugin {
 		// Underwater vision
 		ItemStack aquaVision = new ItemStack(Material.ENDER_PEARL);
 		meta = aquaVision.getItemMeta();
-		meta.setDisplayName(this.TOOL_UNDERWATER_VISION_NAME);
+		meta.setDisplayName(TOOL_UNDERWATER_VISION_NAME);
 		aquaVision.setItemMeta(meta);
 		GUIContent[7] = aquaVision;
 		
 		// Night vision
 		ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
 		meta = nightVision.getItemMeta();
-		meta.setDisplayName(this.TOOL_NIGHT_VISION_NAME);
+		meta.setDisplayName(TOOL_NIGHT_VISION_NAME);
 		nightVision.setItemMeta(meta);
 		GUIContent[8] = nightVision;
 		
@@ -522,6 +524,15 @@ public class SpectatorPlus extends JavaPlugin {
 					watch.setItemMeta(watchMeta);
 					spectator.getInventory().addItem(watch);
 				}
+			}
+			
+			// Give them magma cream (spectators tools) if the toggle is on
+			if(spectatorsTools) {
+				ItemStack tools = new ItemStack(Material.MAGMA_CREAM, 1);
+				ItemMeta toolsMeta = tools.getItemMeta();
+				toolsMeta.setDisplayName(ChatColor.GOLD + "Spectators' tools");
+				tools.setItemMeta(toolsMeta);
+				spectator.getInventory().setItem(4, tools);
 			}
 			
 			// Give them book if the toggle is on
@@ -674,6 +685,17 @@ public class SpectatorPlus extends JavaPlugin {
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"clockItem: watch"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
+			// Spectators' tools: true/false
+			if (!toggles.getConfig().contains("spectatorsTools")) {
+				toggles.getConfig().set("spectatorsTools", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsTools: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			// -> Spectators' tools item: <item name>
+			if (!toggles.getConfig().contains("spectatorsToolsItem")) {
+				toggles.getConfig().set("spectatorsToolsItem", "magma_cream");
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsToolsItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			
 			// Inspector: true/false
 			if (!toggles.getConfig().contains("inspector")) {
 				toggles.getConfig().set("inspector", true);
@@ -738,6 +760,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			compass = toggles.getConfig().getBoolean("compass", true);
 			clock = toggles.getConfig().getBoolean("arenaclock", true);
+			spectatorsTools = toggles.getConfig().getBoolean("spectatorsTools", true);
 			inspector = toggles.getConfig().getBoolean("inspector", true);
 			inspectFromTPMenu = toggles.getConfig().getBoolean("inspectPlayerFromTeleportationMenu", true);
 			specChat = toggles.getConfig().getBoolean("specchat", true);
