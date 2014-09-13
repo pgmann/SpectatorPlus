@@ -394,10 +394,35 @@ public class SpectatorPlus extends JavaPlugin {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 9, ChatColor.BLACK + "Spectators' tools");
 		ItemStack[] GUIContent = gui.getContents();
 		
-		// Normal speed: string
+		// Retrives the current speed level, and the other enabled effects
+		// 0 = no speed; 1 = speed I, etc.
+		Integer speedLevel = 0;
+		Boolean nightVisionActive = false;
+		Boolean underwaterVisionActive = false;
+		if(spectator.hasPotionEffect(PotionEffectType.SPEED)) {
+			for(PotionEffect effect : spectator.getActivePotionEffects()) {
+				if(effect.getType().equals(PotionEffectType.SPEED)) {
+					speedLevel = effect.getAmplifier() + 1; // +1 because Speed I = amplifier 0.
+				}
+				else if(effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
+					nightVisionActive = true;
+				}
+				else if(effect.getType().equals(PotionEffectType.WATER_BREATHING)) {
+					underwaterVisionActive = true;
+				}
+			}
+		}
+		
+		List<String> activeLore = new ArrayList<String>();
+		activeLore.add("" + ChatColor.GRAY + ChatColor.ITALIC + "Active");
+		
+		// Normal speed
 		ItemStack normalSpeed = new ItemStack(Material.STRING);
 		ItemMeta meta = normalSpeed.getItemMeta();
 		meta.setDisplayName(TOOL_NORMAL_SPEED_NAME);
+		if(speedLevel == 0) {
+			meta.setLore(activeLore);
+		}
 		normalSpeed.setItemMeta(meta);
 		GUIContent[0] = normalSpeed;
 		
@@ -405,6 +430,9 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemStack speedI = new ItemStack(Material.FEATHER);
 		meta = speedI.getItemMeta();
 		meta.setDisplayName(TOOL_SPEED_I_NAME);
+		if(speedLevel == 1) {
+			meta.setLore(activeLore);
+		}
 		speedI.setItemMeta(meta);
 		GUIContent[1] = speedI;
 		
@@ -412,6 +440,9 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemStack speedII = new ItemStack(Material.FEATHER, 2);
 		meta = speedII.getItemMeta();
 		meta.setDisplayName(TOOL_SPEED_II_NAME);
+		if(speedLevel == 2) {
+			meta.setLore(activeLore);
+		}
 		speedII.setItemMeta(meta);
 		GUIContent[2] = speedII;
 		
@@ -419,6 +450,9 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemStack speedIII = new ItemStack(Material.FEATHER, 3);
 		meta = speedIII.getItemMeta();
 		meta.setDisplayName(TOOL_SPEED_III_NAME);
+		if(speedLevel == 3) {
+			meta.setLore(activeLore);
+		}
 		speedIII.setItemMeta(meta);
 		GUIContent[3] = speedIII;
 		
@@ -426,6 +460,9 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemStack speedIV = new ItemStack(Material.FEATHER, 4);
 		meta = speedIV.getItemMeta();
 		meta.setDisplayName(TOOL_SPEED_IV_NAME);
+		if(speedLevel == 4) {
+			meta.setLore(activeLore);
+		}
 		speedIV.setItemMeta(meta);
 		GUIContent[4] = speedIV;
 		
@@ -434,6 +471,9 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemStack aquaVision = new ItemStack(Material.ENDER_PEARL);
 		meta = aquaVision.getItemMeta();
 		meta.setDisplayName(TOOL_UNDERWATER_VISION_NAME);
+		if(underwaterVisionActive) {
+			meta.setLore(activeLore);
+		}
 		aquaVision.setItemMeta(meta);
 		GUIContent[7] = aquaVision;
 		
@@ -441,6 +481,9 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
 		meta = nightVision.getItemMeta();
 		meta.setDisplayName(TOOL_NIGHT_VISION_NAME);
+		if(nightVisionActive) {
+			meta.setLore(activeLore);
+		}
 		nightVision.setItemMeta(meta);
 		GUIContent[8] = nightVision;
 		
