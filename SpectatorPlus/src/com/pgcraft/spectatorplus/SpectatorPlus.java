@@ -2,6 +2,7 @@ package com.pgcraft.spectatorplus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -191,6 +192,14 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param region The UUID of the arena to use to choose the players to display on the GUI. Null if there isn't any arena set for this player.
 	 */
 	protected void showGUI(Player spectator, UUID region) {
+		
+		if (setup.getConfig().getString("mode").equals("arena") && region == null) {
+			if(output) {
+				spectator.sendMessage(prefix + "Pick an arena first using the arena selector!");
+			}
+			return;
+		}
+		
 		Inventory gui = null;
 		
 		List<String> lore = new ArrayList<String>();
@@ -199,22 +208,13 @@ public class SpectatorPlus extends JavaPlugin {
 			lore.add(ChatColor.GOLD+""+ChatColor.ITALIC+"Right click"+ ChatColor.DARK_GRAY+ChatColor.ITALIC +" to see inventory");
 		}
 		
+		LinkedList<Player> displayedSpectators = new LinkedList<Player>();
+		
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
-				if (gui == null) {
-					gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Teleporter");
-				}
-
 				if (player.hasPermission("spectate.hide") == false && user.get(player.getName()).spectating == false) {
-					ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-					SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
-					meta.setOwner(player.getName());
-					meta.setDisplayName(ChatColor.RESET + player.getDisplayName());
-					meta.setLore(lore);
-					playerhead.setItemMeta(meta);
-					gui.addItem(playerhead);
+					displayedSpectators.add(player);
 				}
-
 			}
 			else if (setup.getConfig().getString("mode").equals("arena")) {
 				if (region == null) {
@@ -222,7 +222,6 @@ public class SpectatorPlus extends JavaPlugin {
 					return;
 				}
 				else {
-					if (gui == null) gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + arenasManager.getArena(region).getName());
 					Location where = player.getLocation();
 					Arena currentArena = arenasManager.getArena(region);
 					int pos1y = currentArena.getCorner1().getBlockY();
@@ -236,22 +235,38 @@ public class SpectatorPlus extends JavaPlugin {
 						if (Math.floor(where.getY()) < Math.floor(pos1y) && Math.floor(where.getY()) > Math.floor(pos2y)) {
 							if (Math.floor(where.getX()) < pos1x && Math.floor(where.getX()) > pos2x) {
 								if (Math.floor(where.getZ()) < pos1z && Math.floor(where.getZ()) > pos2z) {
-									ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-
-									SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
-									meta.setOwner(player.getName());
-									meta.setDisplayName(ChatColor.RESET + player.getDisplayName());
-									meta.setLore(lore);
-
-									playerhead.setItemMeta(meta);
-
-									gui.addItem(playerhead);
+									displayedSpectators.add(player);
 								}
 							}
 						}
 					}
 				}
 			}
+		}
+		
+		Integer inventorySize = (int) Math.ceil(Double.valueOf(displayedSpectators.size())/9) * 9;
+		if(inventorySize == 0) {
+			inventorySize = 9; // Avoids an empty inventory.
+		}
+		
+		if(setup.getConfig().getString("mode").equals("any")) {
+			gui = Bukkit.getServer().createInventory(spectator, inventorySize, ChatColor.BLACK + "Teleporter");
+		}
+		else {
+			gui = Bukkit.getServer().createInventory(spectator, inventorySize, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + arenasManager.getArena(region).getName());
+		}
+		
+		for(Player displayedSpectator : displayedSpectators) {
+			ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+			SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
+			
+			meta.setOwner(displayedSpectator.getName());
+			meta.setDisplayName(ChatColor.RESET + displayedSpectator.getDisplayName());
+			meta.setLore(lore);
+			
+			playerhead.setItemMeta(meta);
+			
+			gui.addItem(playerhead);
 		}
 
 		spectator.openInventory(gui);
