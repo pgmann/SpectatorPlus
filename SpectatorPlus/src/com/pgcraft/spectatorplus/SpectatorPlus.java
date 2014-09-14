@@ -409,22 +409,20 @@ public class SpectatorPlus extends JavaPlugin {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 9, ChatColor.BLACK + "Spectators' tools");
 		ItemStack[] GUIContent = gui.getContents();
 		
-		// Retrives the current speed level, and the other enabled effects
+		// Retrieves the current speed level, and the other enabled effects
 		// 0 = no speed; 1 = speed I, etc.
 		Integer speedLevel = 0;
 		Boolean nightVisionActive = false;
 		Boolean underwaterVisionActive = false;
-		if(spectator.hasPotionEffect(PotionEffectType.SPEED)) {
-			for(PotionEffect effect : spectator.getActivePotionEffects()) {
-				if(effect.getType().equals(PotionEffectType.SPEED)) {
-					speedLevel = effect.getAmplifier() + 1; // +1 because Speed I = amplifier 0.
-				}
-				else if(effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
-					nightVisionActive = true;
-				}
-				else if(effect.getType().equals(PotionEffectType.WATER_BREATHING)) {
-					underwaterVisionActive = true;
-				}
+		for(PotionEffect effect : spectator.getActivePotionEffects()) {
+			if(effect.getType().equals(PotionEffectType.SPEED)) {
+				speedLevel = effect.getAmplifier() + 1; // +1 because Speed I = amplifier 0.
+			}
+			else if(effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
+				nightVisionActive = true;
+			}
+			else if(effect.getType().equals(PotionEffectType.WATER_BREATHING)) {
+				underwaterVisionActive = true;
 			}
 		}
 		
@@ -501,6 +499,7 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		nightVision.setItemMeta(meta);
 		GUIContent[8] = nightVision;
+		
 		
 		gui.setContents(GUIContent);
 		spectator.openInventory(gui);
