@@ -101,7 +101,38 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to prevent spectators from placing blocks, and stop spectators blocking players from placing blocks.
+	 * Used to prevent spectators from blocking players from placing blocks.
+	 * 
+	 * @param event
+	 */
+	@EventHandler
+	protected void onBlockCanBuild(BlockCanBuildEvent event) {
+		if (!event.isBuildable()) {
+			
+			// Get location of the block that is going to be placed 
+			Location blockL = event.getBlock().getLocation().add(0, 1, 0); // event.getBlock() returns the block to be placed -1 y
+			
+			boolean allowed = false; // If there are any actual players there, the event should not be over-wrote.
+			
+			for (Player target : plugin.getServer().getOnlinePlayers()) {
+				if (target.getWorld().equals(event.getBlock().getWorld())) { // Player spectating & in same world?
+					Location playerL = target.getLocation();
+					
+					if (playerL.getBlockX() == blockL.getBlockX() && playerL.getBlockZ() == blockL.getBlockZ()) { // 2d (x & z)
+						if (playerL.getBlockY() == blockL.getBlockY() || playerL.getBlockY() == blockL.getBlockY()-1) { // 3d (y)
+							if (plugin.user.get(target.getName()).spectating) allowed = true;
+							else {allowed = false; break;}
+						}
+					}
+					
+				}
+			}
+			event.setBuildable(allowed);
+		}
+	}
+	
+	/**
+	 * Used to prevent spectators from placing blocks, and teleport spectators blocking players from placing blocks.
 	 * 
 	 * @param event
 	 */
@@ -113,19 +144,21 @@ public class SpectateListener implements Listener {
 				event.getPlayer().sendMessage(plugin.prefix + "You cannot place blocks while in spectate mode!");
 			}
 		}
-	}
-	
-	@EventHandler
-	protected void onBlockCanBuild(BlockCanBuildEvent event) {
-		plugin.getServer().getLogger().info("BlockCanBuildEvent fired.");
-		// Teleport any spectators that are in the way to the player that placed the block, only if necessary (event not cancelled)
-		for (Player target : plugin.getServer().getOnlinePlayers()) { // For each online player...
-			if (plugin.user.get(target.getName()).spectating && target.getWorld().equals(event.getBlock().getWorld())) { // Check if the entity is in the same world & is a spectator
-				if (target.getLocation().distance(event.getBlock().getLocation()) <= 1) {
-					//TODO target.teleport(event.?, TeleportCause.PLUGIN);
-					target.sendMessage(plugin.prefix + "You were teleported away from a placed block.");
-					if(!event.isBuildable()) event.setBuildable(true);
+		
+		// Get location of the block that is going to be placed 
+		Location blockL = event.getBlock().getLocation();
+
+		for (Player target : plugin.getServer().getOnlinePlayers()) {
+			if (plugin.user.get(target.getName()).spectating && target.getWorld().equals(event.getBlock().getWorld())) { // Player spectating & in same world?
+				Location playerL = target.getLocation();
+
+				if (playerL.getBlockX() == blockL.getBlockX() && playerL.getBlockZ() == blockL.getBlockZ()) { // 2d (x & z)
+					if (playerL.getBlockY() == blockL.getBlockY() || playerL.getBlockY() == blockL.getBlockY()-1) { // 3d (y)
+						target.teleport(event.getPlayer(), TeleportCause.PLUGIN);
+						target.sendMessage(plugin.prefix + "You were teleported away from a placed block.");
+					}
 				}
+
 			}
 		}
 	}
