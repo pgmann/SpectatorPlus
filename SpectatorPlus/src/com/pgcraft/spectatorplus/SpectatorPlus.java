@@ -76,8 +76,8 @@ public class SpectatorPlus extends JavaPlugin {
 	protected final static String TOOL_SPEED_II_NAME  = ChatColor.AQUA + "Speed II";
 	protected final static String TOOL_SPEED_III_NAME = ChatColor.AQUA + "Speed III";
 	protected final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
-	protected final static String TOOL_UNDERWATER_VISION_NAME = ChatColor.GOLD + "Underwater vision";
-	protected final static String TOOL_NIGHT_VISION_NAME = ChatColor.GOLD + "Night vision";
+	protected final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
+	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
 
 
 	@Override
@@ -413,16 +413,12 @@ public class SpectatorPlus extends JavaPlugin {
 		// 0 = no speed; 1 = speed I, etc.
 		Integer speedLevel = 0;
 		Boolean nightVisionActive = false;
-		Boolean underwaterVisionActive = false;
 		for(PotionEffect effect : spectator.getActivePotionEffects()) {
 			if(effect.getType().equals(PotionEffectType.SPEED)) {
 				speedLevel = effect.getAmplifier() + 1; // +1 because Speed I = amplifier 0.
 			}
 			else if(effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
 				nightVisionActive = true;
-			}
-			else if(effect.getType().equals(PotionEffectType.WATER_BREATHING)) {
-				underwaterVisionActive = true;
 			}
 		}
 		
@@ -480,22 +476,15 @@ public class SpectatorPlus extends JavaPlugin {
 		GUIContent[4] = speedIV;
 		
 		
-		// Underwater vision
-		ItemStack aquaVision = new ItemStack(Material.ENDER_PEARL);
-		meta = aquaVision.getItemMeta();
-		meta.setDisplayName(TOOL_UNDERWATER_VISION_NAME);
-		if(underwaterVisionActive) {
-			meta.setLore(activeLore);
-		}
-		aquaVision.setItemMeta(meta);
-		GUIContent[7] = aquaVision;
-		
 		// Night vision
 		ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
 		meta = nightVision.getItemMeta();
-		meta.setDisplayName(TOOL_NIGHT_VISION_NAME);
 		if(nightVisionActive) {
-			meta.setLore(activeLore);
+			nightVision.setType(Material.ENDER_PEARL);
+			meta.setDisplayName(TOOL_NIGHT_VISION_ACTIVE_NAME);
+		}
+		else {
+			meta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
 		}
 		nightVision.setItemMeta(meta);
 		GUIContent[8] = nightVision;

@@ -675,20 +675,15 @@ public class SpectateListener implements Listener {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
 						spectator.setFlySpeed(0.22f);
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_UNDERWATER_VISION_NAME)) {
-						if(spectator.hasPotionEffect(PotionEffectType.WATER_BREATHING)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_ACTIVE_NAME)
+							|| toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_INACTIVE_NAME)) {
+						if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
+							spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
 							spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
 						}
 						else {
-							spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
-						}
-					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_NAME)) {
-						if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
-							spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
-						}
-						else {
 							spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
+							spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
 						}
 					}
 					
