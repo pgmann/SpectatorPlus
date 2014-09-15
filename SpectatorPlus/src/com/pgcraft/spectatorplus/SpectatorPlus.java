@@ -547,6 +547,9 @@ public class SpectatorPlus extends JavaPlugin {
 			
 			savePlayerInv(spectator);
 			user.get(spectator.getName()).effects = spectator.getActivePotionEffects();
+			for (PotionEffect pe : spectator.getActivePotionEffects()) {
+				spectator.removePotionEffect(pe.getType());
+			}
 			
 			spectator.setAllowFlight(true);
 			spectator.setFoodLevel(20);
