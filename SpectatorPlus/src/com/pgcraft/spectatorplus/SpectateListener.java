@@ -143,7 +143,7 @@ public class SpectateListener implements Listener {
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 			if(plugin.output) {
-				event.getPlayer().sendMessage(plugin.prefix + "You cannot place blocks while in spectate mode!");
+				event.getPlayer().sendMessage(SpectatorPlus.prefix + "You cannot place blocks while in spectate mode!");
 			}
 		}
 		
@@ -157,7 +157,7 @@ public class SpectateListener implements Listener {
 				if (playerL.getBlockX() == blockL.getBlockX() && playerL.getBlockZ() == blockL.getBlockZ()) { // 2d (x & z)
 					if (playerL.getBlockY() == blockL.getBlockY() || playerL.getBlockY() == blockL.getBlockY()-1) { // 3d (y)
 						target.teleport(event.getPlayer(), TeleportCause.PLUGIN);
-						target.sendMessage(plugin.prefix + "You were teleported away from a placed block.");
+						target.sendMessage(SpectatorPlus.prefix + "You were teleported away from a placed block.");
 					}
 				}
 
@@ -363,7 +363,7 @@ public class SpectateListener implements Listener {
 			event.setCancelled(true);
 			
 			if(plugin.output) {
-				event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");
+				event.getPlayer().sendMessage(SpectatorPlus.prefix + "You cannot break blocks while in spectate mode!");
 			}
 		}
 		
@@ -441,7 +441,7 @@ public class SpectateListener implements Listener {
 			event.setCancelled(true);
 			
 			if(plugin.output) {
-				event.getPlayer().sendMessage(plugin.prefix + "You cannot break blocks while in spectate mode!");
+				event.getPlayer().sendMessage(SpectatorPlus.prefix + "You cannot break blocks while in spectate mode!");
 			}
 		}
 		
@@ -609,7 +609,7 @@ public class SpectateListener implements Listener {
 			if (event.getPlayer().hasPermission("spectate.admin") && plugin.adminBypass) {
 				// Do nothing
 			} else if (!(event.getMessage().startsWith("/spec") || event.getMessage().startsWith("/spectate") || event.getMessage().startsWith("/me")) && plugin.user.get(event.getPlayer().getName()).spectating) {
-				event.getPlayer().sendMessage(plugin.prefix+"Command blocked!");
+				event.getPlayer().sendMessage(SpectatorPlus.prefix+"Command blocked!");
 				event.setCancelled(true);
 			}
 		}
@@ -641,7 +641,7 @@ public class SpectateListener implements Listener {
 			event.setCancelled(true);
 			
 			// Teleportation GUI
-			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.SKULL_ITEM && event.getCurrentItem().getDurability() == 3) {
+			if ((event.getInventory().getTitle().equals(SpectatorPlus.TELEPORTER_ANY_TITLE) || event.getInventory().getTitle().startsWith(SpectatorPlus.TELEPORTER_ARENA_TITLE)) && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.SKULL_ITEM && event.getCurrentItem().getDurability() == 3) {
 				ItemStack playerhead = event.getCurrentItem();
 				SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
 				Player skullOwner = plugin.getServer().getPlayer(meta.getOwner());
@@ -659,16 +659,17 @@ public class SpectateListener implements Listener {
 				else {
 					if (skullOwner == null) {
 						OfflinePlayer offlineSkullOwner = plugin.getServer().getOfflinePlayer(meta.getOwner());
-						((Player) event.getWhoClicked()).sendMessage(plugin.prefix + ChatColor.RED + offlineSkullOwner.getName() + ChatColor.GOLD + " is offline!");
+						((Player) event.getWhoClicked()).sendMessage(SpectatorPlus.prefix + ChatColor.RED + offlineSkullOwner.getName() + ChatColor.GOLD + " is offline!");
 					}
 					else if (skullOwner.getAllowFlight() == true) {
-						((Player) event.getWhoClicked()).sendMessage(plugin.prefix + ChatColor.RED + skullOwner.getName() + ChatColor.GOLD + " is currently spectating!");
+						((Player) event.getWhoClicked()).sendMessage(SpectatorPlus.prefix + ChatColor.RED + skullOwner.getName() + ChatColor.GOLD + " is currently spectating!");
 					}
 				}
+				return;
 			}
 			
 			// Manage showArenaGUI method selection
-			if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.BOOK) {
+			if (event.getInventory().getTitle().equals(SpectatorPlus.ARENA_SELECTOR_TITLE) && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.BOOK) {
 				ItemStack arenaBook = event.getCurrentItem();
 				ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
 				String chosenArena = meta.getDisplayName();
@@ -679,10 +680,11 @@ public class SpectateListener implements Listener {
 						plugin.setArenaForPlayer((Player) event.getWhoClicked(), chosenArena);
 					}
 				}
+				return;
 			}
 			
 			// Manage spectators' tools
-			if(event.getCurrentItem() != null) {
+			if(event.getInventory().getTitle().equals(SpectatorPlus.SPEC_TOOLS_TITLE) && event.getCurrentItem() != null) {
 				ItemStack toolSelected = event.getCurrentItem();
 				Player spectator = (Player) event.getWhoClicked();
 				try {

@@ -39,8 +39,8 @@ public class SpectatorPlus extends JavaPlugin {
 
 	protected HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
 
-	protected String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
-	protected String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
+	protected final static String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
+	protected final static String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
 
 	protected double version = 2.0; // Plugin version
 
@@ -69,6 +69,12 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Scoreboard board = null;
 	protected Team team = null;
 	
+	// Constants for inventory title names
+	protected final static String TELEPORTER_ANY_TITLE = ChatColor.BLACK + "Teleporter";
+	protected final static String TELEPORTER_ARENA_TITLE = ChatColor.BLACK + "Arena "; // (Prefix only)
+	protected final static String ARENA_SELECTOR_TITLE = basePrefix;
+	protected final static String PLAYER_STATE_TITLE = ChatColor.RESET + "'s state"; // (Suffix only)
+	protected final static String SPEC_TOOLS_TITLE = ChatColor.BLACK + "Spectators' tools";
 	
 	// Constants used for identification of the spectators' tools in the listener
 	protected final static String TOOL_NORMAL_SPEED_NAME = ChatColor.DARK_AQUA + "Normal speed";
@@ -250,10 +256,10 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		
 		if(setup.getConfig().getString("mode").equals("any")) {
-			gui = Bukkit.getServer().createInventory(spectator, inventorySize, ChatColor.BLACK + "Teleporter");
+			gui = Bukkit.getServer().createInventory(spectator, inventorySize, TELEPORTER_ANY_TITLE);
 		}
 		else {
-			gui = Bukkit.getServer().createInventory(spectator, inventorySize, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + arenasManager.getArena(region).getName());
+			gui = Bukkit.getServer().createInventory(spectator, inventorySize, TELEPORTER_ARENA_TITLE + ChatColor.ITALIC + arenasManager.getArena(region).getName());
 		}
 		
 		for(Player displayedSpectator : displayedSpectators) {
@@ -279,7 +285,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param spectator The GUI will be open for this spectator.
 	 */
 	protected void showArenaGUI(Player spectator) {
-		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, basePrefix);
+		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, ARENA_SELECTOR_TITLE);
 
 		
 		for (Arena arena : arenasManager.getArenas()) {
@@ -313,7 +319,7 @@ public class SpectatorPlus extends JavaPlugin {
 		separator.setItemMeta(separatorMeta);
 		
 		// + 18: a separator row, and a row with armor, XP, potion effects, health and feed level.
-		Inventory gui = Bukkit.getServer().createInventory(spectator, inventory.getSize() + 18, (inventoryOwner.getDisplayName().length() > 22) ? inventoryOwner.getName() : inventoryOwner.getDisplayName() + ChatColor.RESET + "'s state");
+		Inventory gui = Bukkit.getServer().createInventory(spectator, inventory.getSize() + 18, (inventoryOwner.getDisplayName().length() > 22) ? inventoryOwner.getName() : inventoryOwner.getDisplayName() + PLAYER_STATE_TITLE);
 		ItemStack[] GUIContent = gui.getContents();
 		
 		// Player's inventory
@@ -406,7 +412,7 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	
 	protected void showSpectatorsOptionsGUI(Player spectator) {
-		Inventory gui = Bukkit.getServer().createInventory(spectator, 9, ChatColor.BLACK + "Spectators' tools");
+		Inventory gui = Bukkit.getServer().createInventory(spectator, 9, SPEC_TOOLS_TITLE);
 		ItemStack[] GUIContent = gui.getContents();
 		
 		// Retrieves the current speed level, and the other enabled effects
