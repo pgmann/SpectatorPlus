@@ -1,9 +1,12 @@
 package com.pgcraft.spectatorplus;
 
+import java.util.Collection;
 import java.util.UUID;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Scoreboard;
 
 public class PlayerObject {	
@@ -31,6 +34,16 @@ public class PlayerObject {
 	 * The saved armour of the player.
 	 */
 	protected ItemStack[] armour;
+	
+	/**
+	 * The saved potion effects of the player.
+	 */
+	protected Collection<PotionEffect> effects;
+	
+	/**
+	 * The saved gamemode of the player.
+	 */
+	protected GameMode oldGameMode;
 	
 	/**
 	 * The setup step.
