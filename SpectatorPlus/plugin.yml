@@ -3,6 +3,7 @@ main: com.pgcraft.spectatorplus.SpectatorPlus
 version: '2.0'
 description: "Lets players spectate other competitors in events, games, etc. when they're not playing. Allows them to fly but stops them helping other players. Do [/spec help] for help!"
 author: pgmann
+authors: ["AmauryPi"]
 commands:
   spectate:
     description: 'See [/spec help] for help'
