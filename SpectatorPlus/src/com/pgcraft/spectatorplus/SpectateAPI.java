@@ -164,6 +164,44 @@ public class SpectateAPI {
 	}
 	
 	/**
+	 * Enables (or disables) the spectators' tools (magma cream).
+	 * <p>
+	 * These tools allows a spectator to change his speed, and to enable night/underwater vision.
+	 * 
+	 * @param value Enabled if true.
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setSpectatorsTools(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("spectatorsTools", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.spectatorsTools = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
+	 * Sets the item to be given as the spectator's tools (default: "magma_cream").
+	 * 
+	 * @param value Item to be used instead of magma cream, invalid entries will default to "magma_cream". Examples: "watch", "stone", "wool"
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setSpectatorsToolsItem(String value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("spectatorsToolsItem", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.spectatorsToolsItem = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
 	 * Enables (or disables) the inspector (book).
 	 * 
 	 * @param value Enabled if true.

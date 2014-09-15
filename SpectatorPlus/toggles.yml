@@ -4,6 +4,9 @@ compassItem: compass
 # Enable the arena selector in arena mode (clock)?
 arenaclock: true
 clockItem: watch
+# Enable the spectators' tools (magma cream), to give spectators speed, night or underwater vision?
+spectatorsTools: true
+spectatorsToolsItem: magma_cream
 # Enable the player inspector (book)?
 inspector: true
 inspectorItem: book

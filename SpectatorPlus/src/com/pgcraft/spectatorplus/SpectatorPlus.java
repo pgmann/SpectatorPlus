@@ -2,6 +2,7 @@ package com.pgcraft.spectatorplus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,6 +59,8 @@ public class SpectatorPlus extends JavaPlugin {
 	protected String compassItem;
 	protected boolean clock;
 	protected String clockItem;
+	protected boolean spectatorsTools;
+	protected String spectatorsToolsItem;
 	protected boolean inspector;
 	protected String inspectorItem;
 	protected boolean inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
@@ -65,6 +68,16 @@ public class SpectatorPlus extends JavaPlugin {
 	protected ScoreboardManager manager = null;
 	protected Scoreboard board = null;
 	protected Team team = null;
+	
+	
+	// Constants used for identification of the spectators' tools in the listener
+	protected final static String TOOL_NORMAL_SPEED_NAME = ChatColor.DARK_AQUA + "Normal speed";
+	protected final static String TOOL_SPEED_I_NAME   = ChatColor.AQUA + "Speed I";
+	protected final static String TOOL_SPEED_II_NAME  = ChatColor.AQUA + "Speed II";
+	protected final static String TOOL_SPEED_III_NAME = ChatColor.AQUA + "Speed III";
+	protected final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
+	protected final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
+	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
 
 
 	@Override
@@ -179,6 +192,14 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param region The UUID of the arena to use to choose the players to display on the GUI. Null if there isn't any arena set for this player.
 	 */
 	protected void showGUI(Player spectator, UUID region) {
+		
+		if (setup.getConfig().getString("mode").equals("arena") && region == null) {
+			if(output) {
+				spectator.sendMessage(prefix + "Pick an arena first using the arena selector!");
+			}
+			return;
+		}
+		
 		Inventory gui = null;
 		
 		List<String> lore = new ArrayList<String>();
@@ -187,22 +208,13 @@ public class SpectatorPlus extends JavaPlugin {
 			lore.add(ChatColor.GOLD+""+ChatColor.ITALIC+"Right click"+ ChatColor.DARK_GRAY+ChatColor.ITALIC +" to see inventory");
 		}
 		
+		LinkedList<Player> displayedSpectators = new LinkedList<Player>();
+		
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
-				if (gui == null) {
-					gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Teleporter");
-				}
-
 				if (player.hasPermission("spectate.hide") == false && user.get(player.getName()).spectating == false) {
-					ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-					SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
-					meta.setOwner(player.getName());
-					meta.setDisplayName(ChatColor.RESET + player.getDisplayName());
-					meta.setLore(lore);
-					playerhead.setItemMeta(meta);
-					gui.addItem(playerhead);
+					displayedSpectators.add(player);
 				}
-
 			}
 			else if (setup.getConfig().getString("mode").equals("arena")) {
 				if (region == null) {
@@ -210,7 +222,6 @@ public class SpectatorPlus extends JavaPlugin {
 					return;
 				}
 				else {
-					if (gui == null) gui = Bukkit.getServer().createInventory(spectator, 27, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + arenasManager.getArena(region).getName());
 					Location where = player.getLocation();
 					Arena currentArena = arenasManager.getArena(region);
 					int pos1y = currentArena.getCorner1().getBlockY();
@@ -224,22 +235,38 @@ public class SpectatorPlus extends JavaPlugin {
 						if (Math.floor(where.getY()) < Math.floor(pos1y) && Math.floor(where.getY()) > Math.floor(pos2y)) {
 							if (Math.floor(where.getX()) < pos1x && Math.floor(where.getX()) > pos2x) {
 								if (Math.floor(where.getZ()) < pos1z && Math.floor(where.getZ()) > pos2z) {
-									ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-
-									SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
-									meta.setOwner(player.getName());
-									meta.setDisplayName(ChatColor.RESET + player.getDisplayName());
-									meta.setLore(lore);
-
-									playerhead.setItemMeta(meta);
-
-									gui.addItem(playerhead);
+									displayedSpectators.add(player);
 								}
 							}
 						}
 					}
 				}
 			}
+		}
+		
+		Integer inventorySize = (int) Math.ceil(Double.valueOf(displayedSpectators.size())/9) * 9;
+		if(inventorySize == 0) {
+			inventorySize = 9; // Avoids an empty inventory.
+		}
+		
+		if(setup.getConfig().getString("mode").equals("any")) {
+			gui = Bukkit.getServer().createInventory(spectator, inventorySize, ChatColor.BLACK + "Teleporter");
+		}
+		else {
+			gui = Bukkit.getServer().createInventory(spectator, inventorySize, ChatColor.BLACK + "Arena " + ChatColor.ITALIC + arenasManager.getArena(region).getName());
+		}
+		
+		for(Player displayedSpectator : displayedSpectators) {
+			ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+			SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
+			
+			meta.setOwner(displayedSpectator.getName());
+			meta.setDisplayName(ChatColor.RESET + displayedSpectator.getDisplayName());
+			meta.setLore(lore);
+			
+			playerhead.setItemMeta(meta);
+			
+			gui.addItem(playerhead);
 		}
 
 		spectator.openInventory(gui);
@@ -376,6 +403,96 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		spectator.openInventory(gui);
 	}
+	
+	
+	protected void showSpectatorsOptionsGUI(Player spectator) {
+		Inventory gui = Bukkit.getServer().createInventory(spectator, 9, ChatColor.BLACK + "Spectators' tools");
+		ItemStack[] GUIContent = gui.getContents();
+		
+		// Retrieves the current speed level, and the other enabled effects
+		// 0 = no speed; 1 = speed I, etc.
+		Integer speedLevel = 0;
+		Boolean nightVisionActive = false;
+		for(PotionEffect effect : spectator.getActivePotionEffects()) {
+			if(effect.getType().equals(PotionEffectType.SPEED)) {
+				speedLevel = effect.getAmplifier() + 1; // +1 because Speed I = amplifier 0.
+			}
+			else if(effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
+				nightVisionActive = true;
+			}
+		}
+		
+		List<String> activeLore = new ArrayList<String>();
+		activeLore.add("" + ChatColor.GRAY + ChatColor.ITALIC + "Active");
+		
+		// Normal speed
+		ItemStack normalSpeed = new ItemStack(Material.STRING);
+		ItemMeta meta = normalSpeed.getItemMeta();
+		meta.setDisplayName(TOOL_NORMAL_SPEED_NAME);
+		if(speedLevel == 0) {
+			meta.setLore(activeLore);
+		}
+		normalSpeed.setItemMeta(meta);
+		GUIContent[0] = normalSpeed;
+		
+		// Speed I
+		ItemStack speedI = new ItemStack(Material.FEATHER);
+		meta = speedI.getItemMeta();
+		meta.setDisplayName(TOOL_SPEED_I_NAME);
+		if(speedLevel == 1) {
+			meta.setLore(activeLore);
+		}
+		speedI.setItemMeta(meta);
+		GUIContent[1] = speedI;
+		
+		// Speed II
+		ItemStack speedII = new ItemStack(Material.FEATHER, 2);
+		meta = speedII.getItemMeta();
+		meta.setDisplayName(TOOL_SPEED_II_NAME);
+		if(speedLevel == 2) {
+			meta.setLore(activeLore);
+		}
+		speedII.setItemMeta(meta);
+		GUIContent[2] = speedII;
+		
+		// Speed III
+		ItemStack speedIII = new ItemStack(Material.FEATHER, 3);
+		meta = speedIII.getItemMeta();
+		meta.setDisplayName(TOOL_SPEED_III_NAME);
+		if(speedLevel == 3) {
+			meta.setLore(activeLore);
+		}
+		speedIII.setItemMeta(meta);
+		GUIContent[3] = speedIII;
+		
+		// Speed IV
+		ItemStack speedIV = new ItemStack(Material.FEATHER, 4);
+		meta = speedIV.getItemMeta();
+		meta.setDisplayName(TOOL_SPEED_IV_NAME);
+		if(speedLevel == 4) {
+			meta.setLore(activeLore);
+		}
+		speedIV.setItemMeta(meta);
+		GUIContent[4] = speedIV;
+		
+		
+		// Night vision
+		ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
+		meta = nightVision.getItemMeta();
+		if(nightVisionActive) {
+			nightVision.setType(Material.ENDER_PEARL);
+			meta.setDisplayName(TOOL_NIGHT_VISION_ACTIVE_NAME);
+		}
+		else {
+			meta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
+		}
+		nightVision.setItemMeta(meta);
+		GUIContent[8] = nightVision;
+		
+		
+		gui.setContents(GUIContent);
+		spectator.openInventory(gui);
+	}
 
 
 	/**
@@ -425,8 +542,12 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 
 			// Gamemode, 'ghost' and inventory
+			user.get(spectator.getName()).oldGameMode = spectator.getGameMode();
 			spectator.setGameMode(GameMode.ADVENTURE);
+			
 			savePlayerInv(spectator);
+			user.get(spectator.getName()).effects = spectator.getActivePotionEffects();
+			
 			spectator.setAllowFlight(true);
 			spectator.setFoodLevel(20);
 			spectator.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
@@ -453,6 +574,15 @@ public class SpectatorPlus extends JavaPlugin {
 					watch.setItemMeta(watchMeta);
 					spectator.getInventory().addItem(watch);
 				}
+			}
+			
+			// Give them magma cream (spectators tools) if the toggle is on
+			if(spectatorsTools) {
+				ItemStack tools = new ItemStack(Material.MAGMA_CREAM, 1);
+				ItemMeta toolsMeta = tools.getItemMeta();
+				toolsMeta.setDisplayName(ChatColor.GOLD + "Spectators' tools");
+				tools.setItemMeta(toolsMeta);
+				spectator.getInventory().setItem(4, tools);
 			}
 			
 			// Give them book if the toggle is on
@@ -522,11 +652,20 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Allow interaction
 			user.get(spectator.getName()).spectating = false;
-			spectator.setGameMode(getServer().getDefaultGameMode());
+			spectator.setGameMode(user.get(spectator.getName()).oldGameMode);
 			spectator.setAllowFlight(false);
+			
 			loadPlayerInv(spectator);
+			
+			// Restore effects
 			spectator.removePotionEffect(PotionEffectType.INVISIBILITY);
-
+			spectator.removePotionEffect(PotionEffectType.SPEED);
+			spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
+			spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
+			spectator.addPotionEffects(user.get(spectator.getName()).effects);
+			
+			spectator.setFlySpeed(0.1f);
+			
 			// Remove from spec team
 			if (scoreboard) {
 				if(user.get(spectator.getName()).oldScoreboard != null) spectator.setScoreboard(user.get(spectator.getName()).oldScoreboard);
@@ -605,6 +744,17 @@ public class SpectatorPlus extends JavaPlugin {
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"clockItem: watch"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
+			// Spectators' tools: true/false
+			if (!toggles.getConfig().contains("spectatorsTools")) {
+				toggles.getConfig().set("spectatorsTools", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsTools: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			// -> Spectators' tools item: <item name>
+			if (!toggles.getConfig().contains("spectatorsToolsItem")) {
+				toggles.getConfig().set("spectatorsToolsItem", "magma_cream");
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsToolsItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			
 			// Inspector: true/false
 			if (!toggles.getConfig().contains("inspector")) {
 				toggles.getConfig().set("inspector", true);
@@ -669,6 +819,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			compass = toggles.getConfig().getBoolean("compass", true);
 			clock = toggles.getConfig().getBoolean("arenaclock", true);
+			spectatorsTools = toggles.getConfig().getBoolean("spectatorsTools", true);
 			inspector = toggles.getConfig().getBoolean("inspector", true);
 			inspectFromTPMenu = toggles.getConfig().getBoolean("inspectPlayerFromTeleportationMenu", true);
 			specChat = toggles.getConfig().getBoolean("specchat", true);
