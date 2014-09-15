@@ -655,8 +655,8 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Allow interaction
 			user.get(spectator.getName()).spectating = false;
-			spectator.setGameMode(user.get(spectator.getName()).oldGameMode);
 			spectator.setAllowFlight(false);
+			spectator.setGameMode(user.get(spectator.getName()).oldGameMode);
 			
 			loadPlayerInv(spectator);
 			
