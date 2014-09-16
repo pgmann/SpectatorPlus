@@ -357,7 +357,7 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemMeta xpMeta = GUIContent[inventory.getSize() + 14].getItemMeta();
 			xpMeta.setDisplayName(ChatColor.GREEN +""+ ChatColor.BOLD + "Experience");
 			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Level " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getLevel() + ChatColor.DARK_GRAY + ChatColor.ITALIC + " (" + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getExp()*100 + ChatColor.DARK_GRAY + ChatColor.ITALIC + "% towards level " + ChatColor.GOLD + ChatColor.ITALIC + (inventoryOwner.getLevel()+1) + ChatColor.DARK_GRAY + ChatColor.ITALIC + ")");
+				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Level " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getLevel() + ChatColor.DARK_GRAY + ChatColor.ITALIC + " (" + ChatColor.GOLD + ChatColor.ITALIC + Math.floor(inventoryOwner.getExp()*100) + ChatColor.DARK_GRAY + ChatColor.ITALIC + "% towards level " + ChatColor.GOLD + ChatColor.ITALIC + (inventoryOwner.getLevel()+1) + ChatColor.DARK_GRAY + ChatColor.ITALIC + ")");
 			xpMeta.setLore(lore);
 		GUIContent[inventory.getSize() + 14].setItemMeta(xpMeta);
 		
