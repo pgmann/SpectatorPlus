@@ -315,7 +315,7 @@ public class SpectatorPlus extends JavaPlugin {
 		// Remove item name from the inventory separator.
 		ItemStack separator = new ItemStack(Material.WATER, 1);
 		ItemMeta separatorMeta = separator.getItemMeta();
-		separatorMeta.setDisplayName("");
+		separatorMeta.setDisplayName(ChatColor.RESET+"");
 		separator.setItemMeta(separatorMeta);
 		
 		// + 18: a separator row, and a row with armor, XP, potion effects, health and feed level.
@@ -357,7 +357,7 @@ public class SpectatorPlus extends JavaPlugin {
 		ItemMeta xpMeta = GUIContent[inventory.getSize() + 14].getItemMeta();
 			xpMeta.setDisplayName(ChatColor.GREEN +""+ ChatColor.BOLD + "Experience");
 			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Level " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getLevel() + ChatColor.DARK_GRAY + ChatColor.ITALIC + " (" + ChatColor.GOLD + ChatColor.ITALIC + Math.floor(inventoryOwner.getExp()*100) + ChatColor.DARK_GRAY + ChatColor.ITALIC + "% towards level " + ChatColor.GOLD + ChatColor.ITALIC + (inventoryOwner.getLevel()+1) + ChatColor.DARK_GRAY + ChatColor.ITALIC + ")");
+				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Level " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getLevel() + ChatColor.DARK_GRAY + ChatColor.ITALIC + " (" + ChatColor.GOLD + ChatColor.ITALIC + ((int) Math.floor(inventoryOwner.getExp()*100)) + ChatColor.DARK_GRAY + ChatColor.ITALIC + "% towards level " + ChatColor.GOLD + ChatColor.ITALIC + (inventoryOwner.getLevel()+1) + ChatColor.DARK_GRAY + ChatColor.ITALIC + ")");
 			xpMeta.setLore(lore);
 		GUIContent[inventory.getSize() + 14].setItemMeta(xpMeta);
 		
@@ -379,14 +379,14 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		
 		ItemMeta effectsMeta = GUIContent[inventory.getSize() + 15].getItemMeta();
-			effectsMeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Potion effects");
+			effectsMeta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Potion effects  ");
 		GUIContent[inventory.getSize() + 15].setItemMeta(effectsMeta);
 		
 		// Health
 		if(((Damageable) inventoryOwner).getHealth() > 0) {
 			GUIContent[inventory.getSize() + 16] = new ItemStack(Material.GOLDEN_APPLE, (int) Math.ceil(((Damageable) inventoryOwner).getHealth()));
 			ItemMeta healthMeta = GUIContent[inventory.getSize() + 16].getItemMeta();
-				healthMeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Health");
+				healthMeta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Health ");
 				lore = new ArrayList<String>();
 					lore.add(ChatColor.GOLD +"" + ChatColor.ITALIC + (int) Math.ceil(((Damageable) inventoryOwner).getHealth()) + ChatColor.DARK_GRAY + ChatColor.ITALIC + "/20");
 				healthMeta.setLore(lore);

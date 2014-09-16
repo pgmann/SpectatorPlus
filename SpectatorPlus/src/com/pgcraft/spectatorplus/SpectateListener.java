@@ -112,16 +112,16 @@ public class SpectateListener implements Listener {
 		if (!event.isBuildable()) {
 			
 			// Get location of the block that is going to be placed 
-			Location blockL = event.getBlock().getLocation().add(0, 1, 0); // event.getBlock() returns the block to be placed -1 y
+			Location blockL = event.getBlock().getLocation(); // event.getBlock() returns the block to be placed -1 y
 			
 			boolean allowed = false; // If there are any actual players there, the event should not be over-wrote.
 			
 			for (Player target : plugin.getServer().getOnlinePlayers()) {
-				if (target.getWorld().equals(event.getBlock().getWorld())) { // Player spectating & in same world?
+				if (target.getWorld().equals(event.getBlock().getWorld())) { // Player in same world?
 					Location playerL = target.getLocation();
 					
 					if (playerL.getBlockX() == blockL.getBlockX() && playerL.getBlockZ() == blockL.getBlockZ()) { // 2d (x & z)
-						if (playerL.getBlockY() == blockL.getBlockY() || playerL.getBlockY() == blockL.getBlockY()-1) { // 3d (y)
+						if (playerL.getBlockY() == blockL.getBlockY() || playerL.getBlockY()+1 == blockL.getBlockY()) { // 3d (y): for feet & head height
 							if (plugin.user.get(target.getName()).spectating) allowed = true;
 							else {allowed = false; break;}
 						}
