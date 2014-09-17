@@ -1,12 +1,20 @@
 # Enable the teleporter (compass)?
 compass: true
 compassItem: compass
+
 # Enable the arena selector in arena mode (clock)?
 arenaclock: true
 clockItem: watch
+
 # Enable the spectators' tools (magma cream), to give spectators speed, night or underwater vision?
 spectatorsTools: true
 spectatorsToolsItem: magma_cream
+
+# Enable the "teleport to death point" spectators' tool?
+tpToDeathTool: true
+# Display the cause of the death in the tooltip? (Example: « You starved to death ».)
+tpToDeathToolShowCause: true
+
 # Enable the player inspector (book)?
 inspector: true
 inspectorItem: book

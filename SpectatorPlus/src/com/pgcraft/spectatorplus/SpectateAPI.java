@@ -202,6 +202,43 @@ public class SpectateAPI {
 	}
 	
 	/**
+	 * Enables/disables the "teleport to death point" tool.
+	 * 
+	 * @param value True if enabled.
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setTPToDeathTool(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("tpToDeathTool", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.tpToDeathTool = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
+	 * Enables/disables the display of the death cause in the
+	 * "teleport to death point" tool.
+	 * 
+	 * @param value True if enabled.
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setShowCauseInTPToDeathTool(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("tpToDeathToolShowCause", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.tpToDeathToolShowCause = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
 	 * Enables (or disables) the inspector (book).
 	 * 
 	 * @param value Enabled if true.

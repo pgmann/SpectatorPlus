@@ -46,6 +46,23 @@ public class PlayerObject {
 	protected GameMode oldGameMode;
 	
 	/**
+	 * The last death message for this player, with his name replaced by "You",
+	 * and "Name was" replaced by "You were".
+	 * <p>
+	 * Example: « You starved to death ».
+	 * <p>
+	 * Null if the player was never dead.
+	 */
+	protected String lastDeathMessage = null;
+	
+	/**
+	 * The location of the last death.
+	 * 
+	 * Null if no death registered.
+	 */
+	protected Location deathLocation = null;
+	
+	/**
 	 * The setup step.
 	 *  - 0: no setup in progress;
 	 *  - 1: first corner set;

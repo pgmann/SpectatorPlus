@@ -64,7 +64,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected String spectatorsToolsItem;
 	protected boolean inspector;
 	protected String inspectorItem;
-	protected boolean inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
 
 	protected ScoreboardManager manager = null;
 	protected Scoreboard board = null;
@@ -85,7 +85,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
 	protected final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
 	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
-
+	protected final static String TOOL_TP_TO_DEATH_POINT_NAME = ChatColor.YELLOW + "Go to your death point";
 
 	@Override
 	public void onLoad() {
@@ -432,6 +432,14 @@ public class SpectatorPlus extends JavaPlugin {
 		List<String> activeLore = new ArrayList<String>();
 		activeLore.add("" + ChatColor.GRAY + ChatColor.ITALIC + "Active");
 		
+		// If a death location is registered for this player, the position of the "night vision" tool
+		// is not the same (6 with death point registered; 8 without).
+		// That's why this is defined here, not below.
+		// If the "tp to death" tool is disabled, the death location is not set. So it's useless to
+		// check this here.
+		Location deathPoint = user.get(spectator.getName()).deathLocation;
+		
+		
 		// Normal speed
 		ItemStack normalSpeed = new ItemStack(Material.STRING);
 		ItemMeta meta = normalSpeed.getItemMeta();
@@ -494,7 +502,29 @@ public class SpectatorPlus extends JavaPlugin {
 			meta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
 		}
 		nightVision.setItemMeta(meta);
-		GUIContent[8] = nightVision;
+		if(deathPoint == null) { // No "TP to death point" tool: position #8.
+			GUIContent[8] = nightVision;
+		}
+		else {
+			GUIContent[6] = nightVision;
+		}
+		
+		
+		// Teleportation to the death point
+		if(deathPoint != null) {
+			ItemStack tpToDeathPoint = new ItemStack(Material.NETHER_STAR);
+			meta = tpToDeathPoint.getItemMeta();
+			meta.setDisplayName(TOOL_TP_TO_DEATH_POINT_NAME);
+			// The death message is never set if it is disabled: check useless (same as above).
+			if(user.get(spectator.getName()).lastDeathMessage != null) {
+				List<String> lore = new ArrayList<String>();
+				lore.add("" + ChatColor.GRAY + user.get(spectator.getName()).lastDeathMessage);
+				meta.setLore(lore);
+			}
+			tpToDeathPoint.setItemMeta(meta);
+			GUIContent[8] = tpToDeathPoint;
+		}
+		
 		
 		
 		gui.setContents(GUIContent);
@@ -766,6 +796,17 @@ public class SpectatorPlus extends JavaPlugin {
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsToolsItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
+			// Spectators' tool: TP to death: true/false
+			if (!toggles.getConfig().contains("tpToDeathTool")) {
+				toggles.getConfig().set("tpToDeathTool", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"tpToDeathTool: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			// Spectators' tool: TP to death: show death cause true/false
+			if (!toggles.getConfig().contains("tpToDeathToolShowCause")) {
+				toggles.getConfig().set("tpToDeathToolShowCause", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"tpToDeathToolShowCause: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			
 			// Inspector: true/false
 			if (!toggles.getConfig().contains("inspector")) {
 				toggles.getConfig().set("inspector", true);
@@ -831,6 +872,8 @@ public class SpectatorPlus extends JavaPlugin {
 			compass = toggles.getConfig().getBoolean("compass", true);
 			clock = toggles.getConfig().getBoolean("arenaclock", true);
 			spectatorsTools = toggles.getConfig().getBoolean("spectatorsTools", true);
+			tpToDeathTool = toggles.getConfig().getBoolean("tpToDeathTool", true);
+			tpToDeathToolShowCause = toggles.getConfig().getBoolean("tpToDeathToolShowCause", true);
 			inspector = toggles.getConfig().getBoolean("inspector", true);
 			inspectFromTPMenu = toggles.getConfig().getBoolean("inspectPlayerFromTeleportationMenu", true);
 			specChat = toggles.getConfig().getBoolean("specchat", true);

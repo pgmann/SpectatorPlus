@@ -28,6 +28,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -615,6 +616,27 @@ public class SpectateListener implements Listener {
 		}
 	}
 	
+	@EventHandler(priority = EventPriority.MONITOR)
+	protected void onPlayerDeath(PlayerDeathEvent event) {
+		if(plugin.tpToDeathTool) {
+			Player killed = event.getEntity();
+			
+			plugin.user.get(killed.getName()).deathLocation = killed.getLocation();
+			
+			if(plugin.tpToDeathToolShowCause) {
+				String deathMessage = ChatColor.stripColor(event.getDeathMessage());
+				String noColorsDisplayName = ChatColor.stripColor(killed.getDisplayName());
+				
+				deathMessage = deathMessage.replace(killed.getName() + " was", "You were")
+				                           .replace(killed.getName(), "You")
+				                           .replace(noColorsDisplayName + " was", "You were")
+				                           .replace(noColorsDisplayName, "You");
+				
+				plugin.user.get(killed.getName()).lastDeathMessage = ChatColor.stripColor(deathMessage);
+			}
+		}
+	}
+	
 	/**
 	 * Used to get the selected item in the various GUIs.
 	 * 
@@ -707,6 +729,9 @@ public class SpectateListener implements Listener {
 							spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
 							spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
 						}
+					}
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_TP_TO_DEATH_POINT_NAME)) {
+						spectator.teleport(plugin.user.get(spectator.getName()).deathLocation.setDirection(spectator.getLocation().getDirection()));
 					}
 					
 					spectator.closeInventory();
