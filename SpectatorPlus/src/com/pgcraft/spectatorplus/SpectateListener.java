@@ -28,6 +28,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -628,6 +629,15 @@ public class SpectateListener implements Listener {
 		}
 	}
 	
+	@EventHandler
+	protected void onPlayerDeath(PlayerDeathEvent event) {
+		plugin.user.get(event.getEntity().getName()).deathLocation = event.getEntity().getLocation();
+		
+		if(event.getEntity().getKiller() != null) {
+			plugin.user.get(event.getEntity().getName()).lastKiller = event.getEntity().getKiller().getDisplayName();
+		}
+	}
+	
 	/**
 	 * Used to get the selected item in the various GUIs.
 	 * 
@@ -720,6 +730,9 @@ public class SpectateListener implements Listener {
 							spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
 							spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
 						}
+					}
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_TP_TO_DEATH_POINT_NAME)) {
+						spectator.teleport(plugin.user.get(spectator.getName()).deathLocation.setDirection(spectator.getLocation().getDirection()));
 					}
 					
 					spectator.closeInventory();

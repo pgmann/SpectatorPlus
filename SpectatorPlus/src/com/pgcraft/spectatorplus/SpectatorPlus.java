@@ -84,7 +84,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
 	protected final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
 	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
-
+	protected final static String TOOL_TP_TO_DEATH_POINT_NAME = ChatColor.YELLOW + "Go to your death point";
 
 	@Override
 	public void onLoad() {
@@ -431,6 +431,12 @@ public class SpectatorPlus extends JavaPlugin {
 		List<String> activeLore = new ArrayList<String>();
 		activeLore.add("" + ChatColor.GRAY + ChatColor.ITALIC + "Active");
 		
+		// If a death location is registered for this player, the position of the "night vision" tool
+		// is not the same (6 with death point registered; 8 without).
+		// That's why this is defined here, not below.
+		Location deathPoint = user.get(spectator.getName()).deathLocation;
+		
+		
 		// Normal speed
 		ItemStack normalSpeed = new ItemStack(Material.STRING);
 		ItemMeta meta = normalSpeed.getItemMeta();
@@ -493,7 +499,28 @@ public class SpectatorPlus extends JavaPlugin {
 			meta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
 		}
 		nightVision.setItemMeta(meta);
-		GUIContent[8] = nightVision;
+		if(deathPoint == null) { // No "TP to death point" tool: position #8.
+			GUIContent[8] = nightVision;
+		}
+		else {
+			GUIContent[6] = nightVision;
+		}
+		
+		
+		// Teleportation to the death point
+		if(deathPoint != null) { // No "TP to death point" tool: position #8.
+			ItemStack tpToDeathPoint = new ItemStack(Material.NETHER_STAR);
+			meta = tpToDeathPoint.getItemMeta();
+			meta.setDisplayName(TOOL_TP_TO_DEATH_POINT_NAME);
+			if(user.get(spectator.getName()).lastKiller != null) {
+				List<String> lore = new ArrayList<String>();
+				lore.add("" + ChatColor.GRAY + "You where killed by " + user.get(spectator.getName()).lastKiller);
+				meta.setLore(lore);
+			}
+			tpToDeathPoint.setItemMeta(meta);
+			GUIContent[8] = tpToDeathPoint;
+		}
+		
 		
 		
 		gui.setContents(GUIContent);

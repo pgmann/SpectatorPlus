@@ -46,6 +46,20 @@ public class PlayerObject {
 	protected GameMode oldGameMode;
 	
 	/**
+	 * The display name of the last killer of the spectator.
+	 * <p>
+	 * Null if never killed.
+	 */
+	protected String lastKiller = null;
+	
+	/**
+	 * The location of the last death.
+	 * 
+	 * Null if no death registered.
+	 */
+	protected Location deathLocation = null;
+	
+	/**
 	 * The setup step.
 	 *  - 0: no setup in progress;
 	 *  - 1: first corner set;
