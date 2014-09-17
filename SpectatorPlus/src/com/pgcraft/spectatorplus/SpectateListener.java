@@ -629,13 +629,21 @@ public class SpectateListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	protected void onPlayerDeath(PlayerDeathEvent event) {
-		plugin.user.get(event.getEntity().getName()).deathLocation = event.getEntity().getLocation();
+		Player killed = event.getEntity();
 		
-		if(event.getEntity().getKiller() != null) {
-			plugin.user.get(event.getEntity().getName()).lastKiller = event.getEntity().getKiller().getDisplayName();
-		}
+		plugin.user.get(killed.getName()).deathLocation = killed.getLocation();
+		
+		String deathMessage = ChatColor.stripColor(event.getDeathMessage());
+		String noColorsDisplayName = ChatColor.stripColor(killed.getDisplayName());
+		
+		deathMessage.replace(killed.getName() + " was", "You were")
+		            .replace(killed.getName(), "You")
+		            .replace(noColorsDisplayName + " was", "You were")
+		            .replace(noColorsDisplayName, "You");
+		
+		plugin.user.get(killed.getName()).lastDeathMessage = ChatColor.stripColor(deathMessage);
 	}
 	
 	/**

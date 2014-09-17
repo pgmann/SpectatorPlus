@@ -512,9 +512,9 @@ public class SpectatorPlus extends JavaPlugin {
 			ItemStack tpToDeathPoint = new ItemStack(Material.NETHER_STAR);
 			meta = tpToDeathPoint.getItemMeta();
 			meta.setDisplayName(TOOL_TP_TO_DEATH_POINT_NAME);
-			if(user.get(spectator.getName()).lastKiller != null) {
+			if(user.get(spectator.getName()).lastDeathMessage != null) {
 				List<String> lore = new ArrayList<String>();
-				lore.add("" + ChatColor.GRAY + "You where killed by " + user.get(spectator.getName()).lastKiller);
+				lore.add("" + ChatColor.GRAY + user.get(spectator.getName()).lastDeathMessage);
 				meta.setLore(lore);
 			}
 			tpToDeathPoint.setItemMeta(meta);

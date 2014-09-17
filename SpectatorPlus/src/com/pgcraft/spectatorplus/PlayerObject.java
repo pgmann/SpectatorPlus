@@ -46,11 +46,14 @@ public class PlayerObject {
 	protected GameMode oldGameMode;
 	
 	/**
-	 * The display name of the last killer of the spectator.
+	 * The last death message for this player, with his name replaced by "You",
+	 * and "Name was" replaced by "You were".
 	 * <p>
-	 * Null if never killed.
+	 * Example: « You starved to death ».
+	 * <p>
+	 * Null if the player was never dead.
 	 */
-	protected String lastKiller = null;
+	protected String lastDeathMessage = null;
 	
 	/**
 	 * The location of the last death.
