@@ -631,19 +631,23 @@ public class SpectateListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	protected void onPlayerDeath(PlayerDeathEvent event) {
-		Player killed = event.getEntity();
-		
-		plugin.user.get(killed.getName()).deathLocation = killed.getLocation();
-		
-		String deathMessage = ChatColor.stripColor(event.getDeathMessage());
-		String noColorsDisplayName = ChatColor.stripColor(killed.getDisplayName());
-		
-		deathMessage.replace(killed.getName() + " was", "You were")
-		            .replace(killed.getName(), "You")
-		            .replace(noColorsDisplayName + " was", "You were")
-		            .replace(noColorsDisplayName, "You");
-		
-		plugin.user.get(killed.getName()).lastDeathMessage = ChatColor.stripColor(deathMessage);
+		if(plugin.tpToDeathTool) {
+			Player killed = event.getEntity();
+			
+			plugin.user.get(killed.getName()).deathLocation = killed.getLocation();
+			
+			if(plugin.tpToDeathToolShowCause) {
+				String deathMessage = ChatColor.stripColor(event.getDeathMessage());
+				String noColorsDisplayName = ChatColor.stripColor(killed.getDisplayName());
+				
+				deathMessage.replace(killed.getName() + " was", "You were")
+				            .replace(killed.getName(), "You")
+				            .replace(noColorsDisplayName + " was", "You were")
+				            .replace(noColorsDisplayName, "You");
+				
+				plugin.user.get(killed.getName()).lastDeathMessage = ChatColor.stripColor(deathMessage);
+			}
+		}
 	}
 	
 	/**
