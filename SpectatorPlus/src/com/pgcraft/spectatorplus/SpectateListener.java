@@ -640,10 +640,10 @@ public class SpectateListener implements Listener {
 				String deathMessage = ChatColor.stripColor(event.getDeathMessage());
 				String noColorsDisplayName = ChatColor.stripColor(killed.getDisplayName());
 				
-				deathMessage.replace(killed.getName() + " was", "You were")
-				            .replace(killed.getName(), "You")
-				            .replace(noColorsDisplayName + " was", "You were")
-				            .replace(noColorsDisplayName, "You");
+				deathMessage = deathMessage.replace(killed.getName() + " was", "You were")
+				                           .replace(killed.getName(), "You")
+				                           .replace(noColorsDisplayName + " was", "You were")
+				                           .replace(noColorsDisplayName, "You");
 				
 				plugin.user.get(killed.getName()).lastDeathMessage = ChatColor.stripColor(deathMessage);
 			}
