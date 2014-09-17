@@ -39,6 +39,7 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -488,34 +489,20 @@ public class SpectateListener implements Listener {
 	
 	/**
 	 * Used to:<br>
-	 *  - removes the player from the internal scoreboard;<br>
-	 *  - disable the 'hidden' state of the spectator;<br>
-	 *  - put the player back in the server's default gamemode;<br>
-	 *  - disable the spectator mode and reload the inventory, to avoid this inventory to be destroyed on server restart.
+	 *  - disable the spectator mode and reload the inventory, to avoid this inventory to be destroyed on server restart;<br>
+	 *  - save the spectator mode on a file to restore it on the next login.
 	 * 
 	 * @param event
 	 */
 	@EventHandler
 	protected void onPlayerQuit(PlayerQuitEvent event) {
 		Player spectator = event.getPlayer();
-		
-		if (plugin.scoreboard) {
-			plugin.team.removePlayer(spectator);
-		}
-		
-		for (Player target : plugin.getServer().getOnlinePlayers()) {
-			target.showPlayer(event.getPlayer()); // show the leaving player to everyone
-			event.getPlayer().showPlayer(target); // show the leaving player everyone
-		}
-		
 		if (plugin.user.get(spectator.getName()).spectating) {
-			plugin.user.get(spectator.getName()).spectating = false;
-			spectator.setGameMode(plugin.getServer().getDefaultGameMode());
+			plugin.disableSpectate(spectator, plugin.console);
 			
-			plugin.spawnPlayer(spectator);
-			plugin.loadPlayerInv(spectator);
-			
-			plugin.user.remove(spectator.getName());
+			// The spectator mode needs to be re-enabled on the next login
+			plugin.specs.getConfig().set(spectator.getName(), true);
+			plugin.specs.saveConfig();
 		}
 	}
 	
