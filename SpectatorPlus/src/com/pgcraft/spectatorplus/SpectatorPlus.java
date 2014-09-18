@@ -686,10 +686,10 @@ public class SpectatorPlus extends JavaPlugin {
 				}
 				target.showPlayer(spectator);
 			}
-
+			
 			// Teleport to spawn
 			spawnPlayer(spectator);
-
+			
 			// Allow interaction
 			user.get(spectator.getName()).spectating = false;
 			spectator.setAllowFlight(false);
