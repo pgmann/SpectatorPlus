@@ -75,7 +75,10 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onPlayerJoin(PlayerJoinEvent event) {
-		plugin.user.put(event.getPlayer().getName(), new PlayerObject());
+		
+		if(!plugin.user.containsKey(event.getPlayer().getName())) {
+			plugin.user.put(event.getPlayer().getName(), new PlayerObject());
+		}
 		
 		for (Player target : plugin.getServer().getOnlinePlayers()) {
 			if (plugin.user.get(target.getName()).spectating) {
