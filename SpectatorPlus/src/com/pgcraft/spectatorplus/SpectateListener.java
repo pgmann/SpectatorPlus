@@ -10,6 +10,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -40,7 +41,6 @@ import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -50,6 +50,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.material.Gate;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -544,23 +545,110 @@ public class SpectateListener implements Listener {
 		if (plugin.user.get(event.getPlayer().getName()).spectating) {
 			event.setCancelled(true);
 			
-			// Opens the inventory of the blocks with an inventory without the opening animation
-			// The players are unable to take anything due to the InventoryClickEvent & InventoryDragEvent being cancelled.
-			if(event.hasBlock() && event.getClickedBlock().getState() instanceof InventoryHolder) {
+			if(event.hasBlock()) {
 				
-				Inventory original = ((InventoryHolder) event.getClickedBlock().getState()).getInventory();
-				Inventory copy = null;
-				
-				if(original.getType().equals(InventoryType.CHEST) && original.getSize() > 27) {
-					// Double chest. Using the same method lead to an exception (because InventoryType.CHEST is limited to 27 items).
-					copy = plugin.getServer().createInventory(event.getPlayer(), original.getSize(), original.getTitle());
+				// Opens the inventory of the blocks with an inventory without the opening animation
+				// The players are unable to take anything due to the InventoryClickEvent & InventoryDragEvent being cancelled.
+				if(event.getClickedBlock().getState() instanceof InventoryHolder) {
+						Inventory original = ((InventoryHolder) event.getClickedBlock().getState()).getInventory();
+						Inventory copy = null;
+						
+						if(original.getType().equals(InventoryType.CHEST) && original.getSize() > 27) {
+							// Double chest. Using the same method lead to an exception (because InventoryType.CHEST is limited to 27 items).
+							copy = plugin.getServer().createInventory(event.getPlayer(), original.getSize(), original.getTitle());
+						}
+						else {
+							copy = plugin.getServer().createInventory(event.getPlayer(), original.getType(), original.getTitle());
+						}
+						
+						copy.setContents(original.getContents());
+						event.getPlayer().openInventory(copy);
 				}
-				else {
-					copy = plugin.getServer().createInventory(event.getPlayer(), original.getType(), original.getTitle());
-				}
 				
-				copy.setContents(original.getContents());
-				event.getPlayer().openInventory(copy);
+				// Allows spectators to pass through doors.
+				else if(event.getClickedBlock().getType() == Material.WOODEN_DOOR
+						|| event.getClickedBlock().getType() == Material.IRON_DOOR_BLOCK
+						|| event.getClickedBlock().getType() == Material.FENCE_GATE) {
+					
+					Player spectator = event.getPlayer();
+					Location doorLocation = event.getClickedBlock()
+					                             .getLocation()
+					                             .setDirection(spectator.getLocation().getDirection());
+					
+					BlockFace faceClicked = event.getBlockFace();
+					
+					int relativeHeight = 0;
+					if(event.getClickedBlock().getType() == Material.WOODEN_DOOR
+							|| event.getClickedBlock().getType() == Material.IRON_DOOR_BLOCK) {
+						
+						Material belowBlockType = event.getClickedBlock()
+						                               .getLocation().add(0, -1, 0)
+						                               .getBlock().getType();
+						
+						if(belowBlockType == Material.WOODEN_DOOR || belowBlockType == Material.IRON_DOOR_BLOCK) {
+							// The spectator clicked the top part of the door.
+							relativeHeight = -1;
+						}
+					}
+					
+					/*
+					 * North: small Z
+					 * South: big Z
+					 * East:  big X
+					 * West:  small X
+					 */
+					switch(faceClicked) {
+						case EAST:
+							spectator.teleport(doorLocation.add(-0.5, relativeHeight, 0.5), TeleportCause.PLUGIN);
+							break;
+						case NORTH:
+							spectator.teleport(doorLocation.add(0.5, relativeHeight, 1.5), TeleportCause.PLUGIN);
+							break;
+						case SOUTH:
+							spectator.teleport(doorLocation.add(0.5, relativeHeight, -0.5), TeleportCause.PLUGIN);
+							break;
+						case WEST:
+							spectator.teleport(doorLocation.add(1.5, relativeHeight, 0.5), TeleportCause.PLUGIN);
+							break;
+						case UP:
+							// If it's a fence gate, we uses the relative position of the player and the
+							// gate.
+							if(event.getClickedBlock().getState().getData() instanceof Gate) {
+								Gate fenceGate = (Gate) event.getClickedBlock().getState().getData();
+								// The BlockFace represents the block in the direction of the "line" of
+								// the gate. So we needs to invert the relative teleportation.
+								switch(fenceGate.getFacing()) {
+									case NORTH:
+									case SOUTH:
+										if(spectator.getLocation().getX() > doorLocation.getX()) {
+											spectator.teleport(doorLocation.add(-0.5, relativeHeight, 0.5), TeleportCause.PLUGIN);
+										}
+										else {
+											spectator.teleport(doorLocation.add(1.5, relativeHeight, 0.5), TeleportCause.PLUGIN);
+										}
+										break;
+									case EAST:
+									case WEST:
+										if(spectator.getLocation().getZ() > doorLocation.getZ()) {
+											spectator.teleport(doorLocation.add(0.5, relativeHeight, -0.5), TeleportCause.PLUGIN);
+										}
+										else {
+											spectator.teleport(doorLocation.add(0.5, relativeHeight, 1.5), TeleportCause.PLUGIN);
+										}
+										break;
+									default:
+										// Should never happens.
+										break;
+								}
+							}
+							break;
+							
+						default:
+							// Nothing
+							break;
+					}
+					
+				}
 			}
 		}
 	}
