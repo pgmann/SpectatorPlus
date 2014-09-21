@@ -10,7 +10,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -51,6 +50,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.Gate;
+import org.bukkit.material.TrapDoor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -575,8 +575,6 @@ public class SpectateListener implements Listener {
 					                             .getLocation()
 					                             .setDirection(spectator.getLocation().getDirection());
 					
-					BlockFace faceClicked = event.getBlockFace();
-					
 					int relativeHeight = 0;
 					if(event.getClickedBlock().getType() == Material.WOODEN_DOOR
 							|| event.getClickedBlock().getType() == Material.IRON_DOOR_BLOCK) {
@@ -597,7 +595,7 @@ public class SpectateListener implements Listener {
 					 * East:  big X
 					 * West:  small X
 					 */
-					switch(faceClicked) {
+					switch(event.getBlockFace()) {
 						case EAST:
 							spectator.teleport(doorLocation.add(-0.5, relativeHeight, 0.5), TeleportCause.PLUGIN);
 							break;
@@ -648,6 +646,29 @@ public class SpectateListener implements Listener {
 							break;
 					}
 					
+				}
+				
+				// Allows spectators to pass through trap doors
+				else if(event.getClickedBlock().getType() == Material.TRAP_DOOR) {
+					if(!((TrapDoor) event.getClickedBlock().getState().getData()).isOpen()) {
+						Player spectator = event.getPlayer();
+						Location doorLocation = event.getClickedBlock()
+						                             .getLocation()
+						                             .setDirection(spectator.getLocation().getDirection());
+						
+						switch(event.getBlockFace()) {
+							case UP:
+								spectator.teleport(doorLocation.add(0.5, -1, 0.5), TeleportCause.PLUGIN);
+								break;
+							
+							case DOWN:
+								spectator.teleport(doorLocation.add(0.5, 1, 0.5), TeleportCause.PLUGIN);
+								break;
+							
+							default:
+								break;
+						}
+					}
 				}
 			}
 		}
