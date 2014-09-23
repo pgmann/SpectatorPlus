@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
