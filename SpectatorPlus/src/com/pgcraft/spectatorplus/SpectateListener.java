@@ -739,6 +739,8 @@ public class SpectateListener implements Listener {
 				String deathMessage = ChatColor.stripColor(event.getDeathMessage());
 				String noColorsDisplayName = ChatColor.stripColor(killed.getDisplayName());
 				
+				if(deathMessage == null) deathMessage = "";
+				
 				deathMessage = deathMessage.replace(killed.getName() + " was", "You were")
 				                           .replace(killed.getName(), "You")
 				                           .replace(noColorsDisplayName + " was", "You were")
