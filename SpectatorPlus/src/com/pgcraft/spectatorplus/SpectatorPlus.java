@@ -137,15 +137,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			// Disable spectate mode temporarily.
 			if (user.get(player.getName()).spectating) {
-				player.setAllowFlight(false);
-				player.setGameMode(getServer().getDefaultGameMode());
-				player.getInventory().clear();
-				if (scoreboard) {
-					team.removePlayer(player);
-				}
-				loadPlayerInv(player);
-				spawnPlayer(player);
-				user.get(player.getName()).spectating = false;
+				disableSpectate(player, console);
 			}
 		}
 		
