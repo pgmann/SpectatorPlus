@@ -15,4 +15,4 @@ You can find the API's JavaDoc here: http://depot.carrade.eu/html/bukkit/doc/spe
 <b>~ Continuous Integration server ~</b>
 
 The source code of this repository is automatically built and is always available at this link:
-http://jenkins.carrade.eu/job/SpectatorPlus/lastStableBuild/com.pgcraft$SpectatorPlus/ (latest dev build).
+http://jenkins.carrade.eu/job/SpectatorPlus/ (latest dev build).
