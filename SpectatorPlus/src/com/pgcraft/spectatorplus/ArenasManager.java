@@ -10,6 +10,14 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
+/**
+ * This class manages the arenas of SpectatorPlus.
+ * <p>
+ * For an {@link Arena} to be recognized by SpectatorPlus, the object needs to be
+ * registered using {@link #registerArena(Arena)}.
+ * 
+ * @since 2.0
+ */
 public class ArenasManager {
 	
 	private SpectatorPlus p = null;
@@ -17,7 +25,7 @@ public class ArenasManager {
 	
 	private static final String STORAGE_KEY = "arenas";
 	
-	public ArenasManager(SpectatorPlus plugin) {
+	protected ArenasManager(SpectatorPlus plugin) {
 		this.p = plugin;
 		
 		// The Arena class is registered as a serializable one in the onLoad method of the main class.
@@ -31,6 +39,8 @@ public class ArenasManager {
 	
 	/**
 	 * (Re)loads the arenas from the configuration file.
+	 * 
+	 * @since 2.0
 	 */
 	public void reload() {
 		if(p.setup.getConfig().isConfigurationSection(STORAGE_KEY)) {
@@ -44,6 +54,8 @@ public class ArenasManager {
 	
 	/**
 	 * Saves all registered arenas in the configuration file.
+	 * 
+	 * @since 2.0
 	 */
 	public void save() {
 		// The configuration is rewrote every time, to take deletions into account.
@@ -64,6 +76,8 @@ public class ArenasManager {
 	 * Removes all the registered arenas.
 	 * 
 	 * WARNING - CANNOT BE CANCELLED.
+	 * 
+	 * @since 2.0
 	 */
 	public void reset() {
 		for(Arena arena : getArenas()) {
@@ -80,6 +94,8 @@ public class ArenasManager {
 	 * 
 	 * @param id The UUID of the Arena.
 	 * @return The Arena, or null if there isn't any Arena with this UUID.
+	 * 
+	 * @since 2.0
 	 */
 	public Arena getArena(UUID id) {
 		return arenas.get(id);
@@ -92,6 +108,8 @@ public class ArenasManager {
 	 * 
 	 * @param name The name of the Arena.
 	 * @return The Arena, or null if there isn't any Arena with this name.
+	 * 
+	 * @since 2.0
 	 */
 	public Arena getArena(String name) {
 		for(Arena arena : arenas.values()) {
@@ -107,6 +125,8 @@ public class ArenasManager {
 	 * Returns a collection of the registered arenas.
 	 * 
 	 * @return the collection.
+	 * 
+	 * @since 2.0
 	 */
 	public Collection<Arena> getArenas() {
 		return arenas.values();
@@ -118,6 +138,8 @@ public class ArenasManager {
 	 * @param arena The arena to register.
 	 * @throws IllegalArgumentException if an arena with the same UUID is already registered.
 	 * @throws IllegalArgumentException if an arena with the same name is already registered.
+	 * 
+	 * @since 2.0
 	 */
 	public void registerArena(Arena arena) {
 		if(arenas.containsKey(arena.getUUID())) {
@@ -138,6 +160,8 @@ public class ArenasManager {
 	 * Unregisters an arena.
 	 * 
 	 * @param arena The arena to unregister.
+	 * 
+	 * @since 2.0
 	 */
 	public void unregisterArena(Arena arena) {
 		arenas.remove(arena.getUUID());
@@ -149,6 +173,8 @@ public class ArenasManager {
 	
 	/**
 	 * Migrates the arenas stored in the old format to this new one.
+	 * 
+	 * @since 2.0
 	 */
 	private void migrate() {
 		final String OLD_STORAGE_KEY = "arena";

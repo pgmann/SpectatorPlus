@@ -10,6 +10,15 @@ import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.util.Vector;
 
+/**
+ * Represents an Arena in SpectatorPlus.
+ * <p>
+ * An arena is a 3D space, represented by two opposed corners; the spectators inside an arena
+ * can teleport themselves only to the players inside this arena.
+ * 
+ * @since 2.0
+ *
+ */
 public class Arena implements ConfigurationSerializable {
 
 	private UUID id = null;
@@ -28,7 +37,7 @@ public class Arena implements ConfigurationSerializable {
 	 * 
 	 * @param name The name of the arena.
 	 * @param corner1 A corner of the arena.
-	 * @param corner2 The other corner of the arena.
+	 * @param corner2 The other, opposite corner of the arena.
 	 */
 	public Arena(String name, Location corner1, Location corner2) {
 		
@@ -64,8 +73,9 @@ public class Arena implements ConfigurationSerializable {
 	}
 	
 	/**
-	 * Returns a map representing this object.<br>
-	 * Required by ConfigurationSerializable.
+	 * Returns a map representing this object.
+	 * <p>
+	 * Required by {@link org.bukkit.configuration.serialization.ConfigurationSerializable ConfigurationSerializable}.
 	 * 
 	 * @return A representation of the object.
 	 */
@@ -123,7 +133,7 @@ public class Arena implements ConfigurationSerializable {
 	/**
 	 * Sets the location of the first corner of this arena.
 	 * 
-	 * @param corner1 the corner1 to set
+	 * @param corner1 The first corner to set.
 	 */
 	public void setCorner1(Location corner1) {
 		this.corner1 = corner1;
@@ -141,14 +151,14 @@ public class Arena implements ConfigurationSerializable {
 	/**
 	 * Sets the location of the second corner of this arena.
 	 * 
-	 * @param corner2 the corner2 to set
+	 * @param corner2 The second corner to set.
 	 */
 	public void setCorner2(Location corner2) {
 		this.corner2 = corner2;
 	}
 
 	/**
-	 * Returns the UUID of this arena.
+	 * Returns the {@link java.util.UUID UUID} of this arena.
 	 * 
 	 * @return the UUID.
 	 */
@@ -175,7 +185,7 @@ public class Arena implements ConfigurationSerializable {
 	}
 	
 	/**
-	 * Returns true if the arena is registered into the ArenasManager, and is available to the players.
+	 * Returns true if the arena is registered into the {@link ArenasManager}, and is available to the players.
 	 * 
 	 * @return true if the arena is registered.
 	 */
@@ -184,7 +194,7 @@ public class Arena implements ConfigurationSerializable {
 	}
 	
 	/**
-	 * Sets the registration state of this Arena.
+	 * Sets the registration state of this {@link Arena}.
 	 * 
 	 * @param registered
 	 */

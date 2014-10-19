@@ -3,9 +3,14 @@ package com.pgcraft.spectatorplus;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * This is the API of SpectatorPlus.
+ * <p>
+ * Use the methods of this class to manage spectators, arenas and everything else.
+ */
 public class SpectateAPI {
 	private SpectatorPlus plugin;
-
+	
 	protected SpectateAPI(SpectatorPlus plugin) {
 		this.plugin = plugin;
 	}
@@ -33,8 +38,10 @@ public class SpectateAPI {
 	 * @since 1.9.2
 	 */
 	public void setSpectating(Player player, boolean spectating) {
-		// Defaults to console having enabled spectator mode
-		setSpectating(player, spectating, plugin.console);
+		if(isSpectator(player) != spectating) {
+			// Defaults to console having enabled spectator mode
+			setSpectating(player, spectating, plugin.console);
+		}
 	}
 	
 	/**
@@ -166,7 +173,8 @@ public class SpectateAPI {
 	/**
 	 * Enables (or disables) the spectators' tools (magma cream).
 	 * <p>
-	 * These tools allows a spectator to change his speed, and to enable night/underwater vision.
+	 * These tools allows a spectator to change his speed, to enable night/underwater vision,
+	 * and to teleport them to their death points (if enabled by the config).
 	 * 
 	 * @param value Enabled if true.
 	 * @param temp If true this change will not be saved in the config file.
@@ -239,7 +247,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Enables (or disables) the inspector (book).
+	 * Enables (or disables) the inventory inspector (book).
 	 * 
 	 * @param value Enabled if true.
 	 * @param temp If true this change will not be saved in the config file.

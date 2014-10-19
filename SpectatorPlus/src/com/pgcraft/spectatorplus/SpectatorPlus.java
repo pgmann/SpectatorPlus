@@ -86,12 +86,18 @@ public class SpectatorPlus extends JavaPlugin {
 	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
 	protected final static String TOOL_TP_TO_DEATH_POINT_NAME = ChatColor.YELLOW + "Go to your death point";
 
+	/**
+	 * This method is not meant for public use.
+	 */
 	@Override
 	public void onLoad() {
 		// Registers the Arena class as a serializable one.
 		ConfigurationSerialization.registerClass(Arena.class);
 	}
 	
+	/**
+	 * This method is not meant for public use.
+	 */
 	@Override
 	public void onEnable() {
 		setup = new ConfigAccessor(this, "setup");
@@ -126,6 +132,9 @@ public class SpectatorPlus extends JavaPlugin {
 		this.getCommand("spec").setExecutor(new SpectateCommand(this));
 	}
 
+	/**
+	 * This method is not meant for public use.
+	 */
 	@Override
 	public void onDisable() {
 		if(output) {
