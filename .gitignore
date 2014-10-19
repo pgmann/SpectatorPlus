@@ -8,6 +8,8 @@
 *.war
 *.ear
 
+*~
+
 SpectatorPlus/.settings/
 SpectatorPlus/bin/
 SpectatorPlus/target/
