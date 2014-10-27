@@ -90,11 +90,17 @@ public class PlayerObject {
 	 */
 	protected Scoreboard oldScoreboard;
 	
+	/**
+	 * Whether the player is hidden from the spectator teleportation GUI.
+	 */
+	protected boolean hideFromTp;
+	
 	
 	protected PlayerObject() {
 		spectating = false;
 		arenaName = null;
 		teleporting = false;
 		setup = 0;
+		hideFromTp = false;
 	}
 }

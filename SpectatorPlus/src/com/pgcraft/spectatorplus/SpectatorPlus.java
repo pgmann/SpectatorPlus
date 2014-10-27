@@ -219,7 +219,7 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
-				if (player.hasPermission("spectate.hide") == false && user.get(player.getName()).spectating == false) {
+				if (!user.get(player).hideFromTp && !user.get(player.getName()).spectating) {
 					displayedSpectators.add(player);
 				}
 			}
@@ -227,8 +227,7 @@ public class SpectatorPlus extends JavaPlugin {
 				if (region == null) {
 					if(output) {spectator.sendMessage(prefix + "Pick an arena first using the arena selector!");}
 					return;
-				}
-				else {
+				} else {
 					Location where = player.getLocation();
 					Arena currentArena = arenasManager.getArena(region);
 					int pos1y = currentArena.getCorner1().getBlockY();
@@ -238,7 +237,7 @@ public class SpectatorPlus extends JavaPlugin {
 					int pos1z = currentArena.getCorner1().getBlockZ();
 					int pos2z = currentArena.getCorner2().getBlockZ();
 					// pos1 should have the highest co-ords of the arena, pos2 the lowest
-					if (player.hasPermission("spectate.hide") == false && user.get(player.getName()).spectating == false) {
+					if (!user.get(player).hideFromTp && user.get(player.getName()).spectating == false) {
 						if (Math.floor(where.getY()) < Math.floor(pos1y) && Math.floor(where.getY()) > Math.floor(pos2y)) {
 							if (Math.floor(where.getX()) < pos1x && Math.floor(where.getX()) > pos2x) {
 								if (Math.floor(where.getZ()) < pos1z && Math.floor(where.getZ()) > pos2z) {

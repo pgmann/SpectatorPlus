@@ -32,6 +32,7 @@ public class SpectateCommand implements CommandExecutor {
 		commands.add("mode");
 		commands.add("say");
 		commands.add("config");
+		commands.add("hide");
 	}
 
 
@@ -121,6 +122,8 @@ public class SpectateCommand implements CommandExecutor {
 
 		sender.sendMessage(ChatColor.RED + "/spec config" + ChatColor.GOLD + ": Edit configuration from ingame");
 		sender.sendMessage(ChatColor.RED + "/spec reload" + ChatColor.GOLD + ": Reloads configuration");
+		
+		sender.sendMessage(ChatColor.RED + "/spec hide [player]" + ChatColor.GOLD + ": Toggles whether you are shown in the spectator GUI");
 
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.DARK_AQUA + "Strikethrough commands can only be executed as a player.");
@@ -168,6 +171,7 @@ public class SpectateCommand implements CommandExecutor {
 			case "config":
 			case "mode":
 			case "say":
+			case "hide":
 				permission = "spectate.admin." + args[0];
 				break;
 
@@ -229,6 +233,10 @@ public class SpectateCommand implements CommandExecutor {
 
 		case "say":
 			message = "You can't broadcast a message to the spectators' chat.";
+			break;
+		
+		case "hide":
+			message = "You can't toggle hide mode!";
 			break;
 		}
 
@@ -675,6 +683,39 @@ public class SpectateCommand implements CommandExecutor {
 			}
 
 			p.broadcastToSpectators(sender, message);
+		}
+
+	}
+	
+	/**
+	 * This command broadcasts a message to the spectators.<br>
+	 * Usage: /spec hide [player]
+	 * 
+	 * @param sender
+	 * @param command
+	 * @param label
+	 * @param args
+	 */
+	private void doHide(CommandSender sender, Command command, String label, String[] args) {
+
+		if(args.length == 1) {
+			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec hide [player]");
+		} else if(args.length == 2 && !(sender instanceof Player)) {
+			sender.sendMessage(SpectatorPlus.prefix + "Cannot be executed from the console!");
+		} else {
+			// Set the target...
+			Player target;
+			if (args.length == 2) {
+				target = (Player) sender;
+			} else if (p.getServer().getPlayer(args[2]) != null) {
+				target = p.getServer().getPlayer(args[2]);
+			} else {
+				sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[2] + ChatColor.GOLD + " isn't online!");
+				return;
+			}
+			
+			// Toggle hide mode for them.
+			p.user.get(target).hideFromTp = !p.user.get(target).hideFromTp;
 		}
 
 	}
