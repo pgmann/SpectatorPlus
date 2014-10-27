@@ -23,9 +23,6 @@ permissions:
   spectate.use.others:
     description: Allows you to change spectate mode for others [/spec on <player>]
     default: op
-  spectate.hide:
-    description: Stops players spectating you
-    default: false
   spectate.admin:
     description: Allows you to manage all setup and admin commands in SpectatorPlus
     default: op
@@ -37,6 +34,7 @@ permissions:
       spectate.admin.reload: true
       spectate.admin.say: true
       spectate.admin.config: true
+      spectate.admin.hide: true
   spectate.admin.lobby:
     description: Allows you to set the global lobby
     default: op
@@ -48,6 +46,9 @@ permissions:
     default: op
   spectate.admin.reload:
     description: Allows you to reload the plugin
+    default: op
+  spectate.admin.hide:
+    description: Toggle to stop players spectating you (default off)
     default: op
   spectate.admin.config:
     description: Allows you to edit the plugin configuration ingame
