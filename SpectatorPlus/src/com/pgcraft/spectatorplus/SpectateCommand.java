@@ -698,19 +698,19 @@ public class SpectateCommand implements CommandExecutor {
 	 */
 	private void doHide(CommandSender sender, Command command, String label, String[] args) {
 
-		if(args.length == 1) {
+		if(args.length == 0) {
 			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec hide [player]");
-		} else if(args.length == 2 && !(sender instanceof Player)) {
+		} else if(args.length == 0 && !(sender instanceof Player)) {
 			sender.sendMessage(SpectatorPlus.prefix + "Cannot be executed from the console!");
 		} else {
 			// Set the target...
 			Player target;
-			if (args.length == 2) {
+			if (args.length == 0) {
 				target = (Player) sender;
-			} else if (p.getServer().getPlayer(args[2]) != null) {
-				target = p.getServer().getPlayer(args[2]);
+			} else if (p.getServer().getPlayer(args[0]) != null) {
+				target = p.getServer().getPlayer(args[0]);
 			} else {
-				sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[2] + ChatColor.GOLD + " isn't online!");
+				sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[0] + ChatColor.GOLD + " isn't online!");
 				return;
 			}
 			
