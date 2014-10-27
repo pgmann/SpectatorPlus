@@ -715,7 +715,7 @@ public class SpectateCommand implements CommandExecutor {
 			}
 			
 			// Toggle hide mode for them.
-			p.user.get(target).hideFromTp = !p.user.get(target).hideFromTp;
+			p.user.get(target.getName()).hideFromTp = !p.user.get(target.getName()).hideFromTp;
 		}
 
 	}
