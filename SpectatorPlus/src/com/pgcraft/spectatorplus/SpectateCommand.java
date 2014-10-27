@@ -705,12 +705,12 @@ public class SpectateCommand implements CommandExecutor {
 		} else {
 			// Set the target...
 			Player target;
-			if (args.length == 0) {
+			if (args.length <= 1) {
 				target = (Player) sender;
-			} else if (p.getServer().getPlayer(args[0]) != null) {
-				target = p.getServer().getPlayer(args[0]);
+			} else if (p.getServer().getPlayer(args[1]) != null) {
+				target = p.getServer().getPlayer(args[1]);
 			} else {
-				sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[0] + ChatColor.GOLD + " isn't online!");
+				sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
 				return;
 			}
 			
