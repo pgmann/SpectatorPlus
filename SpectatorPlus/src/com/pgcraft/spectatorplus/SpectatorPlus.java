@@ -216,11 +216,15 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		
 		LinkedList<Player> displayedSpectators = new LinkedList<Player>();
+		LinkedList<Player> displayedSpectatorsHidden = new LinkedList<Player>();
 		
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
 				if (!user.get(player.getName()).hideFromTp && !user.get(player.getName()).spectating) {
 					displayedSpectators.add(player);
+				// Admins will still be able to see players who have used '/spec hide':
+				} else if (spectator.hasPermission("spectate.admin") && !user.get(player.getName()).spectating) {
+					displayedSpectatorsHidden.add(player);
 				}
 			}
 			else if (setup.getConfig().getString("mode").equals("arena")) {
@@ -250,7 +254,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 		}
 		
-		Integer inventorySize = (int) Math.ceil(Double.valueOf(displayedSpectators.size())/9) * 9;
+		Integer inventorySize = (int) Math.ceil(Double.valueOf(displayedSpectators.size()+displayedSpectatorsHidden.size())/9) * 9;
 		if(inventorySize == 0) {
 			inventorySize = 9; // Avoids an empty inventory.
 		}
@@ -262,6 +266,21 @@ public class SpectatorPlus extends JavaPlugin {
 			gui = Bukkit.getServer().createInventory(spectator, inventorySize, TELEPORTER_ARENA_TITLE + ChatColor.ITALIC + arenasManager.getArena(region).getName());
 		}
 		
+		// Display hidden players first (people who have used '/spec hide')
+		for(Player displayedSpectatorHidden : displayedSpectatorsHidden) {
+			ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+			SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
+			
+			meta.setOwner(displayedSpectatorHidden.getName());
+			meta.setDisplayName(ChatColor.DARK_GRAY + "[HIDDEN]" + ChatColor.RESET + displayedSpectatorHidden.getDisplayName());
+			meta.setLore(lore);
+			
+			playerhead.setItemMeta(meta);
+			
+			gui.addItem(playerhead);
+		}
+		
+		// Display normal players
 		for(Player displayedSpectator : displayedSpectators) {
 			ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 			SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
