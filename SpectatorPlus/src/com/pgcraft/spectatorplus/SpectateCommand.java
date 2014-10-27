@@ -716,6 +716,10 @@ public class SpectateCommand implements CommandExecutor {
 			
 			// Toggle hide mode for them.
 			p.user.get(target.getName()).hideFromTp = !p.user.get(target.getName()).hideFromTp;
+			
+			// Notify the sender.
+			String state = (p.user.get(target.getName()).hideFromTp) ? ChatColor.GREEN+"enabled" : ChatColor.DARK_RED+"disabled";
+			sender.sendMessage(SpectatorPlus.prefix + "Hide mode for " + args[1] + " is now " + state);
 		}
 
 	}
