@@ -146,7 +146,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			// Disable spectate mode temporarily.
 			if (user.get(player.getName()).spectating) {
-				disableSpectate(player, console);
+				disableSpectate(player, console, true);
 			}
 		}
 		
@@ -613,50 +613,7 @@ public class SpectatorPlus extends JavaPlugin {
 			// Disable interaction
 			user.get(spectator.getName()).spectating = true;
 
-			// Give them compass if the toggle is on
-			if (compass) {
-				ItemStack compass = new ItemStack(Material.COMPASS, 1);
-				ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
-				compassMeta.setDisplayName(ChatColor.BLUE + "Teleporter");
-				compass.setItemMeta(compassMeta);
-				spectator.getInventory().addItem(compass);
-			}
-
-			// Give them clock (only for arena mode and if the toggle is on)
-			if (clock) {
-				String mode = setup.getConfig().getString("mode");
-				if (mode.equals("arena")) {
-					ItemStack watch = new ItemStack(Material.WATCH, 1);
-					ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
-					watchMeta.setDisplayName(ChatColor.DARK_RED + "Arena selector");
-					watch.setItemMeta(watchMeta);
-					spectator.getInventory().addItem(watch);
-				}
-			}
-			
-			// Give them magma cream (spectators tools) if the toggle is on
-			if(spectatorsTools) {
-				ItemStack tools = new ItemStack(Material.MAGMA_CREAM, 1);
-				ItemMeta toolsMeta = tools.getItemMeta();
-				toolsMeta.setDisplayName(ChatColor.GOLD + "Spectators' tools");
-				tools.setItemMeta(toolsMeta);
-				spectator.getInventory().setItem(4, tools);
-			}
-			
-			// Give them book if the toggle is on
-			if(inspector) {
-				ItemStack book = new ItemStack(Material.BOOK, 1);
-				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
-					bookMeta.setDisplayName(ChatColor.BLUE + "Inspector");
-					List<String> lore = new ArrayList<String>();
-						lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " a player to see their");
-						lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "inventory, armour, health & more!");
-					bookMeta.setLore(lore);
-				book.setItemMeta(bookMeta);
-				spectator.getInventory().setItem(8, book);
-			}
-			
-			spectator.updateInventory();
+			updateSpectatorInventory(spectator);
 
 			// Set the prefix in the tab list if the toggle is on
 			if (scoreboard) {
@@ -688,14 +645,28 @@ public class SpectatorPlus extends JavaPlugin {
 			specs.saveConfig();
 		}
 	}
-
+	
 	/**
 	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
+	 * Convenience method for {@link #disableSpectate(Player spectator, CommandSender sender, boolean temp)}
 	 * 
 	 * @param spectator The spectator that will be a normal player.
 	 * @param sender The sender of the /spec off [player] command.
 	 */
 	protected void disableSpectate(Player spectator, CommandSender sender) {
+		disableSpectate(spectator, sender, false);
+	}
+	
+	/**
+	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
+	 * 
+	 * @param spectator The spectator that will be a normal player.
+	 * @param sender The sender of the /spec off [player] command.
+	 * @param temp If true, the next time the player re-logs, spectator mode will be re-enabled.
+	 * 
+	 * @since 2.0
+	 */
+	protected void disableSpectate(Player spectator, CommandSender sender, boolean temp) {
 		if (user.get(spectator.getName()).spectating) {
 			// Show them to everyone
 			for (Player target : getServer().getOnlinePlayers()) {
@@ -748,8 +719,10 @@ public class SpectatorPlus extends JavaPlugin {
 				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
 			}
 
-			specs.getConfig().set(spectator.getName(), null);
-			specs.saveConfig();
+			if (!temp) {
+				specs.getConfig().set(spectator.getName(), null);
+				specs.saveConfig();
+			}
 		} 
 		else {
 			// Spectate mode wasn't on
@@ -951,6 +924,9 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 
 		team.setCanSeeFriendlyInvisibles(seeSpecs);
+		
+		// Update all spectators' inventories
+		updateSpectatorInventories();
 	}
 
 	/**
@@ -1200,6 +1176,103 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 		}
 		console.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + message);
+	}
+	
+	/**
+	 * Updates the spectator inventory for a certain player.
+	 * 
+	 * @param spectator The player whose inventory will be updated
+	 * 
+	 * @since 2.0
+	 */	
+	protected void updateSpectatorInventory(Player spectator) {
+		// Empty the inventory first...
+		spectator.getInventory().clear();
+		
+		// Give them compass if the toggle is on
+		if (compass) {
+			Material compassMaterial = (Material.matchMaterial(compassItem)!=null) ? Material.matchMaterial(compassItem) : Material.COMPASS;
+			ItemStack compass = new ItemStack(compassMaterial, 1);
+			ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
+			compassMeta.setDisplayName(ChatColor.AQUA +""+ ChatColor.BOLD + "Teleporter");
+			List<String> lore = new ArrayList<String>();
+				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose a player");
+				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to teleport to");
+			compassMeta.setLore(lore);
+			compass.setItemMeta(compassMeta);
+			spectator.getInventory().setItem(0, compass);
+		}
+
+		// Give them clock (only for arena mode and if the toggle is on)
+		if (clock) {
+			String mode = setup.getConfig().getString("mode");
+			if (mode.equals("arena")) {
+				Material watchMaterial = (Material.matchMaterial(clockItem)!=null) ? Material.matchMaterial(clockItem) : Material.WATCH;
+				ItemStack watch = new ItemStack(watchMaterial, 1);
+				ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
+				watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector");
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose an arena");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to spectate in");
+				watchMeta.setLore(lore);
+				watch.setItemMeta(watchMeta);
+				spectator.getInventory().setItem(1, watch);
+			}
+		}
+
+		// Give them magma cream (spectators tools) if the toggle is on
+		if(spectatorsTools) {
+			Material toolsMaterial = (Material.matchMaterial(spectatorsToolsItem)!=null) ? Material.matchMaterial(spectatorsToolsItem) : Material.MAGMA_CREAM;
+			ItemStack tools = new ItemStack(toolsMaterial, 1);
+			ItemMeta toolsMeta = tools.getItemMeta();
+			toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools");
+			List<String> lore = new ArrayList<String>();
+				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to open the");
+				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "spectator tools menu");
+			toolsMeta.setLore(lore);
+			tools.setItemMeta(toolsMeta);
+			spectator.getInventory().setItem(4, tools);
+		}
+
+		// Give them book if the toggle is on
+		if(inspector) {
+			Material bookMaterial = (Material.matchMaterial(inspectorItem)!=null) ? Material.matchMaterial(inspectorItem) : Material.BOOK;
+			ItemStack book = new ItemStack(bookMaterial, 1);
+			ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
+			bookMeta.setDisplayName(ChatColor.DARK_AQUA + "Inspector");
+			List<String> lore = new ArrayList<String>();
+				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " a player to see their");
+				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "inventory, armour, health & more!");
+			bookMeta.setLore(lore);
+			book.setItemMeta(bookMeta);
+			spectator.getInventory().setItem(8, book);
+		}
+
+		spectator.updateInventory();
+	}
+	
+	/**
+	 * Updates the spectator inventories for all currently spectating players.
+	 * 
+	 * @since 2.0
+	 */	
+	protected void updateSpectatorInventories() {
+		for (Player target : getServer().getOnlinePlayers()) {
+			if (getPlayerData(target).spectating) {
+				updateSpectatorInventory(target);
+			}
+		}
+	}
+	
+	/**
+	 * Get the PlayerObject (data store) for the player.
+	 * 
+	 * @param target The player to get the PlayerObject of.
+	 * 
+	 * @since 2.0
+	 */	
+	protected PlayerObject getPlayerData(Player target) {
+		return user.get(target.getName());
 	}
 
 	/**
