@@ -976,7 +976,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 		}
 
-		team.setCanSeeFriendlyInvisibles(seeSpecs);
+		if(team != null) team.setCanSeeFriendlyInvisibles(seeSpecs);
 		
 		// Update all spectators' inventories
 		updateSpectatorInventories();
