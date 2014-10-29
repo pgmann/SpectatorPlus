@@ -291,7 +291,7 @@ public class SpectatorPlus extends JavaPlugin {
 			SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
 			
 			meta.setOwner(displayedSpectatorHidden.getName());
-			meta.setDisplayName(ChatColor.DARK_GRAY + "[HIDDEN]" + ChatColor.RESET + displayedSpectatorHidden.getDisplayName());
+			meta.setDisplayName(ChatColor.DARK_GRAY + "[HIDDEN] " + ChatColor.RESET + displayedSpectatorHidden.getDisplayName());
 			meta.setLore(lore);
 			
 			playerhead.setItemMeta(meta);
