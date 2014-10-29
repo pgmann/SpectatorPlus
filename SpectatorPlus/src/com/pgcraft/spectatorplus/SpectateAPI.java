@@ -1,5 +1,6 @@
 package com.pgcraft.spectatorplus;
 
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -130,7 +131,11 @@ public class SpectateAPI {
 			plugin.toggles.saveConfig();
 		}
 		
-		plugin.compassItem = value;
+		if(value != null) {
+			plugin.compassItem = Material.matchMaterial(value);
+		}
+		
+		if(plugin.compassItem == null) plugin.compassItem = Material.COMPASS;
 		plugin.reloadConfig(false);
 	}
 	
@@ -166,7 +171,11 @@ public class SpectateAPI {
 			plugin.toggles.saveConfig();
 		}
 		
-		plugin.clockItem = value;
+		if(value != null) {
+			plugin.clockItem = Material.matchMaterial(value);
+		}
+		
+		if(plugin.clockItem == null) plugin.clockItem = Material.WATCH;
 		plugin.reloadConfig(false);
 	}
 	
@@ -205,7 +214,11 @@ public class SpectateAPI {
 			plugin.toggles.saveConfig();
 		}
 		
-		plugin.spectatorsToolsItem = value;
+		if(value != null) {
+			plugin.spectatorsToolsItem = Material.matchMaterial(value);
+		}
+		
+		if(plugin.spectatorsToolsItem == null) plugin.spectatorsToolsItem = Material.MAGMA_CREAM;
 		plugin.reloadConfig(false);
 	}
 	
@@ -278,10 +291,21 @@ public class SpectateAPI {
 			plugin.toggles.saveConfig();
 		}
 		
-		plugin.inspectorItem = value;
+		if(value != null) {
+			plugin.inspectorItem = Material.matchMaterial(value);
+		}
+		
+		if(plugin.inspectorItem == null) plugin.inspectorItem = Material.BOOK;
 		plugin.reloadConfig(false);
 	}
 	
+	/**
+	 * If set to true, the players will be able to see the inventory & state of the players by right-clicking
+	 * their heads in the teleportation menu.
+	 * 
+	 * @param value Enabled if true.
+	 * @param temp If true this change will not be saved in the config file.
+	 */
 	public void setInspectPlayerFromTeleportationMenu(boolean value, boolean temp) {
 		if(!temp) {
 			plugin.toggles.getConfig().set("inspectPlayerFromTeleportationMenu", value);

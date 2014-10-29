@@ -524,7 +524,7 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onPlayerInteract(PlayerInteractEvent event) {
-		if (plugin.getPlayerData(event.getPlayer()).spectating && event.getMaterial() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (plugin.getPlayerData(event.getPlayer()).spectating && event.getMaterial() == plugin.compassItem && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			String mode = plugin.setup.getConfig().getString("mode"); 
 			if (mode.equals("arena")) {
 				UUID region = plugin.getPlayerData(event.getPlayer()).arena;
@@ -534,12 +534,12 @@ public class SpectateListener implements Listener {
 			}
 		}
 		
-		if (plugin.getPlayerData(event.getPlayer()).spectating && event.getMaterial() == Material.WATCH && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (plugin.getPlayerData(event.getPlayer()).spectating && event.getMaterial() == plugin.clockItem && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			event.setCancelled(true);
 			plugin.showArenaGUI(event.getPlayer());
 		}
 		
-		if (plugin.getPlayerData(event.getPlayer()).spectating && event.getMaterial() == Material.MAGMA_CREAM && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (plugin.getPlayerData(event.getPlayer()).spectating && event.getMaterial() == plugin.spectatorsToolsItem && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			event.setCancelled(true);
 			plugin.showSpectatorsOptionsGUI(event.getPlayer());
 		}
@@ -685,7 +685,7 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onPlayerInteractEntity(PlayerInteractEntityEvent event) {		
 		if(plugin.getPlayerData(event.getPlayer()).spectating && event.getRightClicked() instanceof Player && !event.getRightClicked().hasMetadata("NPC")) {
-			if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(Material.BOOK)) {
+			if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(plugin.inspectorItem)) {
 				plugin.showPlayerInventoryGUI(event.getPlayer(), (Player) event.getRightClicked());
 			}
 			

@@ -58,13 +58,13 @@ public class SpectatorPlus extends JavaPlugin {
 
 	// Manage toggles
 	protected boolean compass;
-	protected String compassItem;
+	protected Material compassItem;
 	protected boolean clock;
-	protected String clockItem;
+	protected Material clockItem;
 	protected boolean spectatorsTools;
-	protected String spectatorsToolsItem;
+	protected Material spectatorsToolsItem;
 	protected boolean inspector;
-	protected String inspectorItem;
+	protected Material inspectorItem;
 	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
 
 	protected ScoreboardManager manager = null;
@@ -108,8 +108,6 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		console = getServer().getConsoleSender();
 		
-		reloadConfig(true); // Load config values.
-		
 		arenasManager = new ArenasManager(this);
 		api = new SpectateAPI(this);
 		
@@ -122,6 +120,8 @@ public class SpectatorPlus extends JavaPlugin {
 				enableSpectate(player, (CommandSender) player);
 			}
 		}
+		
+		reloadConfig(true); // Load config values.
 
 		// Register event listeners
 		getServer().getPluginManager().registerEvents(new SpectateListener(this), this);
@@ -881,6 +881,17 @@ public class SpectatorPlus extends JavaPlugin {
 			seeSpecs = toggles.getConfig().getBoolean("seespecs", false);
 			blockCmds = toggles.getConfig().getBoolean("blockcmds", true);
 			adminBypass = toggles.getConfig().getBoolean("adminbypass", true);
+			
+			compassItem = Material.matchMaterial(toggles.getConfig().getString("compassItem", "COMPASS"));
+			clockItem = Material.matchMaterial(toggles.getConfig().getString("clockItem", "WATCH"));
+			spectatorsToolsItem = Material.matchMaterial(toggles.getConfig().getString("spectatorsToolsItem", "MAGMA_CREAM"));
+			inspectorItem = Material.matchMaterial(toggles.getConfig().getString("inspectorItem", "BOOK"));
+			
+			if(compassItem == null) compassItem = Material.COMPASS;
+			if(clockItem == null) clockItem = Material.WATCH;
+			if(spectatorsToolsItem == null) spectatorsToolsItem = Material.MAGMA_CREAM;
+			if(inspectorItem == null) inspectorItem = Material.BOOK;
+		
 		} // ...end hardReload
 
 		if (scoreboard) {
@@ -1198,8 +1209,7 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		// Give them compass if the toggle is on
 		if (compass) {
-			Material compassMaterial = (Material.matchMaterial(compassItem)!=null) ? Material.matchMaterial(compassItem) : Material.COMPASS;
-			ItemStack compass = new ItemStack(compassMaterial, 1);
+			ItemStack compass = new ItemStack(compassItem, 1);
 			ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
 			compassMeta.setDisplayName(ChatColor.AQUA +""+ ChatColor.BOLD + "Teleporter");
 			List<String> lore = new ArrayList<String>();
@@ -1214,8 +1224,7 @@ public class SpectatorPlus extends JavaPlugin {
 		if (clock) {
 			String mode = setup.getConfig().getString("mode");
 			if (mode.equals("arena")) {
-				Material watchMaterial = (Material.matchMaterial(clockItem)!=null) ? Material.matchMaterial(clockItem) : Material.WATCH;
-				ItemStack watch = new ItemStack(watchMaterial, 1);
+				ItemStack watch = new ItemStack(clockItem, 1);
 				ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
 				watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector");
 				List<String> lore = new ArrayList<String>();
@@ -1229,8 +1238,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 		// Give them magma cream (spectators tools) if the toggle is on
 		if(spectatorsTools) {
-			Material toolsMaterial = (Material.matchMaterial(spectatorsToolsItem)!=null) ? Material.matchMaterial(spectatorsToolsItem) : Material.MAGMA_CREAM;
-			ItemStack tools = new ItemStack(toolsMaterial, 1);
+			ItemStack tools = new ItemStack(spectatorsToolsItem, 1);
 			ItemMeta toolsMeta = tools.getItemMeta();
 			toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools");
 			List<String> lore = new ArrayList<String>();
@@ -1243,8 +1251,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 		// Give them book if the toggle is on
 		if(inspector) {
-			Material bookMaterial = (Material.matchMaterial(inspectorItem)!=null) ? Material.matchMaterial(inspectorItem) : Material.BOOK;
-			ItemStack book = new ItemStack(bookMaterial, 1);
+			ItemStack book = new ItemStack(inspectorItem, 1);
 			ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
 			bookMeta.setDisplayName(ChatColor.DARK_AQUA + "Inspector");
 			List<String> lore = new ArrayList<String>();
