@@ -375,6 +375,12 @@ public class SpectateCommand implements CommandExecutor {
 				case "adminbypass":
 					p.getAPI().setAllowAdminBypassCommandBlocking(value, temp);
 					break;
+				case "tpToDeathTool":
+					p.getAPI().setTPToDeathTool(value, temp);
+					break;
+				case "tpToDeathToolShowCause":
+					p.getAPI().setShowCauseInTPToDeathTool(value, temp);
+					break;
 				default:
 					success = false;
 					break;
@@ -393,6 +399,9 @@ public class SpectateCommand implements CommandExecutor {
 					break;
 				case "inspectorItem":
 					p.getAPI().setInspectorItem(value, temp);
+					break;
+				case "spectatorsToolsItem":
+					p.getAPI().setSpectatorsToolsItem(value, temp);
 					break;
 				default:
 					success = false;
