@@ -95,6 +95,7 @@ public class SpectateCompleter implements TabCompleter {
 					case "adminbypass":
 					case "tpToDeathTool":
 					case "tpToDeathToolShowCause":
+					case "newbieMode":
 						return getAutocompleteSuggestions(args[2], Arrays.asList("true", "false"));
 					case "compassItem":
 					case "clockItem":

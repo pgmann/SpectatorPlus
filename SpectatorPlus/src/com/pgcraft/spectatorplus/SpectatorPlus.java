@@ -65,7 +65,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode;
 
 	protected ScoreboardManager manager = null;
 	protected Scoreboard board = null;
@@ -862,6 +862,12 @@ public class SpectatorPlus extends JavaPlugin {
 				toggles.getConfig().set("adminbypass", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"adminbypass: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
+			
+			// Display “(Right-click)” on the names of the misc tools (teleporter, etc.)? true/false
+			if(!toggles.getConfig().contains("newbieMode")) {
+				toggles.getConfig().set("newbieMode", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"newbieMode: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
 
 			// Config was updated, fix version number.
 			toggles.getConfig().set("version",version);
@@ -881,6 +887,7 @@ public class SpectatorPlus extends JavaPlugin {
 			seeSpecs = toggles.getConfig().getBoolean("seespecs", false);
 			blockCmds = toggles.getConfig().getBoolean("blockcmds", true);
 			adminBypass = toggles.getConfig().getBoolean("adminbypass", true);
+			newbieMode = toggles.getConfig().getBoolean("newbieMode", true);
 			
 			compassItem = Material.matchMaterial(toggles.getConfig().getString("compassItem", "COMPASS"));
 			clockItem = Material.matchMaterial(toggles.getConfig().getString("clockItem", "WATCH"));
@@ -1207,11 +1214,17 @@ public class SpectatorPlus extends JavaPlugin {
 		// Empty the inventory first...
 		spectator.getInventory().clear();
 		
+		String rightClick = "", rightClickPlayer = "";
+		if(newbieMode) {
+			rightClick = ChatColor.GRAY + " (Right-click)";
+			rightClickPlayer = ChatColor.GRAY + " (Right-click a player)";
+		}
+		
 		// Give them compass if the toggle is on
 		if (compass) {
 			ItemStack compass = new ItemStack(compassItem, 1);
 			ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
-			compassMeta.setDisplayName(ChatColor.AQUA +""+ ChatColor.BOLD + "Teleporter");
+			compassMeta.setDisplayName(ChatColor.AQUA +""+ ChatColor.BOLD + "Teleporter" + rightClick);
 			List<String> lore = new ArrayList<String>();
 				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose a player");
 				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to teleport to");
@@ -1226,7 +1239,7 @@ public class SpectatorPlus extends JavaPlugin {
 			if (mode.equals("arena")) {
 				ItemStack watch = new ItemStack(clockItem, 1);
 				ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
-				watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector");
+				watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector" + rightClick);
 				List<String> lore = new ArrayList<String>();
 					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose an arena");
 					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to spectate in");
@@ -1240,7 +1253,7 @@ public class SpectatorPlus extends JavaPlugin {
 		if(spectatorsTools) {
 			ItemStack tools = new ItemStack(spectatorsToolsItem, 1);
 			ItemMeta toolsMeta = tools.getItemMeta();
-			toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools");
+			toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools" + rightClick);
 			List<String> lore = new ArrayList<String>();
 				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to open the");
 				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "spectator tools menu");
@@ -1253,7 +1266,7 @@ public class SpectatorPlus extends JavaPlugin {
 		if(inspector) {
 			ItemStack book = new ItemStack(inspectorItem, 1);
 			ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
-			bookMeta.setDisplayName(ChatColor.DARK_AQUA + "Inspector");
+			bookMeta.setDisplayName(ChatColor.DARK_AQUA +""+ ChatColor.BOLD + "Inspector" + rightClickPlayer);
 			List<String> lore = new ArrayList<String>();
 				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " a player to see their");
 				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "inventory, armour, health & more!");

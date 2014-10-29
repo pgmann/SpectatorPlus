@@ -443,9 +443,29 @@ public class SpectateAPI {
 	}
 	
 	/**
+	 * If enabled, “(Right-click)” will be added in the name of the spectators' tools (teleporter, etc.).
+	 * 
+	 * @param value Enabled if true.
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setNewbieMode(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("newbieMode", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.newbieMode = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
 	 * Returns the {@link ArenasManager Arenas manager}. Use this to manage the arenas.
 	 * 
 	 * @return The {@link ArenasManager}.
+	 * 
+	 * @since 2.0
 	 */
 	public ArenasManager getArenasManager() {
 		return plugin.arenasManager;

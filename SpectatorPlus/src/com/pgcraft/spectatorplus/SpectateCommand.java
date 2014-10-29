@@ -381,6 +381,9 @@ public class SpectateCommand implements CommandExecutor {
 				case "tpToDeathToolShowCause":
 					p.getAPI().setShowCauseInTPToDeathTool(value, temp);
 					break;
+				case "newbieMode":
+					p.getAPI().setNewbieMode(value, temp);
+					break;
 				default:
 					success = false;
 					break;

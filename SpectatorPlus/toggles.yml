@@ -39,5 +39,8 @@ blockcmds: true
 # Allow anyone with spectate.admin to bypass command blocking?
 adminbypass: true
 
+# Add “(Right-click)” in the name of the spectators' tools (teleporter, etc.)?
+newbieMode: true
+
 # Config version (do not alter)
 version: 2.0
