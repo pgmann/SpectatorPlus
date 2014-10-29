@@ -423,15 +423,15 @@ public class SpectateCommand implements CommandExecutor {
 	 */
 	private void doPlayer(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player) { // A player...
-			if (p.user.get(sender.getName()).spectating) { // ...who is spectating...
+			if (p.getPlayerData((Player) sender).spectating) { // ...who is spectating...
 				if (args.length > 1) { // ... and specified a name...
 					Player target = p.getServer().getPlayer(args[1]);
 
-					if (target != null && !p.user.get(target.getName()).spectating) { // ... of an online player
+					if (target != null && !p.getPlayerData(target).spectating) { // ... of an online player
 						p.choosePlayer((Player) sender, p.getServer().getPlayer(args[1]));
 					}
 					else {
-						sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
+						sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online or is spectating!");
 					}
 
 				} else {
@@ -584,9 +584,9 @@ public class SpectateCommand implements CommandExecutor {
 				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena add <arenaName>");
 			}
 			else { // /spec arena add <?>
-				p.user.get(sender.getName()).arenaName = args[2];
+				p.getPlayerData((Player) sender).arenaName = args[2];
 				sender.sendMessage(SpectatorPlus.prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - a corner of the arena");
-				p.user.get(sender.getName()).setup = 1;
+				p.getPlayerData((Player) sender).setup = 1;
 			}
 
 		}
@@ -688,7 +688,7 @@ public class SpectateCommand implements CommandExecutor {
 	}
 	
 	/**
-	 * This command broadcasts a message to the spectators.<br>
+	 * This command hide a player from the spectators.<br>
 	 * Usage: /spec hide [player]
 	 * 
 	 * @param sender
@@ -700,13 +700,16 @@ public class SpectateCommand implements CommandExecutor {
 
 		if(args.length == 0) {
 			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec hide [player]");
-		} else if(args.length == 0 && !(sender instanceof Player)) {
-			sender.sendMessage(SpectatorPlus.prefix + "Cannot be executed from the console!");
 		} else {
 			// Set the target...
 			Player target;
 			if (args.length <= 1) {
-				target = (Player) sender;
+				if(sender instanceof Player)
+					target = (Player) sender;
+				else {
+					sender.sendMessage(SpectatorPlus.prefix + "A name is required from the console or a command block!");
+					return;
+				}
 			} else if (p.getServer().getPlayer(args[1]) != null) {
 				target = p.getServer().getPlayer(args[1]);
 			} else {
@@ -715,10 +718,10 @@ public class SpectateCommand implements CommandExecutor {
 			}
 			
 			// Toggle hide mode for them.
-			p.user.get(target.getName()).hideFromTp = !p.user.get(target.getName()).hideFromTp;
+			p.getPlayerData(target).hideFromTp = !p.user.get(target.getName()).hideFromTp;
 			
 			// Notify the sender.
-			String state = (p.user.get(target.getName()).hideFromTp) ? ChatColor.GREEN+"enabled" : ChatColor.DARK_RED+"disabled";
+			String state = (p.getPlayerData(target).hideFromTp) ? ChatColor.GREEN+"enabled" : ChatColor.DARK_RED+"disabled";
 			sender.sendMessage(SpectatorPlus.prefix + "Hide mode for " + target.getName() + " is now " + state);
 		}
 

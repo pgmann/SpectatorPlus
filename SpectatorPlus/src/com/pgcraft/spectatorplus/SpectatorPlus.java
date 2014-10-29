@@ -145,7 +145,7 @@ public class SpectatorPlus extends JavaPlugin {
 				target.showPlayer(player);
 			}
 			// Disable spectate mode temporarily.
-			if (user.get(player.getName()).spectating) {
+			if (getPlayerData(player).spectating) {
 				disableSpectate(player, console, true);
 			}
 		}
@@ -182,9 +182,9 @@ public class SpectatorPlus extends JavaPlugin {
 					}
 				}
 			}
-			user.get(player.getName()).teleporting = true;
+			getPlayerData(player).teleporting = true;
 			player.teleport(where);
-			user.get(player.getName()).teleporting = false;
+			getPlayerData(player).teleporting = false;
 			return true;
 		} else {
 			return player.performCommand("spawn");
@@ -220,10 +220,10 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		for (Player player : getServer().getOnlinePlayers()) {
 			if (setup.getConfig().getString("mode").equals("any")) {
-				if (!user.get(player.getName()).hideFromTp && !user.get(player.getName()).spectating) {
+				if (!getPlayerData(player).hideFromTp && !getPlayerData(player).spectating) {
 					displayedSpectators.add(player);
 				// Admins will still be able to see players who have used '/spec hide':
-				} else if (spectator.hasPermission("spectate.admin") && !user.get(player.getName()).spectating) {
+				} else if (spectator.hasPermission("spectate.admin") && !getPlayerData(player).spectating) {
 					displayedSpectatorsHidden.add(player);
 				}
 			}
@@ -241,7 +241,7 @@ public class SpectatorPlus extends JavaPlugin {
 					int pos1z = currentArena.getCorner1().getBlockZ();
 					int pos2z = currentArena.getCorner2().getBlockZ();
 					// pos1 should have the highest co-ords of the arena, pos2 the lowest
-					if (!user.get(player.getName()).hideFromTp && user.get(player.getName()).spectating == false) {
+					if (!getPlayerData(player).hideFromTp && getPlayerData(player).spectating == false) {
 						if (Math.floor(where.getY()) < Math.floor(pos1y) && Math.floor(where.getY()) > Math.floor(pos2y)) {
 							if (Math.floor(where.getX()) < pos1x && Math.floor(where.getX()) > pos2x) {
 								if (Math.floor(where.getZ()) < pos1z && Math.floor(where.getZ()) > pos2z) {
@@ -306,7 +306,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected void showArenaGUI(Player spectator) {
 		Inventory gui = Bukkit.getServer().createInventory(spectator, 27, ARENA_SELECTOR_TITLE);
 
-		
+
 		for (Arena arena : arenasManager.getArenas()) {
 			ItemStack arenaBook = new ItemStack(Material.BOOK, 1);
 
@@ -455,7 +455,7 @@ public class SpectatorPlus extends JavaPlugin {
 		// That's why this is defined here, not below.
 		// If the "tp to death" tool is disabled, the death location is not set. So it's useless to
 		// check this here.
-		Location deathPoint = user.get(spectator.getName()).deathLocation;
+		Location deathPoint = getPlayerData(spectator).deathLocation;
 		
 		
 		// Normal speed
@@ -534,9 +534,9 @@ public class SpectatorPlus extends JavaPlugin {
 			meta = tpToDeathPoint.getItemMeta();
 			meta.setDisplayName(TOOL_TP_TO_DEATH_POINT_NAME);
 			// The death message is never set if it is disabled: check useless (same as above).
-			if(user.get(spectator.getName()).lastDeathMessage != null) {
+			if(getPlayerData(spectator).lastDeathMessage != null) {
 				List<String> lore = new ArrayList<String>();
-				lore.add("" + ChatColor.GRAY + user.get(spectator.getName()).lastDeathMessage);
+				lore.add("" + ChatColor.GRAY + getPlayerData(spectator).lastDeathMessage);
 				meta.setLore(lore);
 			}
 			tpToDeathPoint.setItemMeta(meta);
@@ -588,7 +588,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Hide them from everyone
 			for (Player target : getServer().getOnlinePlayers()) {
-				if(seeSpecs&&user.get(target.getName()).spectating) {
+				if(seeSpecs && getPlayerData(target).spectating) {
 					spectator.showPlayer(target);
 				}
 				else {
@@ -597,11 +597,11 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 
 			// Gamemode, 'ghost' and inventory
-			user.get(spectator.getName()).oldGameMode = spectator.getGameMode();
+			getPlayerData(spectator).oldGameMode = spectator.getGameMode();
 			spectator.setGameMode(GameMode.ADVENTURE);
 			
 			savePlayerInv(spectator);
-			user.get(spectator.getName()).effects = spectator.getActivePotionEffects();
+			getPlayerData(spectator).effects = spectator.getActivePotionEffects();
 			for (PotionEffect pe : spectator.getActivePotionEffects()) {
 				spectator.removePotionEffect(pe.getType());
 			}
@@ -611,13 +611,13 @@ public class SpectatorPlus extends JavaPlugin {
 			spectator.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
 
 			// Disable interaction
-			user.get(spectator.getName()).spectating = true;
+			getPlayerData(spectator).spectating = true;
 
 			updateSpectatorInventory(spectator);
 
 			// Set the prefix in the tab list if the toggle is on
 			if (scoreboard) {
-				if (spectator.getScoreboard() != null) user.get(spectator.getName()).oldScoreboard = spectator.getScoreboard(); else user.get(spectator.getName()).oldScoreboard = getServer().getScoreboardManager().getMainScoreboard();
+				if (spectator.getScoreboard() != null) getPlayerData(spectator).oldScoreboard = spectator.getScoreboard(); else user.get(spectator.getName()).oldScoreboard = getServer().getScoreboardManager().getMainScoreboard();
 				spectator.setScoreboard(board);
 				team.addPlayer(spectator);
 			}
@@ -667,10 +667,10 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @since 2.0
 	 */
 	protected void disableSpectate(Player spectator, CommandSender sender, boolean temp) {
-		if (user.get(spectator.getName()).spectating) {
+		if (getPlayerData(spectator).spectating) {
 			// Show them to everyone
 			for (Player target : getServer().getOnlinePlayers()) {
-				if (seeSpecs&&user.get(target.getName()).spectating) {
+				if (seeSpecs && getPlayerData(target).spectating) {
 					spectator.hidePlayer(target);
 				}
 				target.showPlayer(spectator);
@@ -680,9 +680,9 @@ public class SpectatorPlus extends JavaPlugin {
 			spawnPlayer(spectator);
 			
 			// Allow interaction
-			user.get(spectator.getName()).spectating = false;
+			getPlayerData(spectator).spectating = false;
 			spectator.setAllowFlight(false);
-			spectator.setGameMode(user.get(spectator.getName()).oldGameMode);
+			spectator.setGameMode(getPlayerData(spectator).oldGameMode);
 			
 			loadPlayerInv(spectator);
 			
@@ -691,13 +691,13 @@ public class SpectatorPlus extends JavaPlugin {
 			spectator.removePotionEffect(PotionEffectType.SPEED);
 			spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
 			spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
-			spectator.addPotionEffects(user.get(spectator.getName()).effects);
+			spectator.addPotionEffects(getPlayerData(spectator).effects);
 			
 			spectator.setFlySpeed(0.1f);
 			
 			// Remove from spec team
 			if (scoreboard) {
-				if(user.get(spectator.getName()).oldScoreboard != null) spectator.setScoreboard(user.get(spectator.getName()).oldScoreboard);
+				if(getPlayerData(spectator).oldScoreboard != null) spectator.setScoreboard(getPlayerData(spectator).oldScoreboard);
 				team.removePlayer(spectator);
 			}
 
@@ -896,7 +896,7 @@ public class SpectatorPlus extends JavaPlugin {
 			
 			// Add players who are spectating & set their scoreboard
 			for (Player target : getServer().getOnlinePlayers()) {
-				if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
+				if (getPlayerData(target) != null && getPlayerData(target).spectating) {
 					target.setScoreboard(board);
 					team.addPlayer(target);
 				}
@@ -912,9 +912,9 @@ public class SpectatorPlus extends JavaPlugin {
 				}
 				// Reset each spectator's scoreboard to default/previous
 				for (Player target : getServer().getOnlinePlayers()) {
-					if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
-						if (user.get(target.getName()).oldScoreboard != null) {
-							target.setScoreboard(user.get(target.getName()).oldScoreboard);
+					if (getPlayerData(target) != null && getPlayerData(target).spectating) {
+						if (getPlayerData(target).oldScoreboard != null) {
+							target.setScoreboard(getPlayerData(target).oldScoreboard);
 						} else {
 							target.setScoreboard(getServer().getScoreboardManager().getMainScoreboard());
 						}
@@ -938,54 +938,54 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @return True if the player was setting up an arena; false else.
 	 */
 	protected boolean arenaSetup(Player player, Block block) {
-		if (user.get(player.getName()).setup == 2) {
-			user.get(player.getName()).pos2 = block.getLocation();
-			user.get(player.getName()).setup = 0;
+		if (getPlayerData(player).setup == 2) {
+			getPlayerData(player).pos2 = block.getLocation();
+			getPlayerData(player).setup = 0;
 
 			Location lowPos, hiPos;
-			lowPos = new Location(user.get(player.getName()).pos1.getWorld(), 0, 0, 0);
-			hiPos = new Location(user.get(player.getName()).pos1.getWorld(), 0, 0, 0);
+			lowPos = new Location(getPlayerData(player).pos1.getWorld(), 0, 0, 0);
+			hiPos = new Location(getPlayerData(player).pos1.getWorld(), 0, 0, 0);
 
 			// yPos
-			if (Math.floor(user.get(player.getName()).pos1.getY()) > Math.floor(user.get(player.getName()).pos2.getY())) {
-				hiPos.setY(Math.floor(user.get(player.getName()).pos1.getY()));
-				lowPos.setY(Math.floor(user.get(player.getName()).pos2.getY()));
+			if (Math.floor(getPlayerData(player).pos1.getY()) > Math.floor(getPlayerData(player).pos2.getY())) {
+				hiPos.setY(Math.floor(getPlayerData(player).pos1.getY()));
+				lowPos.setY(Math.floor(getPlayerData(player).pos2.getY()));
 			} else {
-				lowPos.setY(Math.floor(user.get(player.getName()).pos1.getY()));
-				hiPos.setY(Math.floor(user.get(player.getName()).pos2.getY()));
+				lowPos.setY(Math.floor(getPlayerData(player).pos1.getY()));
+				hiPos.setY(Math.floor(getPlayerData(player).pos2.getY()));
 			}
 
 			// xPos
-			if (Math.floor(user.get(player.getName()).pos1.getX()) > Math.floor(user.get(player.getName()).pos2.getX())) {
-				hiPos.setX(Math.floor(user.get(player.getName()).pos1.getX()));
-				lowPos.setX(Math.floor(user.get(player.getName()).pos2.getX()));
+			if (Math.floor(getPlayerData(player).pos1.getX()) > Math.floor(getPlayerData(player).pos2.getX())) {
+				hiPos.setX(Math.floor(getPlayerData(player).pos1.getX()));
+				lowPos.setX(Math.floor(getPlayerData(player).pos2.getX()));
 			} else {
-				lowPos.setX(Math.floor(user.get(player.getName()).pos1.getX()));
-				hiPos.setX(Math.floor(user.get(player.getName()).pos2.getX()));
+				lowPos.setX(Math.floor(getPlayerData(player).pos1.getX()));
+				hiPos.setX(Math.floor(getPlayerData(player).pos2.getX()));
 			}
 
 			// zPos
-			if (Math.floor(user.get(player.getName()).pos1.getZ()) > Math.floor(user.get(player.getName()).pos2.getZ())) {
-				hiPos.setZ(Math.floor(user.get(player.getName()).pos1.getZ()));
-				lowPos.setZ(Math.floor(user.get(player.getName()).pos2.getZ()));
+			if (Math.floor(getPlayerData(player).pos1.getZ()) > Math.floor(getPlayerData(player).pos2.getZ())) {
+				hiPos.setZ(Math.floor(getPlayerData(player).pos1.getZ()));
+				lowPos.setZ(Math.floor(getPlayerData(player).pos2.getZ()));
 			} else {
-				lowPos.setZ(Math.floor(user.get(player.getName()).pos1.getZ()));
-				hiPos.setZ(Math.floor(user.get(player.getName()).pos2.getZ()));
+				lowPos.setZ(Math.floor(getPlayerData(player).pos1.getZ()));
+				hiPos.setZ(Math.floor(getPlayerData(player).pos2.getZ()));
 			}
 			
-			arenasManager.registerArena(new Arena(user.get(player.getName()).arenaName, hiPos, lowPos));
-			player.sendMessage(prefix + "Arena " + ChatColor.RED + user.get(player.getName()).arenaName + ChatColor.GOLD + " successfully set up!");
+			arenasManager.registerArena(new Arena(getPlayerData(player).arenaName, hiPos, lowPos));
+			player.sendMessage(prefix + "Arena " + ChatColor.RED + getPlayerData(player).arenaName + ChatColor.GOLD + " successfully set up!");
 
 			// returns true: Cancels breaking of the block that was punched
 			return true;
 		}
 		else {
-			if (user.get(player.getName()).setup == 1) {
-				user.get(player.getName()).pos1 = block.getLocation();
+			if (getPlayerData(player).setup == 1) {
+				getPlayerData(player).pos1 = block.getLocation();
 
 				player.sendMessage(prefix + "Punch point " + ChatColor.RED + "#2" + ChatColor.GOLD + " - the opposite corner of the arena");
 
-				user.get(player.getName()).setup = 2;
+				getPlayerData(player).setup = 2;
 
 				// returns true: Cancels breaking of the block that was punched
 				return true;
@@ -1015,8 +1015,8 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		// The players in the deleted arena are removed to the arena
 		for(Player player : this.getServer().getOnlinePlayers()) {
-			if(user.get(player.getName()).spectating) {
-				if(user.get(player.getName()).arena.equals(arenaToBeRemoved.getUUID())) {
+			if(getPlayerData(player).spectating) {
+				if(getPlayerData(player).arena.equals(arenaToBeRemoved.getUUID())) {
 					removePlayerFromArena(player);
 				}
 			}
@@ -1038,7 +1038,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected boolean setArenaForPlayer(Player player, String arenaName, boolean teleportToLobby) {
 		Arena arena = arenasManager.getArena(arenaName);
 		
-		user.get(player.getName()).arena = arena.getUUID();
+		getPlayerData(player).arena = arena.getUUID();
 		if(teleportToLobby) {
 			Location lobbyLocation = arena.getLobby();
 			
@@ -1079,7 +1079,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	protected void removePlayerFromArena(Player player) {
 
-		user.get(player.getName()).arena = null;
+		getPlayerData(player).arena = null;
 		boolean teleported = spawnPlayer(player);
 
 		if(output) {
@@ -1098,8 +1098,8 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param player The concerned player.
 	 */
 	protected void savePlayerInv(Player player) {
-		user.get(player.getName()).inventory = player.getInventory().getContents();
-		user.get(player.getName()).armour = player.getInventory().getArmorContents();
+		getPlayerData(player).inventory = player.getInventory().getContents();
+		getPlayerData(player).armour = player.getInventory().getArmorContents();
 
 		player.getInventory().clear();
 		player.getInventory().setArmorContents(null);
@@ -1112,11 +1112,11 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	protected void loadPlayerInv(Player player) {
 		player.getInventory().clear();
-		player.getInventory().setContents(user.get(player.getName()).inventory);
-		player.getInventory().setArmorContents(user.get(player.getName()).armour);
+		player.getInventory().setContents(getPlayerData(player).inventory);
+		player.getInventory().setArmorContents(getPlayerData(player).armour);
 
-		user.get(player.getName()).inventory = null;
-		user.get(player.getName()).armour = null;
+		getPlayerData(player).inventory = null;
+		getPlayerData(player).armour = null;
 
 		player.updateInventory(); // yes, it's deprecated. But it still works!
 	}
@@ -1139,7 +1139,7 @@ public class SpectatorPlus extends JavaPlugin {
 		String formattedMessage = ChatColor.GOLD + "[" + senderName + ChatColor.GOLD + " -> spectators] " + ChatColor.RESET + message;
 
 		for (Player player : getServer().getOnlinePlayers()) {
-			if(user.get(player.getName()).spectating || player.getName() == sender.getName()) {
+			if(getPlayerData(player).spectating || player.getName().equals(sender.getName())) {
 				player.sendMessage(formattedMessage);
 			}
 		}
@@ -1171,7 +1171,7 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 
 		for (Player player : getServer().getOnlinePlayers()) {
-			if(user.get(player.getName()).spectating) {
+			if(getPlayerData(player).spectating) {
 				player.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + message);
 			}
 		}

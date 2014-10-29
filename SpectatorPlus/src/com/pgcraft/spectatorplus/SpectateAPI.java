@@ -25,7 +25,7 @@ public class SpectateAPI {
 	 * @since 1.9.2
 	 */
 	public boolean isSpectator(Player player) {
-		return plugin.user.get(player.getName()).spectating;
+		return plugin.getPlayerData(player).spectating;
 	}
 	
 	/**
@@ -73,7 +73,7 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public boolean teleportSpectatorToPlayer(Player spectator, Player target) {
-		if (plugin.user.get(spectator.getName()).spectating && !plugin.user.get(target.getName()).spectating) {
+		if (plugin.getPlayerData(spectator).spectating && !plugin.getPlayerData(spectator).spectating) {
 			plugin.choosePlayer(spectator, target);
 			return true;
 		} else {
