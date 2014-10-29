@@ -384,6 +384,12 @@ public class SpectateCommand implements CommandExecutor {
 				case "newbieMode":
 					p.getAPI().setNewbieMode(value, temp);
 					break;
+				case "teleportToSpawnOnSpecChangeWithoutLobby":
+					p.getAPI().setTeleportToSpawnOnSpecChangeWithoutLobby(value, temp);
+					break;
+				case "useSpawnCommandToTeleport":
+					p.getAPI().setUseSpawnCommandToTeleport(value, temp);
+					break;
 				default:
 					success = false;
 					break;

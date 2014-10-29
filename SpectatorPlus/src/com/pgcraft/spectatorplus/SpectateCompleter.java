@@ -96,6 +96,8 @@ public class SpectateCompleter implements TabCompleter {
 					case "tpToDeathTool":
 					case "tpToDeathToolShowCause":
 					case "newbieMode":
+					case "teleportToSpawnOnSpecChangeWithoutLobby":
+					case "useSpawnCommandToTeleport":
 						return getAutocompleteSuggestions(args[2], Arrays.asList("true", "false"));
 					case "compassItem":
 					case "clockItem":

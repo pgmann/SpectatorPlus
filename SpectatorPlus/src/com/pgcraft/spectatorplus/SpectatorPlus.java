@@ -18,6 +18,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -65,7 +66,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport;
 
 	protected ScoreboardManager manager = null;
 	protected Scoreboard board = null;
@@ -194,7 +195,18 @@ public class SpectatorPlus extends JavaPlugin {
 			getPlayerData(player).teleporting = false;
 			return true;
 		} else {
-			return player.performCommand("spawn");
+			if(teleportToSpawnOnSpecChangeWithoutLobby) {
+				if(useSpawnCommandToTeleport) {
+					if(getCommand("spawn") != null) {
+						return player.performCommand("spawn");
+					}
+					return false;
+				}
+				else {
+					return player.teleport(player.getWorld().getSpawnLocation(), TeleportCause.PLUGIN);
+				}
+			}
+			return false;
 		}
 	}
 
@@ -868,6 +880,20 @@ public class SpectatorPlus extends JavaPlugin {
 				toggles.getConfig().set("newbieMode", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"newbieMode: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
+			
+			// Teleport the players to the spawn, if there isn't any main lobby set, when the spectator
+			// mode is enabled/disabled? true/false
+			if(!toggles.getConfig().contains("teleportToSpawnOnSpecChangeWithoutLobby")) {
+				toggles.getConfig().set("teleportToSpawnOnSpecChangeWithoutLobby", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"teleportToSpawnOnSpecChangeWithoutLobby: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			
+			// When teleporting the players to the spawn (without main lobby), use the /spawn command, or
+			// the spawn point of the current world?
+			if(!toggles.getConfig().contains("useSpawnCommandToTeleport")) {
+				toggles.getConfig().set("useSpawnCommandToTeleport", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"useSpawnCommandToTeleport: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
 
 			// Config was updated, fix version number.
 			toggles.getConfig().set("version",version);
@@ -888,6 +914,8 @@ public class SpectatorPlus extends JavaPlugin {
 			blockCmds = toggles.getConfig().getBoolean("blockcmds", true);
 			adminBypass = toggles.getConfig().getBoolean("adminbypass", true);
 			newbieMode = toggles.getConfig().getBoolean("newbieMode", true);
+			teleportToSpawnOnSpecChangeWithoutLobby = toggles.getConfig().getBoolean("teleportToSpawnOnSpecChangeWithoutLobby", true);
+			useSpawnCommandToTeleport = toggles.getConfig().getBoolean("useSpawnCommandToTeleport", true);
 			
 			compassItem = Material.matchMaterial(toggles.getConfig().getString("compassItem", "COMPASS"));
 			clockItem = Material.matchMaterial(toggles.getConfig().getString("clockItem", "WATCH"));
@@ -1202,7 +1230,7 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		console.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + message);
 	}
-	
+
 	/**
 	 * Updates the spectator inventory for a certain player.
 	 * 
@@ -1213,13 +1241,13 @@ public class SpectatorPlus extends JavaPlugin {
 	protected void updateSpectatorInventory(Player spectator) {
 		// Empty the inventory first...
 		spectator.getInventory().clear();
-		
+
 		String rightClick = "", rightClickPlayer = "";
 		if(newbieMode) {
 			rightClick = ChatColor.GRAY + " (Right-click)";
 			rightClickPlayer = ChatColor.GRAY + " (Right-click a player)";
 		}
-		
+
 		// Give them compass if the toggle is on
 		if (compass) {
 			ItemStack compass = new ItemStack(compassItem, 1);

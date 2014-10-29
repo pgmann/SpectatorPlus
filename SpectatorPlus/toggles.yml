@@ -42,5 +42,13 @@ adminbypass: true
 # Add “(Right-click)” in the name of the spectators' tools (teleporter, etc.)?
 newbieMode: true
 
+# Teleport the players to the spawn, if there isn't any main lobby set, when the spectator
+# mode is enabled/disabled?
+teleportToSpawnOnSpecChangeWithoutLobby: true
+
+# When teleporting the players to the spawn (without main lobby), use the /spawn command, or
+# the spawn point of the current world?
+useSpawnCommandToTeleport: true
+
 # Config version (do not alter)
 version: 2.0
