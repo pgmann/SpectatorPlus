@@ -725,7 +725,7 @@ public class SpectateCommand implements CommandExecutor {
 				if(sender instanceof Player)
 					target = (Player) sender;
 				else {
-					sender.sendMessage(SpectatorPlus.prefix + "A name is required from the console or a command block!");
+					sender.sendMessage(SpectatorPlus.prefix + "Please specify a player: " + ChatColor.RED + "/spec hide <player>");
 					return;
 				}
 			} else if (p.getServer().getPlayer(args[1]) != null) {

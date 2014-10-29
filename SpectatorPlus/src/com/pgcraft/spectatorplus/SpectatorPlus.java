@@ -875,7 +875,7 @@ public class SpectatorPlus extends JavaPlugin {
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"adminbypass: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
-			// Display “(Right-click)” on the names of the misc tools (teleporter, etc.)? true/false
+			// Display "(Right-click)" on the names of the misc tools (teleporter, etc.)? true/false
 			if(!toggles.getConfig().contains("newbieMode")) {
 				toggles.getConfig().set("newbieMode", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"newbieMode: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
@@ -1283,8 +1283,8 @@ public class SpectatorPlus extends JavaPlugin {
 			ItemMeta toolsMeta = tools.getItemMeta();
 			toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools" + rightClick);
 			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to open the");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "spectator tools menu");
+				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to open the spectator");
+				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "tools menu");
 			toolsMeta.setLore(lore);
 			tools.setItemMeta(toolsMeta);
 			spectator.getInventory().setItem(4, tools);
