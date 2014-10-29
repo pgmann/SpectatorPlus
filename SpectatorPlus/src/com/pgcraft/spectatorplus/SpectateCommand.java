@@ -726,4 +726,13 @@ public class SpectateCommand implements CommandExecutor {
 		}
 
 	}
+	
+	
+	/**
+	 * Returns a list of the commands.
+	 * @return
+	 */
+	protected ArrayList<String> getCommands() {
+		return commands;
+	}
 }

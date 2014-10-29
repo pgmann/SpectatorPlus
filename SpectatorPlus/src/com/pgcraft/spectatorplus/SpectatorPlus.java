@@ -50,6 +50,8 @@ public class SpectatorPlus extends JavaPlugin {
 	protected ConfigAccessor toggles = null;
 	protected ConfigAccessor specs = null;
 	
+	protected SpectateCommand commands = null;
+	
 	protected ArenasManager arenasManager = null;
 	
 	private SpectateAPI api = null;
@@ -128,8 +130,13 @@ public class SpectatorPlus extends JavaPlugin {
 			console.sendMessage(prefix + "Version " + ChatColor.RED + version + ChatColor.GOLD + " is enabled!");
 		}
 
-		this.getCommand("spectate").setExecutor(new SpectateCommand(this));
-		this.getCommand("spec").setExecutor(new SpectateCommand(this));
+		this.commands = new SpectateCommand(this);
+		this.getCommand("spectate").setExecutor(commands);
+		this.getCommand("spec").setExecutor(commands);
+		
+		SpectateCompleter completer = new SpectateCompleter(this);
+		this.getCommand("spectate").setTabCompleter(completer);
+		this.getCommand("spec").setTabCompleter(completer);
 	}
 
 	/**
