@@ -238,6 +238,12 @@ public class SpectateAPI {
 		
 		plugin.tpToDeathTool = value;
 		plugin.reloadConfig(false);
+		
+		if(!value) {
+			for(Player player : plugin.getServer().getOnlinePlayers()) {
+				plugin.getPlayerData(player).deathLocation = null;
+			}
+		}
 	}
 	
 	/**
@@ -257,6 +263,12 @@ public class SpectateAPI {
 		
 		plugin.tpToDeathToolShowCause = value;
 		plugin.reloadConfig(false);
+		
+		if(!value) {
+			for(Player player : plugin.getServer().getOnlinePlayers()) {
+				plugin.getPlayerData(player).lastDeathMessage = null;
+			}
+		}
 	}
 	
 	/**
