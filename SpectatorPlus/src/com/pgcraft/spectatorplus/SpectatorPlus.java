@@ -197,7 +197,7 @@ public class SpectatorPlus extends JavaPlugin {
 		} else {
 			if(teleportToSpawnOnSpecChangeWithoutLobby) {
 				if(useSpawnCommandToTeleport) {
-					if(getCommand("spawn") != null) {
+					if(getServer().getPluginCommand("spawn") != null) {
 						return player.performCommand("spawn");
 					}
 					return false;
