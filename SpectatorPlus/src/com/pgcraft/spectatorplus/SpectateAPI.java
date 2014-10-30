@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
  * <p>
  * Use the methods of this class to manage spectators, arenas and everything else.
  */
+@SuppressWarnings("deprecation")
 public class SpectateAPI {
 	private SpectatorPlus plugin;
 	
@@ -455,7 +456,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * If enabled, “(Right-click)” will be added in the name of the spectators' tools (teleporter, etc.).
+	 * If enabled, "(Right-click)" will be added in the name of the spectators' tools (teleporter, etc.).
 	 * 
 	 * @param value Enabled if true.
 	 * @param temp If true this change will not be saved in the config file.
