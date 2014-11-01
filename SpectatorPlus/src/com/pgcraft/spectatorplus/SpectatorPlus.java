@@ -118,7 +118,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Re-enable spectate mode if necessary
 			if (specs.getConfig().contains(player.getName())) {
-				enableSpectate(player, (CommandSender) player);
+				enableSpectate(player, (CommandSender) player, true);
 			}
 		}
 		
@@ -154,7 +154,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			// Disable spectate mode temporarily.
 			if (getPlayerData(player).spectating) {
-				disableSpectate(player, console, true);
+				disableSpectate(player, console, true, true);
 			}
 		}
 		
@@ -703,7 +703,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @since 2.0
 	 */
 	protected void disableSpectate(Player spectator, CommandSender sender, boolean silent) {
-		disableSpectate(spectator, sender, false, false);
+		disableSpectate(spectator, sender, silent, false);
 	}
 	
 	/**

@@ -95,6 +95,11 @@ public class PlayerObject {
 	 */
 	protected boolean hideFromTp;
 	
+	/**
+	 * Whether the player was spectating before they changed worlds.
+	 */
+	protected boolean wasSpectatorBeforeWorldChanged;
+	
 	
 	protected PlayerObject() {
 		spectating = false;
