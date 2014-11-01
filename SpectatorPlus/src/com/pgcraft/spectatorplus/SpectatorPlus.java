@@ -604,12 +604,14 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	protected void enableSpectate(Player spectator, CommandSender sender, boolean silent) {
 		if (user.get(spectator.getName()).spectating) {
-			// Spectator mode was already on
-			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
-				spectator.sendMessage(prefix + "You are already spectating!");
-			}
-			else {
-				sender.sendMessage(prefix + ChatColor.RED + spectator.getDisplayName() + ChatColor.GOLD + " is already spectating!");
+			if (!silent) {
+				// Spectator mode was already on
+				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
+					spectator.sendMessage(prefix + "You are already spectating!");
+				}
+				else {
+					sender.sendMessage(prefix + ChatColor.RED + spectator.getDisplayName() + ChatColor.GOLD + " is already spectating!");
+				}
 			}
 		}
 
@@ -776,11 +778,13 @@ public class SpectatorPlus extends JavaPlugin {
 		} 
 		else {
 			// Spectate mode wasn't on
-			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
-				spectator.sendMessage(prefix + "You aren't spectating!");
-			} 
-			else {
-				sender.sendMessage(prefix + ChatColor.RED + spectator.getDisplayName() + ChatColor.GOLD + " isn't spectating!");
+			if (!silent) {
+				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
+					spectator.sendMessage(prefix + "You aren't spectating!");
+				} 
+				else {
+					sender.sendMessage(prefix + ChatColor.RED + spectator.getDisplayName() + ChatColor.GOLD + " isn't spectating!");
+				}
 			}
 		}
 	}
