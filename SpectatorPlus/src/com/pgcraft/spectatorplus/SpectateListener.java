@@ -867,6 +867,7 @@ public class SpectateListener implements Listener {
 	 * 
 	 * @param event
 	 */
+	@EventHandler
 	public void onInventoryDrag(InventoryDragEvent event) {
 		if (plugin.getPlayerData((Player) event.getWhoClicked()).spectating) {
 			event.setCancelled(true);
