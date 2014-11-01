@@ -1,6 +1,7 @@
 package com.pgcraft.spectatorplus;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -469,10 +470,13 @@ public class SpectatorPlus extends JavaPlugin {
 		// Potion effects
 		if(inventoryOwner.getActivePotionEffects().size() == 0) {
 			GUIContent[inventory.getSize() + 15] = new ItemStack(Material.GLASS_BOTTLE, 1);
+			ItemMeta meta = GUIContent[inventory.getSize() + 15].getItemMeta();
+			meta.setLore(Arrays.asList(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "No active effects"));
+			GUIContent[inventory.getSize() + 15].setItemMeta(meta);
 		}
 		else {
 			GUIContent[inventory.getSize() + 15] = new Potion(PotionType.FIRE_RESISTANCE).toItemStack(1);
-			PotionMeta effectsMeta = (PotionMeta) GUIContent[51].getItemMeta();
+			PotionMeta effectsMeta = (PotionMeta) GUIContent[inventory.getSize() + 15].getItemMeta();
 				effectsMeta.clearCustomEffects();
 				lore = new ArrayList<String>();
 					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + inventoryOwner.getActivePotionEffects().size() + ChatColor.DARK_GRAY + ChatColor.ITALIC + " active effects");
