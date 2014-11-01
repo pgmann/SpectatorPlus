@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -792,7 +793,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 	protected void reloadConfig(boolean hardReload) {
 		// 'hardReload': true/false; a hard reload will reload the config values from file.
-		if (hardReload) {
+		if (hardReload) {			
 			setup.saveDefaultConfig();
 			toggles.saveDefaultConfig();
 			specs.saveDefaultConfig();
@@ -800,132 +801,134 @@ public class SpectatorPlus extends JavaPlugin {
 			setup.reloadConfig();
 			toggles.reloadConfig();
 			specs.reloadConfig();
-
+			
+			Set<String> togglesND = toggles.getConfig().getKeys(true); // ND = no defaults
+			
 			// Update config & add default values in
-			if (toggles.getConfig().contains("version") && toggles.getConfig().getDouble("version")<version) {
+			if (togglesND.contains("version") && toggles.getConfig().getDouble("version")<version) {
 				console.sendMessage(prefix+"Updating to version "+ChatColor.RED+version+ChatColor.GOLD+"...");
-			} else if (toggles.getConfig().contains("version") && toggles.getConfig().getDouble("version")>version) { // Placeholder for version checking in future...
+			} else if (togglesND.contains("version") && toggles.getConfig().getDouble("version")>version) { // Placeholder for version checking in future...
 				console.sendMessage(ChatColor.GOLD+"Version "+ChatColor.RED+toggles.getConfig().getDouble("version")+ChatColor.GOLD+" available!");
 			}
 
 			// Compass: true/false
-			if (!toggles.getConfig().contains("compass")) {
+			if (!togglesND.contains("compass")) {
 				toggles.getConfig().set("compass", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"compass: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			// -> Compass item: <item name>
-			if (!toggles.getConfig().contains("compassItem")) {
+			if (!togglesND.contains("compassItem")) {
 				toggles.getConfig().set("compassItem", "compass");
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"compassItem: compass"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 
 			// Arena Selector: true/false
-			if (!toggles.getConfig().contains("arenaclock")) {
+			if (!togglesND.contains("arenaclock")) {
 				toggles.getConfig().set("arenaclock", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"arenaclock: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			// -> Arena selector item: <item name>
-			if (!toggles.getConfig().contains("clockItem")) {
+			if (!togglesND.contains("clockItem")) {
 				toggles.getConfig().set("clockItem", "watch");
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"clockItem: watch"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
 			// Spectators' tools: true/false
-			if (!toggles.getConfig().contains("spectatorsTools")) {
+			if (!togglesND.contains("spectatorsTools")) {
 				toggles.getConfig().set("spectatorsTools", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsTools: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			// -> Spectators' tools item: <item name>
-			if (!toggles.getConfig().contains("spectatorsToolsItem")) {
+			if (!togglesND.contains("spectatorsToolsItem")) {
 				toggles.getConfig().set("spectatorsToolsItem", "magma_cream");
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsToolsItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
 			// Spectators' tool: TP to death: true/false
-			if (!toggles.getConfig().contains("tpToDeathTool")) {
+			if (!togglesND.contains("tpToDeathTool")) {
 				toggles.getConfig().set("tpToDeathTool", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"tpToDeathTool: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			// Spectators' tool: TP to death: show death cause true/false
-			if (!toggles.getConfig().contains("tpToDeathToolShowCause")) {
+			if (!togglesND.contains("tpToDeathToolShowCause")) {
 				toggles.getConfig().set("tpToDeathToolShowCause", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"tpToDeathToolShowCause: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
 			// Inspector: true/false
-			if (!toggles.getConfig().contains("inspector")) {
+			if (!togglesND.contains("inspector")) {
 				toggles.getConfig().set("inspector", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspector: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			// -> Inspector item: <item name>
-			if (!toggles.getConfig().contains("inspectorItem")) {
+			if (!togglesND.contains("inspectorItem")) {
 				toggles.getConfig().set("inspectorItem", "book");
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspectorItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			// -> Inspect from teleportation menu
-			if (!toggles.getConfig().contains("inspectPlayerFromTeleportationMenu")) {
+			if (!togglesND.contains("inspectPlayerFromTeleportationMenu")) {
 				toggles.getConfig().set("inspectPlayerFromTeleportationMenu", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspectPlayerFromTeleportationMenu: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 
 			// Spectator chat: true/false
-			if (!toggles.getConfig().contains("specchat")) {
+			if (!togglesND.contains("specchat")) {
 				toggles.getConfig().set("specchat", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"specchat: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 
 			// Output messages from plugin: true/false
-			if (!toggles.getConfig().contains("outputmessages")) {
+			if (!togglesND.contains("outputmessages")) {
 				toggles.getConfig().set("outputmessages", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"outputmessages: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 
 			// Spectate mode enable on death: true/false
-			if (!toggles.getConfig().contains("deathspec")) {
+			if (!togglesND.contains("deathspec")) {
 				toggles.getConfig().set("deathspec", false);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"deathspec: false"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 
 			// Prefix spectator names in tab list: true/false
-			if (!toggles.getConfig().contains("colouredtablist")) {
+			if (!togglesND.contains("colouredtablist")) {
 				toggles.getConfig().set("colouredtablist", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"colouredtablist: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 
 			// Can spectators see other spectators? true/false
-			if (!toggles.getConfig().contains("seespecs")) {
+			if (!togglesND.contains("seespecs")) {
 				toggles.getConfig().set("seespecs", false);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"seespecs: false"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 
 			// Block spectators from executing non-SpectatorPlus commands? true/false
-			if (!toggles.getConfig().contains("blockcmds")) {
+			if (!togglesND.contains("blockcmds")) {
 				toggles.getConfig().set("blockcmds", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"blockcmds: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 
 			// Can admins bypass command blocking? true/false
-			if (!toggles.getConfig().contains("adminbypass")) {
+			if (!togglesND.contains("adminbypass")) {
 				toggles.getConfig().set("adminbypass", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"adminbypass: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
 			// Display "(Right-click)" on the names of the misc tools (teleporter, etc.)? true/false
-			if(!toggles.getConfig().contains("newbieMode")) {
+			if(!togglesND.contains("newbieMode")) {
 				toggles.getConfig().set("newbieMode", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"newbieMode: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
 			// Teleport the players to the spawn, if there isn't any main lobby set, when the spectator
 			// mode is enabled/disabled? true/false
-			if(!toggles.getConfig().contains("teleportToSpawnOnSpecChangeWithoutLobby")) {
+			if(!togglesND.contains("teleportToSpawnOnSpecChangeWithoutLobby")) {
 				toggles.getConfig().set("teleportToSpawnOnSpecChangeWithoutLobby", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"teleportToSpawnOnSpecChangeWithoutLobby: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
 			
 			// When teleporting the players to the spawn (without main lobby), use the /spawn command, or
 			// the spawn point of the current world?
-			if(!toggles.getConfig().contains("useSpawnCommandToTeleport")) {
+			if(!togglesND.contains("useSpawnCommandToTeleport")) {
 				toggles.getConfig().set("useSpawnCommandToTeleport", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"useSpawnCommandToTeleport: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
