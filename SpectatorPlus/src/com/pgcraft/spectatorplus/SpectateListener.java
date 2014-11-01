@@ -685,7 +685,7 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onPlayerInteractEntity(PlayerInteractEntityEvent event) {		
 		if(plugin.getPlayerData(event.getPlayer()).spectating && event.getRightClicked() instanceof Player && !event.getRightClicked().hasMetadata("NPC")) {
-			if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(plugin.inspectorItem)) {
+			if(event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType().equals(plugin.inspectorItem) && !plugin.getPlayerData((Player) event.getRightClicked()).spectating) {
 				plugin.showPlayerInventoryGUI(event.getPlayer(), (Player) event.getRightClicked());
 			}
 			
