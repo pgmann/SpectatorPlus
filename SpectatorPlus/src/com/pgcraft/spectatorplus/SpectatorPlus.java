@@ -583,7 +583,6 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 	}
 
-
 	/**
 	 * Checks for problems and enables spectator mode for spectator, on behalf of sender.
 	 * 
@@ -591,6 +590,19 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param sender The sender of the /spec on [player] command.
 	 */
 	protected void enableSpectate(Player spectator, CommandSender sender) {
+		enableSpectate(spectator, sender, false);
+	}
+	
+	/**
+	 * Checks for problems and enables spectator mode for spectator, on behalf of sender.
+	 * 
+	 * @param spectator The player that will be a spectator.
+	 * @param sender The sender of the /spec on [player] command.
+	 * @param silent Will not output any messages - useful when using the API or command blocks.
+	 * 
+	 * @since 2.0
+	 */
+	protected void enableSpectate(Player spectator, CommandSender sender, boolean silent) {
 		if (user.get(spectator.getName()).spectating) {
 			// Spectator mode was already on
 			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
@@ -642,22 +654,24 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 
 			// Manage messages if spectator was enabled
-			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
-				if(output) {
-					spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled");
+			if (!silent) {
+				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
+					if(output) {
+						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled");
+					}
+				} 
+				else if (sender instanceof Player && !spectator.getName().equals(sender.getName())) {
+					if(output) {
+						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.RED + ((Player) sender).getDisplayName());
+					}
+					sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
+				} 
+				else {
+					if(output) {
+						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");
+					}
+					sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
 				}
-			} 
-			else if (sender instanceof Player && !spectator.getName().equals(sender.getName())) {
-				if(output) {
-					spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.RED + ((Player) sender).getDisplayName());
-				}
-				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
-			} 
-			else {
-				if(output) {
-					spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");
-				}
-				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
 			}
 
 			specs.getConfig().set(spectator.getName(), true);
@@ -667,7 +681,7 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	/**
 	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
-	 * Convenience method for {@link #disableSpectate(Player spectator, CommandSender sender, boolean temp)}
+	 * Convenience method for {@link #disableSpectate(Player spectator, CommandSender sender, boolean silent)}
 	 * 
 	 * @param spectator The spectator that will be a normal player.
 	 * @param sender The sender of the /spec off [player] command.
@@ -678,14 +692,29 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	/**
 	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
+	 * Convenience method for {@link #disableSpectate(Player spectator, CommandSender sender, boolean silent, boolean temp)}
 	 * 
 	 * @param spectator The spectator that will be a normal player.
 	 * @param sender The sender of the /spec off [player] command.
+	 * @param silent Will not output any messages - useful when using the API or command blocks.
+	 * 
+	 * @since 2.0
+	 */
+	protected void disableSpectate(Player spectator, CommandSender sender, boolean silent) {
+		disableSpectate(spectator, sender, false, false);
+	}
+	
+	/**
+	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
+	 * 
+	 * @param spectator The spectator that will be a normal player.
+	 * @param sender The sender of the /spec off [player] command.
+	 * @param silent Will not output any messages - useful when using the API or command blocks.
 	 * @param temp If true, the next time the player re-logs, spectator mode will be re-enabled.
 	 * 
 	 * @since 2.0
 	 */
-	protected void disableSpectate(Player spectator, CommandSender sender, boolean temp) {
+	protected void disableSpectate(Player spectator, CommandSender sender, boolean silent, boolean temp) {
 		if (getPlayerData(spectator).spectating) {
 			// Show them to everyone
 			for (Player target : getServer().getOnlinePlayers()) {
@@ -719,23 +748,25 @@ public class SpectatorPlus extends JavaPlugin {
 				if(getPlayerData(spectator).oldScoreboard != null) spectator.setScoreboard(getPlayerData(spectator).oldScoreboard);
 				team.removePlayer(spectator);
 			}
-
-			if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
-				if(output) {
-					spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled");
+			
+			if (!silent) {
+				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
+					if(output) {
+						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled");
+					}
 				}
-			}
-			else if (sender instanceof Player && !spectator.getName().equals(sender.getName())) {
-				if(output) {
-					spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.RED + ((Player) sender).getDisplayName());
+				else if (sender instanceof Player && !spectator.getName().equals(sender.getName())) {
+					if(output) {
+						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.RED + ((Player) sender).getDisplayName());
+					}
+					sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
 				}
-				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
-			}
-			else {
-				if(output) {
-					spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");
+				else {
+					if(output) {
+						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");
+					}
+					sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
 				}
-				sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
 			}
 
 			if (!temp) {
