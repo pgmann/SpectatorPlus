@@ -86,6 +86,8 @@ public class SpectateCompleter implements TabCompleter {
 					case "arenaclock":
 					case "inspector":
 					case "inspectPlayerFromTeleportationMenu":
+					case "playersHealthInTeleportationMenu":
+					case "playersLocationInTeleportationMenu":
 					case "specchat":
 					case "outputmessages":
 					case "deathspec":

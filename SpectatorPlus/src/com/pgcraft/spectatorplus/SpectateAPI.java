@@ -351,6 +351,8 @@ public class SpectateAPI {
 	 * 
 	 * @param value Enabled if true.
 	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
 	 */
 	public void setInspectPlayerFromTeleportationMenu(boolean value, boolean temp) {
 		if(!temp) {
@@ -359,6 +361,45 @@ public class SpectateAPI {
 		}
 		
 		plugin.inspectFromTPMenu = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
+	 * If set to true, the players will be able to see the players' health in the tooltip
+	 * of the teleportation menu.
+	 * 
+	 * @param value Enabled if true.
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setPlayersHealthInTeleportationMenu(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("playersHealthInTeleportationMenu", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.playersHealthInTeleportationMenu = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
+	 * If set to true, the players will be able to see the player's relative location
+	 * (distance + direction) in the tooltip of the teleportation menu (if both the player
+	 * and the spectator are in the same world).
+	 * 
+	 * @param value Enabled if true.
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setPlayersLocationInTeleportationMenu(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("playersLocationInTeleportationMenu", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.playersLocationInTeleportationMenu = value;
 		plugin.reloadConfig(false);
 	}
 	

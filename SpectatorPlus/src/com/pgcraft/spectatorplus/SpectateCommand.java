@@ -354,6 +354,12 @@ public class SpectateCommand implements CommandExecutor {
 				case "inspectPlayerFromTeleportationMenu":
 					p.getAPI().setInspectPlayerFromTeleportationMenu(value, temp);
 					break;
+				case "playersHealthInTeleportationMenu":
+					p.getAPI().setPlayersHealthInTeleportationMenu(value, temp);
+					break;
+				case "playersLocationInTeleportationMenu":
+					p.getAPI().setPlayersLocationInTeleportationMenu(value, temp);
+					break;
 				case "specchat":
 					p.getAPI().setSpectatorChatEnabled(value, temp);
 					break;

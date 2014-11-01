@@ -22,6 +22,12 @@ inspectorItem: book
 # Right-click on a head on the TP menu to see the inventory of this player?
 inspectPlayerFromTeleportationMenu: true
 
+# Display the health of the players in the tooltip, on the TP menu?
+playersHealthInTeleportationMenu: true
+
+# Display the relative location of the players in the tooltip, on the TP menu?
+playersLocationInTeleportationMenu: true
+
 # Enable spectator-only chat, invisible to non-specs?
 specchat: true
 # Show spectatorplus plugin messages to spectators?

@@ -35,6 +35,7 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
+import org.bukkit.util.Vector;
 
 @SuppressWarnings("deprecation")
 public class SpectatorPlus extends JavaPlugin {
@@ -67,7 +68,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport;
 
 	protected ScoreboardManager manager = null;
 	protected Scoreboard board = null;
@@ -213,6 +214,95 @@ public class SpectatorPlus extends JavaPlugin {
 
 
 	/**
+	 * Generates a player head ItemStack to be displayed in the teleportation GUI.
+	 * 
+	 * @param player The player
+	 * @param hidden True if the player is a displayed hidden player.
+	 * @return The head.
+	 */
+	protected ItemStack generatePlayerHeadItem(Player player, Player inventoryViewer, boolean hidden) {
+		ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
+		
+		meta.setOwner(player.getName());
+		
+		if(hidden) meta.setDisplayName(ChatColor.DARK_GRAY + "[HIDDEN] " + ChatColor.RESET + player.getDisplayName());
+		else       meta.setDisplayName(ChatColor.RESET + player.getDisplayName());
+		
+		
+		List<String> lore = new ArrayList<String>();
+		
+		if(playersHealthInTeleportationMenu || playersLocationInTeleportationMenu) {
+			if(playersHealthInTeleportationMenu) {
+				lore.add(ChatColor.GOLD + "" + ((int) ((Damageable) player).getHealth()) + " " + ChatColor.WHITE + "hearts" + ChatColor.GRAY + " out of 20");
+			}
+			
+			if(playersLocationInTeleportationMenu) {
+				if(!player.getWorld().equals(inventoryViewer.getWorld())) {
+					lore.add(ChatColor.GRAY + "You and " + player.getName() + " are not in the same world.");
+				}
+				else {
+					int distance = (int) player.getLocation().distance(inventoryViewer.getLocation());
+					
+					String direction = null;
+					// The angle between a vector pointing to the North and a vector pointing
+					// from the spectator to the player, converted in degrees, -180 to have 0° for North.
+					double angle = (new Vector(0, 0, -1).angle(player.getLocation().toVector().setY(0).subtract(inventoryViewer.getLocation().toVector().setY(0)).multiply(-1)) * 180/Math.PI - 180) % 360;
+					if(angle < 0) angle += 360.0;
+					
+					// The calculated angle is the same for two positions symmetric of each other
+					// relative to the N-S axis.
+					// This lead to "west" displayed for both east and west.
+					if(inventoryViewer.getLocation().getX() < player.getLocation().getX()
+							&& 202.5 <= angle && angle < 337.5) {
+						angle -= 180.0;
+					}
+					
+					if (0 <= angle && angle < 22.5) {
+						direction = "North";
+					} else if (22.5 <= angle && angle < 67.5) {
+						direction =  "North-east";
+					} else if (67.5 <= angle && angle < 112.5) {
+						direction =  "East";
+					} else if (112.5 <= angle && angle < 157.5) {
+						direction =  "South-east";
+					} else if (157.5 <= angle && angle < 202.5) {
+						direction =  "South";
+					} else if (202.5 <= angle && angle < 247.5) {
+						direction =  "South-west";
+					} else if (247.5 <= angle && angle < 292.5) {
+						direction =  "West";
+					} else if (292.5 <= angle && angle < 337.5) {
+						direction =  "North-west";
+					} else if (337.5 <= angle && angle <= 360.0) {
+						direction =  "North";
+					}
+					
+					if(direction != null) {
+						lore.add(ChatColor.WHITE + direction + ", " + distance + " meters");
+					}
+					else {
+						lore.add(ChatColor.WHITE + "" + distance + " meters");
+					}
+				}
+			}
+			
+			lore.add(" "); // separator
+		}
+		
+		lore.add(ChatColor.GOLD+""+ChatColor.ITALIC+"Left click"+ ChatColor.DARK_GRAY+ChatColor.ITALIC +" to be teleported");
+		if(this.inspectFromTPMenu) {
+			lore.add(ChatColor.GOLD+""+ChatColor.ITALIC+"Right click"+ ChatColor.DARK_GRAY+ChatColor.ITALIC +" to see inventory");
+		}
+		
+		meta.setLore(lore);
+		
+		
+		playerhead.setItemMeta(meta);
+		return playerhead;
+	}
+	
+	/**
 	 * Opens the player head GUI, to allow spectators to choose a player to teleport to.
 	 * 
 	 * @param spectator The GUI will be open for this spectator.
@@ -228,12 +318,6 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		
 		Inventory gui = null;
-		
-		List<String> lore = new ArrayList<String>();
-		lore.add(ChatColor.GOLD+""+ChatColor.ITALIC+"Left click"+ ChatColor.DARK_GRAY+ChatColor.ITALIC +" to be teleported");
-		if(this.inspectFromTPMenu) {
-			lore.add(ChatColor.GOLD+""+ChatColor.ITALIC+"Right click"+ ChatColor.DARK_GRAY+ChatColor.ITALIC +" to see inventory");
-		}
 		
 		LinkedList<Player> displayedSpectators = new LinkedList<Player>();
 		LinkedList<Player> displayedSpectatorsHidden = new LinkedList<Player>();
@@ -288,30 +372,12 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		// Display hidden players first (people who have used '/spec hide')
 		for(Player displayedSpectatorHidden : displayedSpectatorsHidden) {
-			ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-			SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
-			
-			meta.setOwner(displayedSpectatorHidden.getName());
-			meta.setDisplayName(ChatColor.DARK_GRAY + "[HIDDEN] " + ChatColor.RESET + displayedSpectatorHidden.getDisplayName());
-			meta.setLore(lore);
-			
-			playerhead.setItemMeta(meta);
-			
-			gui.addItem(playerhead);
+			gui.addItem(generatePlayerHeadItem(displayedSpectatorHidden, spectator, true));
 		}
 		
 		// Display normal players
 		for(Player displayedSpectator : displayedSpectators) {
-			ItemStack playerhead = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-			SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
-			
-			meta.setOwner(displayedSpectator.getName());
-			meta.setDisplayName(ChatColor.RESET + displayedSpectator.getDisplayName());
-			meta.setLore(lore);
-			
-			playerhead.setItemMeta(meta);
-			
-			gui.addItem(playerhead);
+			gui.addItem(generatePlayerHeadItem(displayedSpectator, spectator, false));
 		}
 
 		spectator.openInventory(gui);
@@ -870,6 +936,15 @@ public class SpectatorPlus extends JavaPlugin {
 				toggles.getConfig().set("inspectPlayerFromTeleportationMenu", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspectPlayerFromTeleportationMenu: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
+			
+			if (!togglesND.contains("playersHealthInTeleportationMenu")) {
+				toggles.getConfig().set("playersHealthInTeleportationMenu", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"playersHealthInTeleportationMenu: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
+			if (!togglesND.contains("playersLocationInTeleportationMenu")) {
+				toggles.getConfig().set("playersLocationInTeleportationMenu", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"playersLocationInTeleportationMenu: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
 
 			// Spectator chat: true/false
 			if (!togglesND.contains("specchat")) {
@@ -944,6 +1019,8 @@ public class SpectatorPlus extends JavaPlugin {
 			tpToDeathToolShowCause = toggles.getConfig().getBoolean("tpToDeathToolShowCause", true);
 			inspector = toggles.getConfig().getBoolean("inspector", true);
 			inspectFromTPMenu = toggles.getConfig().getBoolean("inspectPlayerFromTeleportationMenu", true);
+			playersHealthInTeleportationMenu = toggles.getConfig().getBoolean("playersHealthInTeleportationMenu", true);
+			playersLocationInTeleportationMenu = toggles.getConfig().getBoolean("playersLocationInTeleportationMenu", true);
 			specChat = toggles.getConfig().getBoolean("specchat", true);
 			output = toggles.getConfig().getBoolean("outputmessages", true);
 			death = toggles.getConfig().getBoolean("deathspec", false);
