@@ -127,6 +127,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 		// Register event listeners
 		getServer().getPluginManager().registerEvents(new SpectateListener(this), this);
+		new SpectatorManagerTask(this).runTaskTimer(this, 20, 20);
 
 		if(output) {
 			console.sendMessage(prefix + "Version " + ChatColor.RED + version + ChatColor.GOLD + " is enabled!");
