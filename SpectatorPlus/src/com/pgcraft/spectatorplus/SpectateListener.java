@@ -34,6 +34,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -871,6 +872,32 @@ public class SpectateListener implements Listener {
 	public void onInventoryDrag(InventoryDragEvent event) {
 		if (plugin.getPlayerData((Player) event.getWhoClicked()).spectating) {
 			event.setCancelled(true);
+		}
+	}
+	
+	/**
+	 * Handle MultiverseInventories & other similar plugins<br>
+	 * Disables spectate to restore proper inventory before world change.
+	 * 
+	 * @param event
+	 */
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onWorldChangeStart(PlayerChangedWorldEvent event) {
+		if (plugin.getPlayerData((Player) event.getPlayer()).spectating) {
+			plugin.disableSpectate(event.getPlayer(), plugin.console, true);
+		}
+	}
+	
+	/**
+	 * Handle MultiverseInventories & other similar plugins<br>
+	 * Enables spectate to restore spectator inventory after world change (technically just after the Multiverse event, which is normal priority).
+	 * 
+	 * @param event
+	 */
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onWorldChangeFinish(PlayerChangedWorldEvent event) {
+		if (plugin.getPlayerData((Player) event.getPlayer()).spectating) {
+			plugin.enableSpectate(event.getPlayer(), plugin.console, true);
 		}
 	}
 }
