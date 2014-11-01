@@ -32,7 +32,8 @@ public class SpectateAPI {
 	
 	/**
 	 * Enables or disables the spectator mode for a player.<br>
-	 * Since this method provides no <i>sender</i>, the console is used by default.
+	 * Since this method provides no <i>sender</i>, the console is used by default.<br>
+	 * Consider using {@link #setSpectating(Player player, boolean spectating, boolean silent)} instead to avoid outputting messages.
 	 * 
 	 * @param player The player.
 	 * @param spectating True if the spectator mode needs to be enabled.
@@ -47,7 +48,25 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Enables or disables the spectator mode for a player.
+	 * Enables or disables the spectator mode for a player.<br>
+	 * Since this method provides no <i>sender</i>, the console is used by default.
+	 * 
+	 * @param player The player.
+	 * @param spectating True if the spectator mode needs to be enabled.
+	 * @param silent If true, will not output any messages - useful when using the API or command blocks.
+	 * 
+	 * @since 2.0
+	 */
+	public void setSpectating(Player player, boolean spectating, boolean silent) {
+		if(isSpectator(player) != spectating) {
+			// Defaults to console having enabled spectator mode
+			setSpectating(player, spectating, plugin.console, silent);
+		}
+	}
+	
+	/**
+	 * Enables or disables the spectator mode for a player.<br>
+	 * Consider using {@link #setSpectating(Player player, boolean spectating, CommandSender sender, boolean silent)} instead to avoid outputting messages.
 	 * 
 	 * @param spectator The player.
 	 * @param spectating True if the spectator mode needs to be enabled.
@@ -56,10 +75,24 @@ public class SpectateAPI {
 	 * @since 1.9.2
 	 */
 	public void setSpectating(Player spectator, boolean spectating, CommandSender sender) {
+		setSpectating(spectator, spectating, sender, false);
+	}
+	
+	/**
+	 * Enables or disables the spectator mode for a player.
+	 * 
+	 * @param spectator The player.
+	 * @param spectating True if the spectator mode needs to be enabled.
+	 * @param sender The player (or the console) who enabled spectate mode
+	 * @param silent If true, will not output any messages - useful when using the API or command blocks.
+	 * 
+	 * @since 2.0
+	 */
+	public void setSpectating(Player spectator, boolean spectating, CommandSender sender, boolean silent) {
 		if (spectating) {
-			plugin.enableSpectate(spectator, sender);
+			plugin.enableSpectate(spectator, sender, silent);
 		} else {
-			plugin.disableSpectate(spectator, sender);
+			plugin.disableSpectate(spectator, sender, silent);
 		}
 	}
 	
