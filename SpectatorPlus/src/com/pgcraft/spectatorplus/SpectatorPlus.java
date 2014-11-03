@@ -753,6 +753,9 @@ public class SpectatorPlus extends JavaPlugin {
 				team.removePlayer(spectator);
 			}
 			
+			// Clear the arena they were spectating in
+			removePlayerFromArena(spectator, true);
+			
 			if (!silent) {
 				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
 					if(output) {
@@ -1162,7 +1165,6 @@ public class SpectatorPlus extends JavaPlugin {
 		return setArenaForPlayer(player, arenaName, true);
 	}
 
-
 	/**
 	 * Removes a player from his arena.
 	 * The player is teleported to the main lobby, if such a lobby is set.
@@ -1170,11 +1172,22 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @param player
 	 */
 	protected void removePlayerFromArena(Player player) {
+		removePlayerFromArena(player, false);
+	}
+	
+	/**
+	 * Removes a player from his arena.
+	 * The player is teleported to the main lobby, if such a lobby is set.
+	 * 
+	 * @param player
+	 * @param silent
+	 */
+	protected void removePlayerFromArena(Player player, boolean silent) {
 
 		getPlayerData(player).arena = null;
 		boolean teleported = spawnPlayer(player);
 
-		if(output) {
+		if(output && !silent) {
 			if(teleported) {
 				player.sendMessage(prefix + "You were removed from your current arena and teleported to the main lobby.");
 			}

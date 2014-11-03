@@ -1,5 +1,6 @@
 package com.pgcraft.spectatorplus;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -27,20 +28,24 @@ public class SpectatorManagerTask extends BukkitRunnable {
 					// Check if the spectator is not in any arenas/the global lobby
 					boolean outOfBounds = true;
 					Arena arena = p.arenasManager.getArena(p.getPlayerData(target).arena);
+					// [Spawn allows free movement (before choosing an arena).]
 					if (arena != null) {
-						if (target.getLocation().getX() >= arena.getCorner1().getX() && target.getLocation().getX() <= arena.getCorner2().getX()) {
-							if (target.getLocation().getY() >= arena.getCorner1().getY() && target.getLocation().getY() <= arena.getCorner2().getY()) {
-								if (target.getLocation().getZ() >= arena.getCorner1().getZ() && target.getLocation().getZ() <= arena.getCorner2().getZ()) {
+						Location pos1 = arena.getCorner1();
+						Location pos2 = arena.getCorner2();
+						if (pos1.getX() > pos2.getX()) {
+							Location tempPos = new Location(pos1.getWorld(), pos1.getX(),pos1.getY(),pos1.getZ()); // pos1 temp
+							pos1 = new Location(pos2.getWorld(), pos2.getX(),pos2.getY(),pos2.getZ());
+							pos2 = new Location(tempPos.getWorld(), tempPos.getX(),tempPos.getY(),tempPos.getZ());
+						}
+						
+						if (target.getLocation().getX() >= pos1.getX() && target.getLocation().getX() <= pos2.getX()) {
+							if (target.getLocation().getY() >= pos1.getY() && target.getLocation().getY() <= pos2.getY()) {
+								if (target.getLocation().getZ() >= pos1.getZ() && target.getLocation().getZ() <= pos2.getZ()) {
 									outOfBounds = false;
 								}
 							}
 						}
-					} else {
-						// No arena, no movement.
-						p.spawnPlayer(target);
-						p.console.sendMessage("Returning to spawn...");
-						return;
-					}
+					} else {outOfBounds = false;}
 					if (outOfBounds) {
 						p.getServer().getLogger().info(target.getName() + " is out of bounds.");
 					}
