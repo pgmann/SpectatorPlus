@@ -570,6 +570,7 @@ public class SpectateCommand implements CommandExecutor {
 				if(mode.equalsIgnoreCase("arena")) {
 					sender.sendMessage(SpectatorPlus.prefix + "Only players in arena regions can be teleported to by spectators.");
 				}
+				p.updateSpectatorInventories();
 			}
 			else {
 				sender.sendMessage(SpectatorPlus.prefix + "The mode can be \"arena\" or \"any\".");
