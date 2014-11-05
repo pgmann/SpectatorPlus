@@ -526,8 +526,7 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onPlayerInteract(PlayerInteractEvent event) {
 		if (plugin.getPlayerData(event.getPlayer()).spectating && event.getMaterial() == plugin.compassItem && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-			String mode = plugin.setup.getConfig().getString("mode"); 
-			if (mode.equals("arena")) {
+			if (plugin.mode == SpectatorPlusMode.ARENA) {
 				UUID region = plugin.getPlayerData(event.getPlayer()).arena;
 				plugin.showGUI(event.getPlayer(), region);
 			} else {

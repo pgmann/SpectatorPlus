@@ -70,7 +70,9 @@ public class SpectatorPlus extends JavaPlugin {
 	protected boolean inspector;
 	protected Material inspectorItem;
 	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport;
-
+	
+	protected SpectatorPlusMode mode = SpectatorPlusMode.ANY;
+	
 	protected ScoreboardManager manager = null;
 	protected Scoreboard board = null;
 	protected Team team = null;
@@ -114,6 +116,13 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		arenasManager = new ArenasManager(this);
 		api = new SpectateAPI(this);
+		
+		try {
+			mode = SpectatorPlusMode.fromString(setup.getConfig().getString("mode"));
+		} catch(IllegalArgumentException e) {
+			getLogger().warning("The SpectatorPlus' mode set in the config (" + setup.getConfig().getString("mode") + ") is invalid; using the ANY mode.");
+			setSpectatorPlusMode(SpectatorPlusMode.ANY);
+		}
 		
 		// Add players already online to this plugin's database
 		for (Player player : getServer().getOnlinePlayers()) {
@@ -311,7 +320,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 */
 	protected void showGUI(Player spectator, UUID region) {
 		
-		if (setup.getConfig().getString("mode").equals("arena") && region == null) {
+		if (mode == SpectatorPlusMode.ARENA && region == null) {
 			if(output) {
 				spectator.sendMessage(prefix + "Pick an arena first using the arena selector!");
 			}
@@ -324,7 +333,7 @@ public class SpectatorPlus extends JavaPlugin {
 		LinkedList<Player> displayedSpectatorsHidden = new LinkedList<Player>();
 		
 		for (Player player : getServer().getOnlinePlayers()) {
-			if (setup.getConfig().getString("mode").equals("any")) {
+			if (mode == SpectatorPlusMode.ANY) {
 				if (!getPlayerData(player).hideFromTp && !getPlayerData(player).spectating) {
 					displayedSpectators.add(player);
 				// Admins will still be able to see players who have used '/spec hide':
@@ -332,7 +341,7 @@ public class SpectatorPlus extends JavaPlugin {
 					displayedSpectatorsHidden.add(player);
 				}
 			}
-			else if (setup.getConfig().getString("mode").equals("arena")) {
+			else if (mode == SpectatorPlusMode.ARENA) {
 				if (region == null) {
 					if(output) {spectator.sendMessage(prefix + "Pick an arena first using the arena selector!");}
 					return;
@@ -364,7 +373,7 @@ public class SpectatorPlus extends JavaPlugin {
 			inventorySize = 9; // Avoids an empty inventory.
 		}
 		
-		if(setup.getConfig().getString("mode").equals("any")) {
+		if(mode == SpectatorPlusMode.ANY) {
 			gui = Bukkit.getServer().createInventory(spectator, inventorySize, TELEPORTER_ANY_TITLE);
 		}
 		else {
@@ -1045,7 +1054,14 @@ public class SpectatorPlus extends JavaPlugin {
 			if(clockItem == null) clockItem = Material.WATCH;
 			if(spectatorsToolsItem == null) spectatorsToolsItem = Material.MAGMA_CREAM;
 			if(inspectorItem == null) inspectorItem = Material.BOOK;
-		
+			
+			try {
+				setSpectatorPlusMode(SpectatorPlusMode.fromString(setup.getConfig().getString("mode")));
+			} catch(IllegalArgumentException e) {
+				getLogger().warning("The SpectatorPlus' mode set in the config (" + setup.getConfig().getString("mode") + ") is invalid; using the ANY mode.");
+				setSpectatorPlusMode(SpectatorPlusMode.ANY);
+			}
+			
 		} // ...end hardReload
 
 		if (scoreboard) {
@@ -1101,6 +1117,31 @@ public class SpectatorPlus extends JavaPlugin {
 		updateSpectatorInventories();
 	}
 
+	/**
+	 * Sets the current SpectatorPlus' mode.
+	 * <p>
+	 * <ul>
+	 *   <li>{@code ANY}: the spectators can teleports themselves to any player in the server.</li>
+	 *   <li>{@code ARENA}: the spectators will have to choose an arena; then they will be able 
+	 *   to teleport themselves only to the players in this arena. An option is available to prevent 
+	 *   the spectators from leaving the arena.</li>
+	 * </ul>
+	 * 
+	 * @param mode The mode.
+	 * @see SpectatorPlusMode
+	 * 
+	 * @since 2.0
+	 */
+	protected void setSpectatorPlusMode(SpectatorPlusMode mode) {
+		this.mode = mode;
+		
+		setup.getConfig().set("mode", mode.toString());
+		setup.saveConfig();
+		
+		// Needed if the mode is changed from/to the arena mode.
+		updateSpectatorInventories();
+	}
+	
 	/**
 	 * Lets a player select two points and set up an arena.
 	 * 
@@ -1381,19 +1422,16 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 
 		// Give them clock (only for arena mode and if the toggle is on)
-		if (clock) {
-			String mode = setup.getConfig().getString("mode");
-			if (mode.equals("arena")) {
-				ItemStack watch = new ItemStack(clockItem, 1);
-				ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
-				watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector" + rightClick);
-				List<String> lore = new ArrayList<String>();
-					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose an arena");
-					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to spectate in");
-				watchMeta.setLore(lore);
-				watch.setItemMeta(watchMeta);
-				spectator.getInventory().setItem(1, watch);
-			}
+		if (clock && mode == SpectatorPlusMode.ARENA) {
+			ItemStack watch = new ItemStack(clockItem, 1);
+			ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
+			watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector" + rightClick);
+			List<String> lore = new ArrayList<String>();
+				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose an arena");
+				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to spectate in");
+			watchMeta.setLore(lore);
+			watch.setItemMeta(watchMeta);
+			spectator.getInventory().setItem(1, watch);
 		}
 
 		// Give them magma cream (spectators tools) if the toggle is on

@@ -561,17 +561,15 @@ public class SpectateCommand implements CommandExecutor {
 
 		else { // /spec mode <?>
 			String mode = args[1];
-
-			if(mode.equalsIgnoreCase("any") || mode.equalsIgnoreCase("arena")) {
-				p.setup.getConfig().set("mode", mode.toLowerCase());
-				p.setup.saveConfig();
-
+			
+			try {
+				p.setSpectatorPlusMode(SpectatorPlusMode.fromString(mode));
+				
 				sender.sendMessage(SpectatorPlus.prefix + "Mode set to " + ChatColor.RED + mode.toLowerCase());
-				if(mode.equalsIgnoreCase("arena")) {
+				if(p.mode == SpectatorPlusMode.ARENA) {
 					sender.sendMessage(SpectatorPlus.prefix + "Only players in arena regions can be teleported to by spectators.");
 				}
-			}
-			else {
+			} catch(IllegalArgumentException e) {
 				sender.sendMessage(SpectatorPlus.prefix + "The mode can be \"arena\" or \"any\".");
 			}
 		}
