@@ -27,7 +27,11 @@ public class SpectateAPI {
 	 * @since 1.9.2
 	 */
 	public boolean isSpectator(Player player) {
-		return plugin.getPlayerData(player).spectating;
+		if(plugin.getPlayerData(player) != null) {
+			return plugin.getPlayerData(player).spectating;
+		}
+		
+		return false;
 	}
 	
 	/**
