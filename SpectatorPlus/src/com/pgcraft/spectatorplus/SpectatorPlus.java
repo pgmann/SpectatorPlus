@@ -333,15 +333,7 @@ public class SpectatorPlus extends JavaPlugin {
 		LinkedList<Player> displayedSpectatorsHidden = new LinkedList<Player>();
 		
 		for (Player player : getServer().getOnlinePlayers()) {
-			if (mode == SpectatorPlusMode.ANY) {
-				if (!getPlayerData(player).hideFromTp && !getPlayerData(player).spectating) {
-					displayedSpectators.add(player);
-				// Admins will still be able to see players who have used '/spec hide':
-				} else if (spectator.hasPermission("spectate.admin") && !getPlayerData(player).spectating) {
-					displayedSpectatorsHidden.add(player);
-				}
-			}
-			else if (mode == SpectatorPlusMode.ARENA) {
+			if (mode == SpectatorPlusMode.ARENA) {
 				if (region == null) {
 					if(output) {spectator.sendMessage(prefix + "Pick an arena first using the arena selector!");}
 					return;
@@ -365,6 +357,19 @@ public class SpectatorPlus extends JavaPlugin {
 						}
 					}
 				}
+			}
+			else if(mode == SpectatorPlusMode.ANY
+					|| (mode == SpectatorPlusMode.WORLD && player.getWorld().equals(spectator.getWorld()))) {
+				
+				if (!getPlayerData(player).hideFromTp && !getPlayerData(player).spectating) {
+					displayedSpectators.add(player);
+				}
+				
+				// Admins will still be able to see players who have used '/spec hide':
+				else if (spectator.hasPermission("spectate.admin") && !getPlayerData(player).spectating) {
+					displayedSpectatorsHidden.add(player);
+				}
+				
 			}
 		}
 		
@@ -1125,6 +1130,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 *   <li>{@code ARENA}: the spectators will have to choose an arena; then they will be able 
 	 *   to teleport themselves only to the players in this arena. An option is available to prevent 
 	 *   the spectators from leaving the arena.</li>
+	 *   <li>{@code WORLD}: the spectators will be able to teleport themselves to the players in the same world.</li>
 	 * </ul>
 	 * 
 	 * @param mode The mode.

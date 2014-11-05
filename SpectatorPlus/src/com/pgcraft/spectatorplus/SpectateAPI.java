@@ -145,6 +145,7 @@ public class SpectateAPI {
 	 *   <li>{@code ARENA}: the spectators will have to choose an arena; then they will be able 
 	 *   to teleport themselves only to the players in this arena. An option is available to prevent 
 	 *   the spectators from leaving the arena.</li>
+	 *   <li>{@code WORLD}: the spectators will be able to teleport themselves to the players in the same world.</li>
 	 * </ul>
 	 * 
 	 * @param mode The mode.
