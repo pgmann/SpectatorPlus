@@ -75,7 +75,7 @@ public class SpectateListener implements Listener {
 	 * 
 	 * @param event
 	 */
-	@EventHandler(priority=EventPriority.HIGH)
+	@EventHandler(priority=EventPriority.HIGHEST)
 	protected void onPlayerJoin(PlayerJoinEvent event) {
 		
 		if(!plugin.user.containsKey(event.getPlayer().getName())) {
