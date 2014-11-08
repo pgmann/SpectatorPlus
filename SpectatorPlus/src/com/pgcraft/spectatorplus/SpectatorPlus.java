@@ -846,7 +846,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			
 			// Teleport to spawn
-			spawnPlayer(spectator);
+			if (!worldChange) spawnPlayer(spectator);
 			
 			// Allow interaction
 			getPlayerData(spectator).spectating = false;
