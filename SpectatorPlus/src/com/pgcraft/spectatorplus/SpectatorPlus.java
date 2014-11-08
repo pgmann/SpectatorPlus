@@ -383,11 +383,11 @@ public class SpectatorPlus extends JavaPlugin {
 			inventorySize = 9; // Avoids an empty inventory.
 		}
 		
-		if(mode == SpectatorMode.ANY) {
-			gui = Bukkit.getServer().createInventory(spectator, inventorySize, TELEPORTER_ANY_TITLE);
-		}
-		else {
+		if(mode == SpectatorMode.ARENA) {
 			gui = Bukkit.getServer().createInventory(spectator, inventorySize, TELEPORTER_ARENA_TITLE + ChatColor.ITALIC + arenasManager.getArena(region).getName());
+		}
+		else { // WORLD and ANY
+			gui = Bukkit.getServer().createInventory(spectator, inventorySize, TELEPORTER_ANY_TITLE);
 		}
 		
 		// Display hidden players first (people who have used '/spec hide')
