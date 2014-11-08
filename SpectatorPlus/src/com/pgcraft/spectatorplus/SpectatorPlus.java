@@ -1110,6 +1110,8 @@ public class SpectatorPlus extends JavaPlugin {
 					team.addPlayer(target);
 				}
 			}
+			// Incase seeSpecs was previously disabled...
+			seeSpecs = toggles.getConfig().getBoolean("seespecs", false);
 		} else {
 			// seeSpecs relies on using scoreboard teams. Force-disable seeSpecs if scoreboard is disabled.
 			seeSpecs = false;
