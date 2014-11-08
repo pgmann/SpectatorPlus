@@ -1243,7 +1243,7 @@ public class SpectatorPlus extends JavaPlugin {
 		// The players in the deleted arena are removed to the arena
 		for(Player player : this.getServer().getOnlinePlayers()) {
 			if(getPlayerData(player).spectating) {
-				if(getPlayerData(player).arena.equals(arenaToBeRemoved.getUUID())) {
+				if(getPlayerData(player).arena != null && getPlayerData(player).arena.equals(arenaToBeRemoved.getUUID())) {
 					removePlayerFromArena(player);
 				}
 			}
