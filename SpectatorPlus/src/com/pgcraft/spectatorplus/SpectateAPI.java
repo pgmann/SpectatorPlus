@@ -610,6 +610,25 @@ public class SpectateAPI {
 	}
 	
 	/**
+	 * When teleporting the players to the spawn (without main lobby), use the /spawn command, or
+	 * the spawn point of the current world?
+	 * 
+	 * @param value Enabled if true
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @since 2.0
+	 */
+	public void setEnforceArenaBoundary(boolean value, boolean temp) {
+		if(!temp) {
+			plugin.toggles.getConfig().set("enforceArenaBoundary", value);
+			plugin.toggles.saveConfig();
+		}
+		
+		plugin.enforceArenaBoundary = value;
+		plugin.reloadConfig(false);
+	}
+	
+	/**
 	 * Returns the {@link ArenasManager Arenas manager}. Use this to manage the arenas.
 	 * 
 	 * @return The {@link ArenasManager}.

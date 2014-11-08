@@ -69,7 +69,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
 	
 	protected SpectatorMode mode = SpectatorMode.ANY;
 	
@@ -1033,6 +1033,13 @@ public class SpectatorPlus extends JavaPlugin {
 				toggles.getConfig().set("useSpawnCommandToTeleport", true);
 				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"useSpawnCommandToTeleport: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
 			}
+			
+			// When teleporting the players to the spawn (without main lobby), use the /spawn command, or
+			// the spawn point of the current world?
+			if(!togglesND.contains("enforceArenaBoundary")) {
+				toggles.getConfig().set("enforceArenaBoundary", true);
+				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"enforceArenaBoundary: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
+			}
 
 			// Config was updated, fix version number.
 			toggles.getConfig().set("version",version);
@@ -1057,6 +1064,7 @@ public class SpectatorPlus extends JavaPlugin {
 			newbieMode = toggles.getConfig().getBoolean("newbieMode", true);
 			teleportToSpawnOnSpecChangeWithoutLobby = toggles.getConfig().getBoolean("teleportToSpawnOnSpecChangeWithoutLobby", true);
 			useSpawnCommandToTeleport = toggles.getConfig().getBoolean("useSpawnCommandToTeleport", true);
+			enforceArenaBoundary = toggles.getConfig().getBoolean("enforceArenaBoundary", true);
 			
 			compassItem = Material.matchMaterial(toggles.getConfig().getString("compassItem", "COMPASS"));
 			clockItem = Material.matchMaterial(toggles.getConfig().getString("clockItem", "WATCH"));

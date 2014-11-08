@@ -22,7 +22,6 @@ public class SpectatorManagerTask extends BukkitRunnable {
 	
 	@Override
 	public void run() {
-		boolean enforceBoundary = true;
 		
 		for (Player target:p.getServer().getOnlinePlayers()) {
 			if (p.getPlayerData(target).spectating) {
@@ -31,7 +30,7 @@ public class SpectatorManagerTask extends BukkitRunnable {
 				
 				// In arena mode, if boundaries are enforced, check if spectators are not inside the boundary.
 				// [Spawn allows free movement (before choosing an arena).]
-				if (p.setup.getConfig().getString("mode").equals("arena") && enforceBoundary) {
+				if (p.mode.equals(SpectatorMode.ARENA) && p.enforceArenaBoundary) {
 					boolean outOfBounds = true;
 					
 					Arena arena = p.arenasManager.getArena(p.getPlayerData(target).arena);
@@ -44,7 +43,7 @@ public class SpectatorManagerTask extends BukkitRunnable {
 					}
 					
 					if (outOfBounds) {
-						p.getServer().getLogger().info(target.getName() + " is out of bounds.");
+						if (p.output) target.sendMessage(SpectatorPlus.prefix + "Stay inside the arena!"); 
 						target.teleport(getValidPos(target.getLocation(), arena));
 					}
 				}

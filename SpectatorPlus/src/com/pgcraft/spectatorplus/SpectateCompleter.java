@@ -103,6 +103,7 @@ public class SpectateCompleter implements TabCompleter {
 					case "newbieMode":
 					case "teleportToSpawnOnSpecChangeWithoutLobby":
 					case "useSpawnCommandToTeleport":
+					case "enforceArenaBoundary":
 						return getAutocompleteSuggestions(args[2], Arrays.asList("true", "false"));
 					case "compassItem":
 					case "clockItem":

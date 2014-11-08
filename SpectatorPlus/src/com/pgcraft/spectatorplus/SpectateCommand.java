@@ -396,6 +396,9 @@ public class SpectateCommand implements CommandExecutor {
 				case "useSpawnCommandToTeleport":
 					p.getAPI().setUseSpawnCommandToTeleport(value, temp);
 					break;
+				case "enforceArenaBoundary":
+					p.getAPI().setEnforceArenaBoundary(value, temp);
+					break;
 				default:
 					success = false;
 					break;
