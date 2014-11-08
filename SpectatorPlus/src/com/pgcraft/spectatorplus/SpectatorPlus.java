@@ -871,7 +871,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			
 			// Clear the arena they were spectating in
-			removePlayerFromArena(spectator, true);
+			if (!worldChange) removePlayerFromArena(spectator, true);
 			
 			if (!silent) {
 				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
