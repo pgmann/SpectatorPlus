@@ -507,11 +507,7 @@ public class SpectateListener implements Listener {
 	protected void onPlayerQuit(PlayerQuitEvent event) {
 		Player spectator = event.getPlayer();
 		if (plugin.getPlayerData(spectator).spectating) {
-			plugin.disableSpectate(spectator, plugin.console);
-			
-			// The spectator mode needs to be re-enabled on the next login
-			plugin.specs.getConfig().set(spectator.getName(), true);
-			plugin.specs.saveConfig();
+			plugin.disableSpectate(spectator, plugin.console, true, true);
 		}
 	}
 	
