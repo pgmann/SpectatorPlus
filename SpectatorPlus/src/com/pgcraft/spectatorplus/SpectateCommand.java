@@ -330,7 +330,14 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void doConfig(CommandSender sender, Command command, String label, String[] args) {
-		if (args.length >= 3) {
+		if(args.length == 2) { // /spec config <key>
+			if(p.toggles.getConfig().get(args[1]) != null) {
+				sender.sendMessage(SpectatorPlus.prefix+"The toggle "+ChatColor.RED+args[1]+ChatColor.GOLD+" is currently set to "+ChatColor.RED+p.toggles.getConfig().get(args[1]).toString()+ChatColor.GOLD+".");
+			}
+			else {
+				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" does not exist!");
+			}
+		} else if(args.length >= 3) { // /spec config <key> <value> [temp]
 			String entry = args[1];
 			boolean temp = (args.length > 3 && args[3] != null && args[3].equalsIgnoreCase("temp")) ? true : false;
 			boolean success = true;
@@ -433,7 +440,7 @@ public class SpectateCommand implements CommandExecutor {
 				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+entry+ChatColor.DARK_RED+" does not exist!");
 			}
 		} else {
-			sender.sendMessage(SpectatorPlus.prefix+"Usage: "+ChatColor.RED+"/spec config <toggle> <value> [temp]");
+			sender.sendMessage(SpectatorPlus.prefix+"Usage: "+ChatColor.RED+"/spec config <toggle> [value] [temp]");
 		}
 	}
 
