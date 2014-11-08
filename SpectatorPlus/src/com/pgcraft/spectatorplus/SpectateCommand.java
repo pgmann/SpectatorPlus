@@ -114,7 +114,7 @@ public class SpectateCommand implements CommandExecutor {
 
 		sender.sendMessage(ChatColor.RED + "/spec arena <" + playerOnly + "add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>" + ChatColor.GOLD + ": Manages arenas");
 		sender.sendMessage(ChatColor.RED + playerOnly + "/spec lobby <set/del>" + ChatColor.GOLD + playerOnly + ": Adds/deletes the spectator lobby");		
-		sender.sendMessage(ChatColor.RED + "/spec mode <any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
+		sender.sendMessage(ChatColor.RED + "/spec mode <world/any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
 
 		sender.sendMessage(ChatColor.RED + playerOnly + "/spec player <player>" + ChatColor.GOLD + playerOnly + ": Teleports the sender (spectator only) to <player>");
 
@@ -546,7 +546,7 @@ public class SpectateCommand implements CommandExecutor {
 	 *  - any: teleportation to any player;<br>
 	 *  - arena: teleportation to the players inside the current arena. Players outside an arena are unreachable.
 	 * <p>
-	 * Usage: /spec mode &lt;any|arena>
+	 * Usage: /spec mode &lt;world|any|arena>
 	 * 
 	 * @param sender
 	 * @param command
@@ -556,24 +556,22 @@ public class SpectateCommand implements CommandExecutor {
 	private void doMode(CommandSender sender, Command command, String label, String[] args) {
 
 		if(args.length == 1) { // /spec mode
-			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec mode <arena/any>");
+			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec mode <world/arena/any>");
 		}
 
 		else { // /spec mode <?>
 			String mode = args[1];
 
-			if(mode.equalsIgnoreCase("any") || mode.equalsIgnoreCase("arena")) {
-				p.setup.getConfig().set("mode", mode.toLowerCase());
-				p.setup.saveConfig();
+			try {
+			p.setSpectatorMode(SpectatorMode.fromString(mode));
 
-				sender.sendMessage(SpectatorPlus.prefix + "Mode set to " + ChatColor.RED + mode.toLowerCase());
-				if(mode.equalsIgnoreCase("arena")) {
-					sender.sendMessage(SpectatorPlus.prefix + "Only players in arena regions can be teleported to by spectators.");
-				}
-				p.updateSpectatorInventories();
+			sender.sendMessage(SpectatorPlus.prefix + "Mode set to " + ChatColor.RED + mode.toLowerCase());
+			if(p.mode == SpectatorMode.ARENA) {
+				sender.sendMessage(SpectatorPlus.prefix + "Only players in arena regions can be teleported to by spectators.");
 			}
-			else {
-				sender.sendMessage(SpectatorPlus.prefix + "The mode can be \"arena\" or \"any\".");
+			
+			} catch (IllegalArgumentException e) {
+				sender.sendMessage(SpectatorPlus.prefix + "The mode can be \"world\", \"arena\" or \"any\".");
 			}
 		}
 	}

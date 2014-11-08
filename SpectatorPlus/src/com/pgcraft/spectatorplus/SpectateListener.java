@@ -75,7 +75,7 @@ public class SpectateListener implements Listener {
 	 * 
 	 * @param event
 	 */
-	@EventHandler(priority=EventPriority.HIGH)
+	@EventHandler(priority=EventPriority.HIGHEST)
 	protected void onPlayerJoin(PlayerJoinEvent event) {
 		
 		if(!plugin.user.containsKey(event.getPlayer().getName())) {
@@ -526,8 +526,7 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onPlayerInteract(PlayerInteractEvent event) {
 		if (plugin.getPlayerData(event.getPlayer()).spectating && event.getMaterial() == plugin.compassItem && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-			String mode = plugin.setup.getConfig().getString("mode"); 
-			if (mode.equals("arena")) {
+			if (plugin.mode == SpectatorMode.ARENA) {
 				UUID region = plugin.getPlayerData(event.getPlayer()).arena;
 				plugin.showGUI(event.getPlayer(), region);
 			} else {

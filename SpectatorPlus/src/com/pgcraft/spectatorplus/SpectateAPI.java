@@ -27,7 +27,11 @@ public class SpectateAPI {
 	 * @since 1.9.2
 	 */
 	public boolean isSpectator(Player player) {
-		return plugin.getPlayerData(player).spectating;
+		if(plugin.getPlayerData(player) != null) {
+			return plugin.getPlayerData(player).spectating;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -131,6 +135,26 @@ public class SpectateAPI {
 	@Deprecated
 	public boolean spectatePlayer(Player spectator, Player target) {
 		return teleportSpectatorToPlayer(spectator, target);
+	}
+	
+	/**
+	 * Sets the current SpectatorPlus' mode.
+	 * <p>
+	 * <ul>
+	 *   <li>{@code ANY}: the spectators can teleports themselves to any player in the server.</li>
+	 *   <li>{@code ARENA}: the spectators will have to choose an arena; then they will be able 
+	 *   to teleport themselves only to the players in this arena. An option is available to prevent 
+	 *   the spectators from leaving the arena.</li>
+	 *   <li>{@code WORLD}: the spectators will be able to teleport themselves to the players in the same world.</li>
+	 * </ul>
+	 * 
+	 * @param mode The mode.
+	 * @see SpectatorPlusMode
+	 * 
+	 * @since 2.0
+	 */
+	public void setSpectatorPlusMode(SpectatorMode mode) {
+		plugin.setSpectatorMode(mode);
 	}
 	
 	/**

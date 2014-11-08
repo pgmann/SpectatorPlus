@@ -62,9 +62,12 @@ public class SpectateCompleter implements TabCompleter {
 			// Autocompletion for /spec mode: modes
 			if(args.length == 2) {
 				ArrayList<String> suggestions = new ArrayList<String>();
-				suggestions.add("any");
-				suggestions.add("arena");
-				return getAutocompleteSuggestions(args[1], Arrays.asList("any", "arena"));
+				
+				for(SpectatorMode mode : SpectatorMode.values()) {
+					suggestions.add(mode.toString().toLowerCase());
+				}
+				
+				return getAutocompleteSuggestions(args[1], suggestions);
 			}
 		}
 		
@@ -109,6 +112,7 @@ public class SpectateCompleter implements TabCompleter {
 						for(Material material : Material.values()) {
 							suggestions.add(material.toString());
 						}
+						
 						return getAutocompleteSuggestions(args[2], suggestions);
 				}
 			}
@@ -139,7 +143,7 @@ public class SpectateCompleter implements TabCompleter {
 		//  - if there isn't any world to ignore, we just compare them;
 		//  - else, we removes the correct number of words at the beginning of the string;
 		//    then, if the raw suggestion matches the typed text, we adds to the suggestion list
-		//    the filtered suggestion, because the Bukkit's autocompleter works on a “per-word” basis.
+		//    the filtered suggestion, because the Bukkit's autocompleter works on a "per-word" basis.
 		
 		for(String rawSuggestion : suggestionsList) {
 			String suggestion = "";
