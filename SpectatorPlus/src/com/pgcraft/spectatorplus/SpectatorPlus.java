@@ -720,9 +720,6 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 
 		else {
-			// Teleport them to the global lobby (not if world change)
-			if (!worldChange) spawnPlayer(spectator);
-
 			// Hide them from everyone
 			for (Player target : getServer().getOnlinePlayers()) {
 				if(seeSpecs && getPlayerData(target).spectating) {
@@ -759,7 +756,10 @@ public class SpectatorPlus extends JavaPlugin {
 				team.addPlayer(spectator);
 			}
 
-			// Manage messages if spectator was enabled
+			// Teleport them to the global lobby (not if world change)
+			if (!worldChange) spawnPlayer(spectator);
+
+			// Manage messages if spectator mode was enabled
 			if (!silent) {
 				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
 					if(output) {
@@ -845,9 +845,6 @@ public class SpectatorPlus extends JavaPlugin {
 				target.showPlayer(spectator);
 			}
 			
-			// Teleport to spawn
-			if (!worldChange) spawnPlayer(spectator);
-			
 			// Allow interaction
 			getPlayerData(spectator).spectating = false;
 			spectator.setAllowFlight(false);
@@ -870,8 +867,10 @@ public class SpectatorPlus extends JavaPlugin {
 				team.removePlayer(spectator);
 			}
 			
-			// Clear the arena they were spectating in
-			if (!worldChange) removePlayerFromArena(spectator, true);
+			if (!worldChange) {
+				removePlayerFromArena(spectator, true); // Clear the arena they were spectating in
+				spawnPlayer(spectator); // Teleport to spawn
+			}
 			
 			if (!silent) {
 				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
