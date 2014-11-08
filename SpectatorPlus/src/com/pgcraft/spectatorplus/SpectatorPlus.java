@@ -371,7 +371,7 @@ public class SpectatorPlus extends JavaPlugin {
 				}
 				
 				// Admins will still be able to see players who have used '/spec hide':
-				else if (spectator.hasPermission("spectate.admin") && !getPlayerData(player).spectating) {
+				else if (spectator.hasPermission("spectate.admin.hide.see") && !getPlayerData(player).spectating) {
 					displayedSpectatorsHidden.add(player);
 				}
 				

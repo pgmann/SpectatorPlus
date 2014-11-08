@@ -35,6 +35,7 @@ permissions:
       spectate.admin.say: true
       spectate.admin.config: true
       spectate.admin.hide: true
+      spectate.admin.hide.see: true
   spectate.admin.lobby:
     description: Allows you to set the global lobby
     default: op
@@ -49,6 +50,18 @@ permissions:
     default: op
   spectate.admin.hide:
     description: Toggle to stop players spectating you (default off)
+    default: op
+    children:
+      spectate.admin.hide.self: true
+      spectate.admin.hide.others: true
+  spectate.admin.hide.self:
+    description: Toggle to stop players spectating you (default off)
+    default: op
+  spectate.admin.hide.others:
+    description: Toggle to stop players spectating the selected player (default off)
+    default: op
+  spectate.admin.hide.see:
+    description: Players with this permission will still be able to see hidden players
     default: op
   spectate.admin.config:
     description: Allows you to edit the plugin configuration ingame

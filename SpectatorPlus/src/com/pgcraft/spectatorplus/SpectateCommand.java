@@ -162,7 +162,7 @@ public class SpectateCommand implements CommandExecutor {
 			switch(args[0]) {
 			case "on":
 			case "off":
-				permission = (args.length >= 2) ? "spectate.use.others" : "spectate.use"; 
+				permission = (args.length >= 2) ? "spectate.use.others" : "spectate.use";
 				break;
 
 			case "arena":
@@ -171,10 +171,12 @@ public class SpectateCommand implements CommandExecutor {
 			case "config":
 			case "mode":
 			case "say":
-			case "hide":
 				permission = "spectate.admin." + args[0];
 				break;
-
+			case "hide":
+				permission = (args.length >= 2) ? "spectate.admin.hide.others" : "spectate.admin.hide.self";
+				break;
+				
 			case "player":
 			case "p":
 				return true; // always allowed
