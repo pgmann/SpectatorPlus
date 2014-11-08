@@ -542,6 +542,9 @@ h3 {
   line-height: 24px;
 }
 
+p {
+  color: rgb(42, 42, 42);
+}
 a {
   color: #3399cc;
   font-weight: 400;
