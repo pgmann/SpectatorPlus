@@ -885,13 +885,13 @@ public class SpectateListener implements Listener {
 	public void onWorldChange(final PlayerChangedWorldEvent event) {
 		if (plugin.getPlayerData((Player) event.getPlayer()).spectating) {
 			plugin.getPlayerData((Player) event.getPlayer()).wasSpectatorBeforeWorldChanged = true;
-			plugin.disableSpectate(event.getPlayer(), plugin.console, true);
+			plugin.disableSpectate(event.getPlayer(), plugin.console, true, false, true);
 			new BukkitRunnable() {
 				@Override
 				public void run() {
 					// What you want to schedule goes here
 					if (plugin.getPlayerData((Player) event.getPlayer()).wasSpectatorBeforeWorldChanged) {
-						plugin.enableSpectate(event.getPlayer(), plugin.console, true);
+						plugin.enableSpectate(event.getPlayer(), plugin.console, true, true);
 						plugin.getPlayerData((Player) event.getPlayer()).wasSpectatorBeforeWorldChanged = false;
 					}
 				}

@@ -693,6 +693,20 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @since 2.0
 	 */
 	protected void enableSpectate(Player spectator, CommandSender sender, boolean silent) {
+		enableSpectate(spectator, sender, silent, false);
+	}
+	
+	/**
+	 * Checks for problems and enables spectator mode for spectator, on behalf of sender.
+	 * 
+	 * @param spectator The player that will be a spectator.
+	 * @param sender The sender of the /spec on [player] command.
+	 * @param silent Will not output any messages - useful when using the API or command blocks.
+	 * @param worldChange Was the enable spectate caused by a world change?
+	 * 
+	 * @since 2.0
+	 */
+	protected void enableSpectate(Player spectator, CommandSender sender, boolean silent, boolean worldChange) {
 		if (user.get(spectator.getName()).spectating) {
 			if (!silent) {
 				// Spectator mode was already on
@@ -706,8 +720,8 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 
 		else {
-			// Teleport them to the global lobby
-			spawnPlayer(spectator);
+			// Teleport them to the global lobby (not if world change)
+			if (!worldChange) spawnPlayer(spectator);
 
 			// Hide them from everyone
 			for (Player target : getServer().getOnlinePlayers()) {
@@ -807,6 +821,21 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @since 2.0
 	 */
 	protected void disableSpectate(Player spectator, CommandSender sender, boolean silent, boolean temp) {
+		disableSpectate(spectator, sender, silent, temp, false);
+	}
+	
+	/**
+	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
+	 * 
+	 * @param spectator The spectator that will be a normal player.
+	 * @param sender The sender of the /spec off [player] command.
+	 * @param silent Will not output any messages - useful when using the API or command blocks.
+	 * @param temp If true, the next time the player re-logs, spectator mode will be re-enabled.
+	 * @param worldChange Was the enable spectate caused by a world change?
+	 * 
+	 * @since 2.0
+	 */
+	protected void disableSpectate(Player spectator, CommandSender sender, boolean silent, boolean temp, boolean worldChange) {
 		if (getPlayerData(spectator).spectating) {
 			// Show them to everyone
 			for (Player target : getServer().getOnlinePlayers()) {
