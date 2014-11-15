@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 public class SpectateCompleter implements TabCompleter {
 	
@@ -29,6 +30,22 @@ public class SpectateCompleter implements TabCompleter {
 		// Autocompletion for subcommands
 		if(args.length == 1) {
 			return getAutocompleteSuggestions(args[0], p.commands.getCommands());
+		}
+		
+		else if(args[0].equalsIgnoreCase("on") || args[0].equalsIgnoreCase("off")) {
+			if(args.length == 2) { // /spec on|off <name...>
+				ArrayList<String> suggestions = new ArrayList<String>();
+				boolean on = args[0].equalsIgnoreCase("on") ? true : false;
+				
+				for(Player player : p.getServer().getOnlinePlayers()) {
+					if((p.getPlayerData(player).spectating && !on)
+							|| (!p.getPlayerData(player).spectating && on)) {
+						suggestions.add(player.getName());
+					}
+				}
+				
+				return getAutocompleteSuggestions(args[1], suggestions);
+			}
 		}
 		
 		else if(args[0].equalsIgnoreCase("arena")) {
