@@ -543,8 +543,9 @@ h3 {
 }
 
 p {
-  color: rgb(42, 42, 42);
+  font-weight: normal;
 }
+
 a {
   color: #3399cc;
   font-weight: 400;
@@ -571,6 +572,8 @@ strong {
   width: 650px;
   margin: 0 auto;
   position: relative;
+  color: rgb(42, 42, 42);
+  font-weight: bold;
 }
 
 section img {
