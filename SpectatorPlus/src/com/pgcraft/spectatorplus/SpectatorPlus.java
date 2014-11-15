@@ -438,7 +438,7 @@ public class SpectatorPlus extends JavaPlugin {
 		PlayerInventory inventory = inventoryOwner.getInventory();
 		
 		// Remove item name from the inventory separator.
-		ItemStack separator = new ItemStack(Material.WATER, 1);
+		ItemStack separator = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
 		ItemMeta separatorMeta = separator.getItemMeta();
 		separatorMeta.setDisplayName(ChatColor.RESET+"");
 		separator.setItemMeta(separatorMeta);
