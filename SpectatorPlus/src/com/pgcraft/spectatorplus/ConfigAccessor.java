@@ -36,29 +36,29 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ConfigAccessor {
 
 	private final String fileName;
-	private final JavaPlugin plugin;
+	private final JavaPlugin p;
 
 	private File configFile;
 	private FileConfiguration fileConfiguration;
 
-	public ConfigAccessor(JavaPlugin plugin, String fileName) {
-		if (plugin == null) {
+	public ConfigAccessor(JavaPlugin p, String fileName) {
+		if (p == null) {
 			throw new IllegalArgumentException("plugin cannot be null");
 		}
-		this.plugin = plugin;
+		this.p = p;
 		this.fileName = fileName;
-		File dataFolder = plugin.getDataFolder();
+		File dataFolder = p.getDataFolder();
 		if (dataFolder == null) {
 			throw new IllegalStateException();
 		}
-		this.configFile = new File(plugin.getDataFolder(), fileName+".yml");
+		this.configFile = new File(p.getDataFolder(), fileName+".yml");
 	}
 
 	public void reloadConfig() {        
 		fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
 
 		// Look for defaults in the jar
-		InputStream defConfigStream = plugin.getResource(fileName+".yml");
+		InputStream defConfigStream = p.getResource(fileName+".yml");
 		if (defConfigStream != null) {
 			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 			fileConfiguration.setDefaults(defConfig);
@@ -79,20 +79,20 @@ public class ConfigAccessor {
 			try {
 				getConfig().save(configFile);
 			} catch (IOException ex) {
-				plugin.getLogger().log(Level.SEVERE, "Could not save config to " + configFile, ex);
+				p.getLogger().log(Level.SEVERE, "Could not save config to " + configFile, ex);
 			}
 		}
 	}
 
 	public void saveDefaultConfig() {
 		if (!configFile.exists()) {            
-			this.plugin.saveResource(fileName+".yml", false);
+			this.p.saveResource(fileName+".yml", false);
 		}
 	}
 
 	public void saveDefaultConfig(boolean force) {
 		if (force) {            
-			this.plugin.saveResource(fileName+".yml", true);
+			this.p.saveResource(fileName+".yml", true);
 		}
 	}
 

@@ -25,8 +25,8 @@ public class ArenasManager {
 	
 	private static final String STORAGE_KEY = "arenas";
 	
-	protected ArenasManager(SpectatorPlus plugin) {
-		this.p = plugin;
+	protected ArenasManager(SpectatorPlus p) {
+		this.p = p;
 		
 		// The Arena class is registered as a serializable one in the onLoad method of the main class.
 		

@@ -19,8 +19,8 @@ public class SpectateCommand implements CommandExecutor {
 	private ArrayList<String> commands = new ArrayList<String>();
 
 
-	public SpectateCommand(SpectatorPlus plugin) {
-		this.p = plugin;
+	public SpectateCommand(SpectatorPlus p) {
+		this.p = p;
 
 		commands.add("on");
 		commands.add("off");

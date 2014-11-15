@@ -16,8 +16,8 @@ public class SpectateCompleter implements TabCompleter {
 	private SpectatorPlus p = null;
 	
 	
-	public SpectateCompleter(SpectatorPlus plugin) {
-		this.p = plugin;
+	public SpectateCompleter(SpectatorPlus p) {
+		this.p = p;
 	}
 
 	@Override

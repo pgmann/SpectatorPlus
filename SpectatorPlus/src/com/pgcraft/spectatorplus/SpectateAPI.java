@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
  */
 @SuppressWarnings("deprecation")
 public class SpectateAPI {
-	private SpectatorPlus plugin;
+	private SpectatorPlus p;
 	
-	protected SpectateAPI(SpectatorPlus plugin) {
-		this.plugin = plugin;
+	protected SpectateAPI(SpectatorPlus p) {
+		this.p = p;
 	}
 	
 	/**
@@ -27,8 +27,8 @@ public class SpectateAPI {
 	 * @since 1.9.2
 	 */
 	public boolean isSpectator(Player player) {
-		if(plugin.getPlayerData(player) != null) {
-			return plugin.getPlayerData(player).spectating;
+		if(p.getPlayerData(player) != null) {
+			return p.getPlayerData(player).spectating;
 		}
 		
 		return false;
@@ -47,7 +47,7 @@ public class SpectateAPI {
 	public void setSpectating(Player player, boolean spectating) {
 		if(isSpectator(player) != spectating) {
 			// Defaults to console having enabled spectator mode
-			setSpectating(player, spectating, plugin.console);
+			setSpectating(player, spectating, p.console);
 		}
 	}
 	
@@ -64,7 +64,7 @@ public class SpectateAPI {
 	public void setSpectating(Player player, boolean spectating, boolean silent) {
 		if(isSpectator(player) != spectating) {
 			// Defaults to console having enabled spectator mode
-			setSpectating(player, spectating, plugin.console, silent);
+			setSpectating(player, spectating, p.console, silent);
 		}
 	}
 	
@@ -94,9 +94,9 @@ public class SpectateAPI {
 	 */
 	public void setSpectating(Player spectator, boolean spectating, CommandSender sender, boolean silent) {
 		if (spectating) {
-			plugin.enableSpectate(spectator, sender, silent);
+			p.enableSpectate(spectator, sender, silent);
 		} else {
-			plugin.disableSpectate(spectator, sender, silent);
+			p.disableSpectate(spectator, sender, silent);
 		}
 	}
 	
@@ -112,8 +112,8 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public boolean teleportSpectatorToPlayer(Player spectator, Player target) {
-		if (plugin.getPlayerData(spectator).spectating && !plugin.getPlayerData(spectator).spectating) {
-			plugin.choosePlayer(spectator, target);
+		if (p.getPlayerData(spectator).spectating && !p.getPlayerData(spectator).spectating) {
+			p.choosePlayer(spectator, target);
 			return true;
 		} else {
 			return false;
@@ -154,7 +154,7 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public void setSpectatorPlusMode(SpectatorMode mode) {
-		plugin.setSpectatorMode(mode);
+		p.setSpectatorMode(mode);
 	}
 	
 	/**
@@ -167,12 +167,12 @@ public class SpectateAPI {
 	 */
 	public void setCompass(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("compass", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("compass", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.compass = value;
-		plugin.reloadConfig(false);
+		p.compass = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -185,16 +185,16 @@ public class SpectateAPI {
 	 */
 	public void setCompassItem(String value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("compassItem", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("compassItem", value);
+			p.toggles.saveConfig();
 		}
 		
 		if(value != null) {
-			plugin.compassItem = Material.matchMaterial(value);
+			p.compassItem = Material.matchMaterial(value);
 		}
 		
-		if(plugin.compassItem == null) plugin.compassItem = Material.COMPASS;
-		plugin.reloadConfig(false);
+		if(p.compassItem == null) p.compassItem = Material.COMPASS;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -207,12 +207,12 @@ public class SpectateAPI {
 	 */
 	public void setArenaClock(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("arenaclock", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("arenaclock", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.clock = value;
-		plugin.reloadConfig(false);
+		p.clock = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -225,16 +225,16 @@ public class SpectateAPI {
 	 */
 	public void setClockItem(String value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("clockItem", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("clockItem", value);
+			p.toggles.saveConfig();
 		}
 		
 		if(value != null) {
-			plugin.clockItem = Material.matchMaterial(value);
+			p.clockItem = Material.matchMaterial(value);
 		}
 		
-		if(plugin.clockItem == null) plugin.clockItem = Material.WATCH;
-		plugin.reloadConfig(false);
+		if(p.clockItem == null) p.clockItem = Material.WATCH;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -250,12 +250,12 @@ public class SpectateAPI {
 	 */
 	public void setSpectatorsTools(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("spectatorsTools", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("spectatorsTools", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.spectatorsTools = value;
-		plugin.reloadConfig(false);
+		p.spectatorsTools = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -268,16 +268,16 @@ public class SpectateAPI {
 	 */
 	public void setSpectatorsToolsItem(String value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("spectatorsToolsItem", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("spectatorsToolsItem", value);
+			p.toggles.saveConfig();
 		}
 		
 		if(value != null) {
-			plugin.spectatorsToolsItem = Material.matchMaterial(value);
+			p.spectatorsToolsItem = Material.matchMaterial(value);
 		}
 		
-		if(plugin.spectatorsToolsItem == null) plugin.spectatorsToolsItem = Material.MAGMA_CREAM;
-		plugin.reloadConfig(false);
+		if(p.spectatorsToolsItem == null) p.spectatorsToolsItem = Material.MAGMA_CREAM;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -290,16 +290,16 @@ public class SpectateAPI {
 	 */
 	public void setTPToDeathTool(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("tpToDeathTool", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("tpToDeathTool", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.tpToDeathTool = value;
-		plugin.reloadConfig(false);
+		p.tpToDeathTool = value;
+		p.reloadConfig(false);
 		
 		if(!value) {
-			for(Player player : plugin.getServer().getOnlinePlayers()) {
-				plugin.getPlayerData(player).deathLocation = null;
+			for(Player player : p.getServer().getOnlinePlayers()) {
+				p.getPlayerData(player).deathLocation = null;
 			}
 		}
 	}
@@ -315,16 +315,16 @@ public class SpectateAPI {
 	 */
 	public void setShowCauseInTPToDeathTool(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("tpToDeathToolShowCause", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("tpToDeathToolShowCause", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.tpToDeathToolShowCause = value;
-		plugin.reloadConfig(false);
+		p.tpToDeathToolShowCause = value;
+		p.reloadConfig(false);
 		
 		if(!value) {
-			for(Player player : plugin.getServer().getOnlinePlayers()) {
-				plugin.getPlayerData(player).lastDeathMessage = null;
+			for(Player player : p.getServer().getOnlinePlayers()) {
+				p.getPlayerData(player).lastDeathMessage = null;
 			}
 		}
 	}
@@ -339,12 +339,12 @@ public class SpectateAPI {
 	 */
 	public void setInspector(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("inspector", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("inspector", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.inspector = value;
-		plugin.reloadConfig(false);
+		p.inspector = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -357,16 +357,16 @@ public class SpectateAPI {
 	 */
 	public void setInspectorItem(String value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("inspectorItem", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("inspectorItem", value);
+			p.toggles.saveConfig();
 		}
 		
 		if(value != null) {
-			plugin.inspectorItem = Material.matchMaterial(value);
+			p.inspectorItem = Material.matchMaterial(value);
 		}
 		
-		if(plugin.inspectorItem == null) plugin.inspectorItem = Material.BOOK;
-		plugin.reloadConfig(false);
+		if(p.inspectorItem == null) p.inspectorItem = Material.BOOK;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -380,12 +380,12 @@ public class SpectateAPI {
 	 */
 	public void setInspectPlayerFromTeleportationMenu(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("inspectPlayerFromTeleportationMenu", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("inspectPlayerFromTeleportationMenu", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.inspectFromTPMenu = value;
-		plugin.reloadConfig(false);
+		p.inspectFromTPMenu = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -399,12 +399,12 @@ public class SpectateAPI {
 	 */
 	public void setPlayersHealthInTeleportationMenu(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("playersHealthInTeleportationMenu", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("playersHealthInTeleportationMenu", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.playersHealthInTeleportationMenu = value;
-		plugin.reloadConfig(false);
+		p.playersHealthInTeleportationMenu = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -419,12 +419,12 @@ public class SpectateAPI {
 	 */
 	public void setPlayersLocationInTeleportationMenu(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("playersLocationInTeleportationMenu", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("playersLocationInTeleportationMenu", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.playersLocationInTeleportationMenu = value;
-		plugin.reloadConfig(false);
+		p.playersLocationInTeleportationMenu = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -437,12 +437,12 @@ public class SpectateAPI {
 	 */
 	public void setSpectatorChatEnabled(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("specchat", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("specchat", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.specChat = value;
-		plugin.reloadConfig(false);
+		p.specChat = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -455,12 +455,12 @@ public class SpectateAPI {
 	 */
 	public void setOutputMessages(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("outputmessages", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("outputmessages", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.output = value;
-		plugin.reloadConfig(false);
+		p.output = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -473,12 +473,12 @@ public class SpectateAPI {
 	 */
 	public void setSpectateOnDeath(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("deathspec", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("deathspec", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.death = value;
-		plugin.reloadConfig(false);
+		p.death = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -491,12 +491,12 @@ public class SpectateAPI {
 	 */
 	public void setColouredTabList(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("colouredtablist", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("colouredtablist", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.scoreboard = value;
-		plugin.reloadConfig(false);
+		p.scoreboard = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -509,12 +509,12 @@ public class SpectateAPI {
 	 */
 	public void setSeeSpectators(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("seespecs", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("seespecs", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.seeSpecs = value;
-		plugin.reloadConfig(false);
+		p.seeSpecs = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -527,12 +527,12 @@ public class SpectateAPI {
 	 */
 	public void setBlockCommands(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("blockcmds", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("blockcmds", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.blockCmds = value;
-		plugin.reloadConfig(false);
+		p.blockCmds = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -545,12 +545,12 @@ public class SpectateAPI {
 	 */
 	public void setAllowAdminBypassCommandBlocking(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("adminbypass", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("adminbypass", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.adminBypass = value;
-		plugin.reloadConfig(false);
+		p.adminBypass = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -563,12 +563,12 @@ public class SpectateAPI {
 	 */
 	public void setNewbieMode(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("newbieMode", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("newbieMode", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.newbieMode = value;
-		plugin.reloadConfig(false);
+		p.newbieMode = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -582,12 +582,12 @@ public class SpectateAPI {
 	 */
 	public void setTeleportToSpawnOnSpecChangeWithoutLobby(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("teleportToSpawnOnSpecChangeWithoutLobby", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("teleportToSpawnOnSpecChangeWithoutLobby", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.teleportToSpawnOnSpecChangeWithoutLobby = value;
-		plugin.reloadConfig(false);
+		p.teleportToSpawnOnSpecChangeWithoutLobby = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -601,12 +601,12 @@ public class SpectateAPI {
 	 */
 	public void setUseSpawnCommandToTeleport(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("useSpawnCommandToTeleport", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("useSpawnCommandToTeleport", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.useSpawnCommandToTeleport = value;
-		plugin.reloadConfig(false);
+		p.useSpawnCommandToTeleport = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -620,12 +620,12 @@ public class SpectateAPI {
 	 */
 	public void setEnforceArenaBoundary(boolean value, boolean temp) {
 		if(!temp) {
-			plugin.toggles.getConfig().set("enforceArenaBoundary", value);
-			plugin.toggles.saveConfig();
+			p.toggles.getConfig().set("enforceArenaBoundary", value);
+			p.toggles.saveConfig();
 		}
 		
-		plugin.enforceArenaBoundary = value;
-		plugin.reloadConfig(false);
+		p.enforceArenaBoundary = value;
+		p.reloadConfig(false);
 	}
 	
 	/**
@@ -636,7 +636,7 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public ArenasManager getArenasManager() {
-		return plugin.arenasManager;
+		return p.arenasManager;
 	}
 	
 	/**
@@ -652,7 +652,7 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public boolean setArenaForPlayer(Player player, Arena arena, boolean teleportToLobby) {
-		return plugin.setArenaForPlayer(player, arena.getName(), teleportToLobby);
+		return p.setArenaForPlayer(player, arena.getName(), teleportToLobby);
 	}
 	
 	/**
@@ -679,7 +679,7 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public void removePlayerFromArena(Player player) {
-		plugin.removePlayerFromArena(player);
+		p.removePlayerFromArena(player);
 	}
 	
 	
@@ -693,7 +693,7 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public void broadcastToSpectators(CommandSender sender, String message) {
-		plugin.broadcastToSpectators(sender, message);
+		p.broadcastToSpectators(sender, message);
 	}
 	
 	
@@ -708,6 +708,6 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
-		plugin.sendSpectatorMessage(sender, message, isAction);
+		p.sendSpectatorMessage(sender, message, isAction);
 	}
 }
