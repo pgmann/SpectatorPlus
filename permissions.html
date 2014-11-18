@@ -44,8 +44,49 @@
 <a name="commands-permissions" class="anchor" href="#commands-permissions"><span class="octicon octicon-link"></span></a>Commands & Permissions
 
 <p>
+  <code>[]</code> parameters are optional; <code>&lt;></code> parameters are required.<br>
+  Some optional parameters are required when using the console.<br>
   <table>
-    Coming soon.
+    <tr>
+      <td>Command</td>
+      <td>Permission</td>
+      <td>Defaults to</td>
+      <td>Description</td>
+    </tr>
+    <tr>
+      <td><code>/spectate [help]</code> or <code>/spec [help]</code></td>
+      <td>none</td>
+      <td>everyone</td>
+      <td>Displays a list of all SpectatorPlus commands.</td>
+    </tr>
+    <tr>
+      <td><code>/spec on [player]</code></td>
+      <td><code>spectate.use</code> (self) and <code>spectate.use.others</code> (other players)</td>
+      <td>op</td>
+      <td>Enables spectate mode [for the specified player]</td>
+    </tr>
+    <tr>
+      <td><code>/spec off [player]</code></td>
+      <td><code>spectate.use</code> (self) and <code>spectate.use.others</code> (other players)</td>
+      <td>op</td>
+      <td>Disables spectate mode [for the specified player]</td>
+    </tr>
+    <tr>
+      <td>none</td>
+      <td><code>spectate.admin</code></td>
+      <td>op</td>
+      <td>Grants all sub-permissions:<ul>
+        <li><code>spectate.admin.lobby</code>,
+        <li><code>spectate.admin.mode</code>,
+        <li><code>spectate.admin.arena</code>,
+        <li><code>spectate.admin.reload</code>,
+        <li><code>spectate.admin.hide</code>,
+        <li><code>spectate.admin.hide.see</code>
+        <li><code>spectate.admin.say</code>,
+        <li><code>spectate.admin.config</code>, and
+        <li><code>spectate.use.others</code>.
+      </ul></td>
+    </tr>
   </table>
 </p>
 
