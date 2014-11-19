@@ -1,0 +1,4 @@
+SpectatorPlus/
+*.lock
+
+_site/
