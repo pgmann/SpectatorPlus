@@ -6,89 +6,156 @@ title: Commands and permissions
 
 <section>
 
-  <a name="commands-permissions" class="anchor" href="#commands-permissions"><span class="octicon octicon-link"></span></a>Commands &amp; Permissions
+  <h2>Commands, Permissions &amp; Permission Groups</h2>
 
   <p>
-    Updated for version <b>S2.0</b>.<br>
-    <code>[]</code> parameters are optional; <code>&lt;></code> parameters are required.<br>
-    Some optional parameters are required when using the console.<br>
-    <table>
-      <tr>
-        <th>Command</th>
-        <th>Permission</th>
-        <th>Defaults to</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><code>/spectate [help]</code> or <code>/spec [help]</code></td>
-        <td>none</td>
-        <td>everyone</td>
-        <td>Displays a list of all SpectatorPlus commands.</td>
-      </tr>
-      <tr>
-        <td><code>/spec on [player]</code></td>
-        <td><code>spectate.use</code> and <code>spectate.use.others</code></td>
-        <td>op</td>
-        <td>Enables spectate mode [for the specified player]. <code>spectate.use</code> will allow players to use only <code>/spec on</code>, while <code>spectate.use.others</code> will allow players to do only <code>/spec on &lt;player></code> - the <b>player</b> parameter is required unless they have <code>spectate.use</code> as well.</td>
-      </tr>
-      <tr>
-        <td><code>/spec off [player]</code></td>
-        <td><code>spectate.use</code> and <code>spectate.use.others</code></td>
-        <td>op</td>
-        <td>Disables spectate mode [for the specified player]. Likewise, <code>spectate.use</code> works only for <code>/spec off</code>, while <code>spectate.use.others</code> works only for <code>/spec off &lt;player></code>.</td>
-      </tr>
-      <tr>
-        <td><code>/spec lobby &lt;set|del></code></td>
-        <td><code>spectate.admin.lobby</code></td>
-        <td>op</td>
-        <td>Allows the player to set the global lobby to their current location, or delete the global lobby.</td>
-      </tr>
-      <tr>
-        <td><code>/spec mode &lt;any|world|arena</code></td>
-        <td><code>spectate.admin.mode</code></td>
-        <td>op</td>
-        <td>Allows you to set the mode. The <code>any</code> mode allows teleportation to any player who isn't spectating; <code>world</code> allows teleportation only to players in the spectator's current world; <code>arena</code> mode only allows teleportation to players in the same arena as the spectator.</td>
-      </tr>
-      <tr>
-        <td><code>/spec arena &lt;add &lt;name>|lobby &lt;name>|reset|remove &lt;name>|list></code></td>
-        <td><code>spectate.admin.arena</code></td>
-        <td>op</td>
-        <td>Allows the player to manage arenas.</td>
-      </tr>
-      <tr>
-        <td><code>/spec say &lt;message></code></td>
-        <td><code>spectate.admin.say</code></td>
-        <td>op</td>
-        <td>Broadcasts a message to spectators only.</td>
-      </tr>
-      <tr>
-        <td><code>/spec hide [player]</code></td>
-        <td><code>spectate.admin.hide</code> (<code>spectate.admin.hide.self</code> & <code>spectate.admin.hide.others</code>)</td>
-        <td>op</td>
-        <td>Toggles whether the [specified] player is shown in normal players' teleporter GUI (see below).</td>
-      </tr>
-      <tr>
-        <td>none</td>
-        <td><code>spectate.admin.hide.see</code></td>
-        <td>op</td>
-        <td>Players with this permission will still be able to see hidden players in the teleporter GUI.</td>
-      </tr>
-      <tr>
-        <td><code>/spec config &lt;key> &lt;value> ["temp"]</code></td>
-        <td><code>spectate.admin.config</code> (granting this grants <code>spectate.admin.reload</code> by default)</td>
-        <td>op</td>
-        <td>Allows players to edit the <code>toggles.yml</code> file from ingame. If you aren't sure what to put for a parameter, press tab on your keyboard to autocomplete. Write the word "<code>temp</code>" afterwards to make the toggle revert to its previous value after the next reload.</td>
-      </tr>
-      <tr>
-        <td><code>/spec reload</code></td>
-        <td><code>spectate.admin.reload</code></td>
-        <td>op</td>
-        <td>Reloads the plugin's config from file.</td>
-      </tr>
-    </table>
+    Updated for version <b>S2.0</b>.
   </p>
 
-    <a name="permission-groups" class="anchor" href="#permission-groups"><span class="octicon octicon-link"></span></a>Permission Groups
+  <h3>Commands &amp; Permissions</h3>
+
+  <p>
+    Legend: <code>[optional parameter]; &lt;required parameter&gt;</code>.<br />
+    Some optional parameters are required when using the console.
+  </p>
+  <table>
+    <tr>
+      <th class="perm_command">Command</th>
+      <th class="perm_perm">Permission</th>
+      <th class="perm_granted-to" title="Granted by default to...">Granted&nbsp;to</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td class="perm_command">
+        <code>/spectate [help]</code><br />
+        <code>/spec [help]</code>
+      </td>
+      <td class="perm_perm">none</td>
+      <td class="perm_granted-to">all</td>
+      <td>Displays a list of all SpectatorPlus commands.</td>
+    </tr>
+    <tr>
+      <td class="perm_command"><code>/spec on [player]</code></td>
+      <td class="perm_perm">
+        <code>spectate.use</code><br />
+        <code>spectate.use.others</code>
+      </td>
+      <td class="perm_granted-to">op</td>
+      <td>
+        Enables spectate mode for the sender or the specified player.<br /><br />
+        <ul>
+          <li><code>spectate.use</code> will allow players to act on themselves.</li>
+          <li><code>spectate.use.others</code> will allow players to act on any player connected to the server.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="perm_command"><code>/spec off [player]</code></td>
+      <td class="perm_perm">
+        <code>spectate.use</code><br />
+        <code>spectate.use.others</code>
+      </td>
+      <td class="perm_granted-to">op</td>
+      <td>
+        Disables spectate mode for the sender or the specified player.<br /><br />
+
+        The following permissions grants similar privileges that the previous command:
+        <ul>
+          <li><code>spectate.use</code>;</li>
+          <li><code>spectate.use.others</code>.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="perm_command"><code>/spec lobby &lt;set|del&gt;</code></td>
+      <td class="perm_perm"><code>spectate.admin.lobby</code></td>
+      <td class="perm_granted-to">op</td>
+      <td>Allows the player to set the global lobby to their current location, or delete the global lobby.</td>
+    </tr>
+    <tr>
+      <td class="perm_command"><code>/spec mode &lt;mode&gt;</code></td>
+      <td class="perm_perm"><code>spectate.admin.mode</code></td>
+      <td class="perm_granted-to">op</td>
+      <td>
+        Allows you to set the SpectatorPlus' mode. <br /><br />
+
+        <ul>
+          <li><code>any</code>: allows teleportation to any player who isn't spectating.</li>
+          <li><code>world</code>: allows teleportation only to players in the spectator's current world.</li>
+          <li><code>arena</code>: only allows teleportation to players in the same arena as the spectator.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="perm_command">
+        <code>/spec arena &lt;...&gt;</code>
+      </td>
+      <td class="perm_perm"><code>spectate.admin.arena</code></td>
+      <td class="perm_granted-to">op</td>
+      <td>
+        Allows the player to manage arenas.<br /><br />
+
+        <ul>
+          <li><code>add &lt;name&gt;</code>: to create an arena.</li>
+          <li><code>lobby &lt;name&gt;</code>: to set the lobby of the specified arena.</li>
+          <li><code>remove &lt;name&gt;</code>: to remove an arena.</li>
+          <li><code>reset</code>: to remove all arenas.</li>
+          <li><code>list</code>: to list the registered arenas.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="perm_command"><code>/spec say &lt;message&gt;</code></td>
+      <td class="perm_perm"><code>spectate.admin.say</code></td>
+      <td class="perm_granted-to">op</td>
+      <td>Broadcasts a message to spectators only.</td>
+    </tr>
+    <tr>
+      <td class="perm_command"><code>/spec hide [player]</code></td>
+      <td class="perm_perm">
+        <code>spectate.admin.hide</code>
+        <ul>
+          <li><code>spectate.admin.hide.self</code></li>
+          <li><code>spectate.admin.hide.others</code></li>
+        </ul>
+      </td>
+      <td class="perm_granted-to">op</td>
+      <td>Toggles whether the [specified] player is shown in normal players' teleporter GUI (see below).</td>
+    </tr>
+    <tr>
+      <td class="perm_command" style="text-align: center;">—</td>
+      <td class="perm_perm"><code>spectate.admin.hide.see</code></td>
+      <td class="perm_granted-to">op</td>
+      <td>Players with this permission will still be able to see hidden players in the teleporter GUI.</td>
+    </tr>
+    <tr>
+      <td class="perm_command"><code>/spec config &lt;key&gt; [value] [temp]</code></td>
+      <td class="perm_perm">
+        <code>spectate.admin.config</code><br /><br />
+
+        Child permission:
+        <ul>
+          <li><code>spectate.admin.reload</code></li>
+        </ul>
+      </td>
+      <td class="perm_granted-to">op</td>
+      <td>
+        Allows players to see and edit the <code>toggles.yml</code> file from ingame.<br /><br />
+
+        Press tab on your keyboard to autocomplete the keys and available values.<br />
+        Write the word <code>temp</code> afterwards to make the toggle revert to its previous value after the next reload.
+      </td>
+    </tr>
+    <tr>
+      <td class="perm_command"><code>/spec reload</code></td>
+      <td class="perm_perm"><code>spectate.admin.reload</code></td>
+      <td class="perm_granted-to">op</td>
+      <td>Reloads the plugin's config from file.</td>
+    </tr>
+  </table>
+
+
+  <h3>Permission Groups</h3>
 
   <p>
     Granting the main permission for any of the below will grant all child nodes listed.
@@ -97,7 +164,7 @@ title: Commands and permissions
       <tr>
         <th>Permission</th>
         <th>Child nodes</th>
-        <th>Defaults to</th>
+        <th class="perm_granted-to" title="Granted by default to...">Granted&nbsp;to</th>
         <th>Decription</th>
       </tr>
       <tr>
@@ -105,7 +172,7 @@ title: Commands and permissions
         <td><ul>
           <li><code>spectate.admin.reload</code></li>
         </ul></td>
-        <td>op</td>
+        <td class="perm_granted-to">op</td>
         <td>Players able to do <code>/spec config &lt;...></code> will also be able to use <code>/spec reload</code>.</td>
       </tr>
       <tr>
@@ -114,7 +181,7 @@ title: Commands and permissions
           <li><code>spectate.admin.hide.self</code></li>
           <li><code>spectate.admin.hide.others</code></li>
         </ul></td>
-        <td>op</td>
+        <td class="perm_granted-to">op</td>
         <td>Players with the permission <code>spectate.admin.hide</code> will be able to toggle hide mode for both themselves and others.</td>
       </tr>
       <tr>
@@ -130,8 +197,11 @@ title: Commands and permissions
           <li><code>spectate.admin.reload</code>
           <li><code>spectate.use.others</code>
         </ul></td>
-        <td>op</td>
-        <td>Grants all permissions, but not <code>spectate.use</code>. This means they will not be allowed to change their own spectator mode without specifying their own name. Consider using <code>spectate.*</code> instead.</td>
+        <td class="perm_granted-to">op</td>
+        <td>
+          Grants all permissions, but not <code>spectate.use</code>. This means they will not be allowed to change their own spectator mode without specifying their own name.<br />
+          Consider using <code>spectate.*</code> instead.
+        </td>
       </tr>
       <tr>
         <td><code>spectate.*</code></td>
@@ -139,7 +209,7 @@ title: Commands and permissions
           <li><code>spectate.use</code></li>
           <li><code>spectate.admin</code></li>
         </ul></td>
-        <td>op</td>
+        <td class="perm_granted-to">op</td>
         <td>Grants every plugin permission. Recommended for admins.</td>
       </tr>
     </table>

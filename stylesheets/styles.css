@@ -1036,3 +1036,20 @@ footer {
     width: auto;
   }
 }
+
+
+/*******************************************************************************
+Specific styles
+*******************************************************************************/
+
+th.perm_command, td.perm_command {
+  width: 30%;
+}
+
+th.perm_perm, td.perm_perm {
+  width: 20%;
+}
+
+th.perm_granted-to, td.perm_granted-to {
+  text-align: center;
+}
