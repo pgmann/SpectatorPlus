@@ -569,11 +569,15 @@ strong {
 }
 
 .wrapper {
-  width: 650px;
+  width: 90%;
   margin: 0 auto;
   position: relative;
   color: rgb(42, 42, 42);
   font-weight: bold;
+}
+
+.wrapper > section {
+  width: initial;
 }
 
 section img {
@@ -626,6 +630,10 @@ table {
   border-collapse: collapse;
 }
 
+tbody,th {
+  border: solid orange 2px;
+}
+
 th {
   text-align: left;
   padding: 5px 10px;
@@ -637,7 +645,7 @@ td {
   text-align: left;
   padding: 5px 10px;
   border-bottom: 1px solid #e5e5e5;
-  border-right: 1px solid #ffcc00;
+  border-right: 2px solid #ffcc00;
 }
 td:first-child {
   border-left: 1px solid #ffcc00;
