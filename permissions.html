@@ -159,61 +159,61 @@ title: Commands and permissions
 
   <p>
     Granting the main permission for any of the below will grant all child nodes listed.
-    
-    <table>
-      <tr>
-        <th>Permission</th>
-        <th>Child nodes</th>
-        <th class="perm_granted-to" title="Granted by default to...">Granted&nbsp;to</th>
-        <th>Decription</th>
-      </tr>
-      <tr>
-        <td><code>spectate.admin.config</code></td>
-        <td><ul>
-          <li><code>spectate.admin.reload</code></li>
-        </ul></td>
-        <td class="perm_granted-to">op</td>
-        <td>Players able to do <code>/spec config &lt;...></code> will also be able to use <code>/spec reload</code>.</td>
-      </tr>
-      <tr>
-        <td><code>spectate.admin.hide</code></td>
-        <td><ul>
-          <li><code>spectate.admin.hide.self</code></li>
-          <li><code>spectate.admin.hide.others</code></li>
-        </ul></td>
-        <td class="perm_granted-to">op</td>
-        <td>Players with the permission <code>spectate.admin.hide</code> will be able to toggle hide mode for both themselves and others.</td>
-      </tr>
-      <tr>
-        <td><code>spectate.admin</code></td>
-        <td><ul>
-          <li><code>spectate.admin.lobby</code>
-          <li><code>spectate.admin.mode</code>
-          <li><code>spectate.admin.arena</code>
-          <li><code>spectate.admin.say</code>
-          <li><code>spectate.admin.hide</code>
-          <li><code>spectate.admin.hide.see</code>
-          <li><code>spectate.admin.config</code>
-          <li><code>spectate.admin.reload</code>
-          <li><code>spectate.use.others</code>
-        </ul></td>
-        <td class="perm_granted-to">op</td>
-        <td>
-          Grants all permissions, but not <code>spectate.use</code>. This means they will not be allowed to change their own spectator mode without specifying their own name.<br />
-          Consider using <code>spectate.*</code> instead.
-        </td>
-      </tr>
-      <tr>
-        <td><code>spectate.*</code></td>
-        <td><ul>
-          <li><code>spectate.use</code></li>
-          <li><code>spectate.admin</code></li>
-        </ul></td>
-        <td class="perm_granted-to">op</td>
-        <td>Grants every plugin permission. Recommended for admins.</td>
-      </tr>
-    </table>
   </p>
+  
+  <table>
+    <tr>
+      <th>Permission</th>
+      <th>Child nodes</th>
+      <th class="perm_granted-to" title="Granted by default to...">Granted&nbsp;to</th>
+      <th>Decription</th>
+    </tr>
+    <tr>
+      <td><code>spectate.admin.config</code></td>
+      <td><ul>
+        <li><code>spectate.admin.reload</code></li>
+      </ul></td>
+      <td class="perm_granted-to">op</td>
+      <td>Players able to do <code>/spec config &lt;...></code> will also be able to use <code>/spec reload</code>.</td>
+    </tr>
+    <tr>
+      <td><code>spectate.admin.hide</code></td>
+      <td><ul>
+        <li><code>spectate.admin.hide.self</code></li>
+        <li><code>spectate.admin.hide.others</code></li>
+      </ul></td>
+      <td class="perm_granted-to">op</td>
+      <td>Players with the permission <code>spectate.admin.hide</code> will be able to toggle hide mode for both themselves and others.</td>
+    </tr>
+    <tr>
+      <td><code>spectate.admin</code></td>
+      <td><ul>
+        <li><code>spectate.admin.lobby</code>
+        <li><code>spectate.admin.mode</code>
+        <li><code>spectate.admin.arena</code>
+        <li><code>spectate.admin.say</code>
+        <li><code>spectate.admin.hide</code>
+        <li><code>spectate.admin.hide.see</code>
+        <li><code>spectate.admin.config</code>
+        <li><code>spectate.admin.reload</code>
+        <li><code>spectate.use.others</code>
+      </ul></td>
+      <td class="perm_granted-to">op</td>
+      <td>
+        Grants all permissions, but not <code>spectate.use</code>. This means they will not be allowed to change their own spectator mode without specifying their own name.<br />
+        Consider using <code>spectate.*</code> instead.
+      </td>
+    </tr>
+    <tr>
+      <td><code>spectate.*</code></td>
+      <td><ul>
+        <li><code>spectate.use</code></li>
+        <li><code>spectate.admin</code></li>
+      </ul></td>
+      <td class="perm_granted-to">op</td>
+      <td>Grants every plugin permission. Recommended for admins.</td>
+    </tr>
+  </table>
 </section>
 
 {% include footer.html %}
