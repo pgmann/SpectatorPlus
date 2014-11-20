@@ -890,8 +890,8 @@ footer {
 
 @media print, screen and (max-width: 1060px) {
   div.wrapper {
-    width: auto;
-    margin: 0;
+    /*width: auto;
+    margin: 0;*/
   }
 
   nav {
@@ -924,7 +924,7 @@ footer {
     border-width: 1px 0;
     padding: 20px auto;
     margin: 190px auto 20px;
-    max-width: 600px;
+    /*max-width: 600px;*/
   }
 
   footer {
