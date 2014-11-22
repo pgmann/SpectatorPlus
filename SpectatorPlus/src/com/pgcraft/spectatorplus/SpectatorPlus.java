@@ -46,7 +46,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected final static String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
 	protected final static String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
 
-	protected double version = 2.0; // Plugin version
+	protected double version = 2.1; // Plugin version
 
 	protected ConsoleCommandSender console;
 

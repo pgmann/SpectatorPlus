@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.pgcraft</groupId>
   <artifactId>SpectatorPlus</artifactId>
-  <version>S2.0</version>
+  <version>B2.1</version>
   <name>SpectatorPlus</name>
   <url>http://github.com/pgmann/spectatorplus</url>
   <description>This is a Minecraft Bukkit plugin, see http://github.com/pgmann/spectatorplus for the source and README.</description>
   
   <issueManagement>
-  	<system>BukkitDev</system>
-  	<url>http://dev.bukkit.org/bukkit-plugins/spectator/tickets/</url>
+  	<system>Github Issues</system>
+  	<url>http://github.com/pgmann/spectatorplus/issues</url>
   </issueManagement>
   
   <build>
