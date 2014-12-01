@@ -1,6 +1,8 @@
 package com.pgcraft.spectatorplus;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
@@ -13,14 +15,17 @@ import org.bukkit.Material;
  */
 public class ToggleManager {
 	
+	private SpectatorPlus p = null;
 	private ConfigAccessor toggles = null;
 	
 	/**
 	 * Constructor.
 	 * 
+	 * @param plugin The main class of the plugin
 	 * @param toggles The toggles.
 	 */
-	public ToggleManager(ConfigAccessor toggles) {
+	public ToggleManager(SpectatorPlus plugin, ConfigAccessor toggles) {
+		this.p = plugin;
 		this.toggles = toggles;
 	}
 	
@@ -130,5 +135,59 @@ public class ToggleManager {
 		Validate.isTrue(toggle.getDataType().isAssignableFrom(value.getClass()), "Cannot cast this toggle to Boolean: ", toggle.getPath());
 		
 		toggles.getConfig().set(toggle.getPath(), value);
+	}
+	
+	/**
+	 * Saves the config file to the disk.
+	 */
+	public void save() {
+		toggles.saveConfig();
+	}
+	
+	
+	/**
+	 * Migrates the configuration from the old to the new one.
+	 */
+	protected void migrate() {
+		if (getVersion() == p.version) {
+			return; // Updated
+		}
+		
+		HashMap<String, String> conversionTable = new HashMap<String, String>();
+		
+		if(getVersion() <= 2.0) {
+			conversionTable.put("compass", "tools.teleporter.enabled");
+			conversionTable.put("compassItem", "tools.teleporter.item");
+			conversionTable.put("arenaclock", "tools.arenaChooser.enabled");
+			conversionTable.put("clockItem", "tools.arenaChooser.item");
+			conversionTable.put("spectatorsTools", "tools.tools.enabled");
+			conversionTable.put("spectatorsToolsItem", "tools.tools.item");
+			conversionTable.put("tpToDeathTool", "tools.tools.tpToDeath.enabled");
+			conversionTable.put("tpToDeathToolShowCause", "tools.tools.tpToDeath.displayCause");
+			conversionTable.put("inspector", "tools.inspector.enabled");
+			conversionTable.put("inspectorItem", "tools.inspector.item");
+			conversionTable.put("inspectPlayerFromTeleportationMenu", "tools.teleporter.inspector");
+			conversionTable.put("playersHealthInTeleportationMenu", "tools.teleporter.health");
+			conversionTable.put("playersLocationInTeleportationMenu", "tools.teleporter.location");
+			conversionTable.put("specchat", "chat.spectatorChat");
+			conversionTable.put("outputmessages", "outputMessages");
+			conversionTable.put("deathspec", "spectatorModeOnDeath");
+			conversionTable.put("colouredtablist", "spectators.tabListPrefix");
+			conversionTable.put("seespecs", "spectators.spectatorsSeeSpectators");
+			conversionTable.put("blockcmds", "chat.blockCommands.enabled");
+			conversionTable.put("adminbypass", "chat.blockCommands.adminBypass");
+			conversionTable.put("newbieMode", "tools.newbieMode");
+			conversionTable.put("teleportToSpawnOnSpecChangeWithoutLobby", "onSpectatorModeChanged.teleportation.toSpawnWithoutLobby");
+			conversionTable.put("useSpawnCommandToTeleport", "onSpectatorModeChanged.teleportation.usingSpawnCommand");
+		}
+		
+		for(Map.Entry<String, String> conversion : conversionTable.entrySet()) {
+			toggles.getConfig().set(conversion.getValue(), toggles.getConfig().get(conversion.getKey()));
+			toggles.getConfig().set(conversion.getKey(), null);
+		}
+		
+		setVersion(p.version);
+		
+		save();
 	}
 }
