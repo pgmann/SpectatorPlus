@@ -3,8 +3,7 @@ package com.pgcraft.spectatorplus;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.util.org.apache.commons.lang3.Validate;
-
+import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 
 
@@ -65,7 +64,9 @@ public enum Toggle {
 	SPECTATOR_MODE_ON_DEATH("spectatorModeOnDeath", Boolean.class, false, "Enable spectate mode when a player dies?"),
 	
 	ENFORCE_ARENA_BOUNDARIES("enforceArenaBoundaries", Boolean.class, true, "Should spectators be stopped from going out of the boundary of the arena they're in? Stops them from generating far-off chunks."),
+	
 	;
+	
 	
 	private String path;
 	private Class dataType;
@@ -85,8 +86,9 @@ public enum Toggle {
 	 * 
 	 * @since 2.1
 	 */
+	@SuppressWarnings("unchecked")
 	Toggle(Class dataType, Object defaultValue, String description) {
-		Validate.isAssignableFrom(dataType, defaultValue.getClass(), "Invalid type %s for the default value of the toggle %s", defaultValue.getClass().toString(), name());
+		Validate.isTrue(dataType.isAssignableFrom(defaultValue.getClass()), "Invalid type for the default value of the toggle " + name(), defaultValue.getClass().getCanonicalName());
 		
 		this.path = this.name().replace("_", ".").toLowerCase();
 		this.dataType = dataType;
@@ -104,8 +106,9 @@ public enum Toggle {
 	 * 
 	 * @since 2.1
 	 */
+	@SuppressWarnings("unchecked")
 	Toggle(String path, Class dataType, Object defaultValue, String description) {
-		Validate.isAssignableFrom(dataType, defaultValue.getClass(), "Invalid type %s for the default value of the toggle %s", defaultValue.getClass().toString(), name());
+		Validate.isTrue(dataType.isAssignableFrom(defaultValue.getClass()), "Invalid type for the default value of the toggle " + name(), defaultValue.getClass().getCanonicalName());
 		
 		this.path = path;
 		this.dataType = dataType;
