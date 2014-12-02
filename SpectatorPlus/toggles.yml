@@ -39,6 +39,7 @@ tools:
     # Add "(Right-click)" in the name of the spectators' tools (teleporter, etc.)?
     newbieMode: true
 
+
 chat:
     # Enable spectator-only chat, invisible to non-specs?
     spectatorChat: true
@@ -54,7 +55,7 @@ chat:
         # Type the beginning of the command â€“ the plugin will accept all commands starting with that.
         # Initial / is required.
         whitelist:
-            - 
+            - /login
 
 
 spectators:
@@ -67,13 +68,14 @@ spectators:
     # See other spectators when you're spectating? (*requires spectators.tabListPrefix to be true*)
     spectatorsSeeSpectators: true
 
+
 # What to do when the spectator mode is changed (enabled or disabled)?
 onSpectatorModeChanged:
     teleportation:
         # Teleport the player to the spawn if there isn't any Main Lobby set
         toSpawnWithoutLobby: true
         
-        # When teleporting the players to the spawn (without main lobby), use the /spawn command, or
+        # When teleporting the players to the spawn (without a main lobby set), use the /spawn command, or
         # the spawn point of the current world?
         usingSpawnCommand: true
 
@@ -86,5 +88,5 @@ spectatorModeOnDeath: false
 
 # Should spectators be stopped from going out of the boundary of the arena they're in?
 # Stops them from generating far-off chunks
-enforceArenaBoundary: true
+enforceArenaBoundaries: true
 

@@ -95,7 +95,7 @@ public class SpectateCompleter implements TabCompleter {
 				ArrayList<String> suggestions = new ArrayList<String>();
 				
 				for(String key : p.toggles.getConfiguration().getKeys(true)) {
-					if(!key.equals("version")) suggestions.add(key);
+					if(!key.equals("version") && !p.toggles.getConfiguration().isConfigurationSection(key)) suggestions.add(key);
 				}
 				
 				return getAutocompleteSuggestions(args[1], suggestions);

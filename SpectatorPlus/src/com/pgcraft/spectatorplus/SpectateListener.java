@@ -2,6 +2,8 @@ package com.pgcraft.spectatorplus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -699,7 +701,7 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onCommandPreprocess(PlayerCommandPreprocessEvent e) {
-		if(p.specChat && e.getMessage().startsWith("/me") && p.getPlayerData(e.getPlayer()).spectating) {
+		if(p.specChat && e.getMessage().startsWith("/me ") && p.getPlayerData(e.getPlayer()).spectating) {
 			p.sendSpectatorMessage(e.getPlayer(), e.getMessage().substring(4), true);
 			e.setCancelled(true);
 			return;
@@ -708,9 +710,18 @@ public class SpectateListener implements Listener {
 		if (p.blockCmds) {
 			if (e.getPlayer().hasPermission("spectate.admin") && p.adminBypass) {
 				// Do nothing
-			} else if (!(e.getMessage().startsWith("/spec") || e.getMessage().startsWith("/spectate") || e.getMessage().startsWith("/me")) && p.getPlayerData(e.getPlayer()).spectating) {
-				e.getPlayer().sendMessage(SpectatorPlus.prefix+"Command blocked!");
-				e.setCancelled(true);
+			} else if (!(e.getMessage().startsWith("/spec ") || e.getMessage().startsWith("/spectate ") || e.getMessage().startsWith("/me ")) && p.getPlayerData(e.getPlayer()).spectating) {
+				Iterator<String> iter = ((ArrayList<String>) p.toggles.get(Toggle.CHAT_BLOCKCOMMANDS_WHITELIST)).iterator();
+				boolean allowed = false;
+				while (iter.hasNext()) {
+					if (e.getMessage().startsWith(iter.next()+" ")) {
+						allowed = true;
+					}
+				}
+				if (!allowed) {
+					e.getPlayer().sendMessage(SpectatorPlus.prefix+"Command blocked!");
+					e.setCancelled(true);
+				}
 			}
 		}
 	}
