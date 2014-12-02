@@ -228,6 +228,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * Generates a player head ItemStack to be displayed in the teleportation GUI.
 	 * 
 	 * @param player The player
+	 * @param inventoryViewer The spectator viewing the inventory (position relative to that player).
 	 * @param hidden True if the player is a displayed hidden player.
 	 * @return The head.
 	 */
@@ -969,6 +970,7 @@ public class SpectatorPlus extends JavaPlugin {
 				board.registerNewObjective("health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
 				team = board.registerNewTeam("spec");
 				team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
+				team.setSuffix(ChatColor.RESET.toString());
 				for (Player target : getServer().getOnlinePlayers()) {
 					if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
 					}
