@@ -1,64 +1,90 @@
-# Enable the teleporter (compass)?
-compass: true
-compassItem: compass
+# Config version (do not alter)
+version: 2.1
 
-# Enable the arena selector in arena mode (clock)?
-arenaclock: true
-clockItem: watch
+# All the tools available in the spectators' hotbar
+tools:
+    teleporter:
+        enabled: true
+        item: COMPASS
+        
+        # Right-click on a head on the TP menu to see the inventory of this player?
+        inspector: true
+        
+        # Display the health of the players in the tooltip, on the TP menu?
+        health: true
+        
+        # Display the relative location of the players in the tooltip, on the TP menu?
+        location: true
+    
+    # Enable the arena selector in arena mode (clock)?
+    # Tip: don't disable that except if you're using a plugin to put players into arenas automatically.
+    arenaChooser:
+        enabled: true
+        item: WATCH
+    
+    # Speed, night or underwater vision, teleportation to death location
+    tools:
+        enabled: true
+        item: MAGMA_CREAM
+        
+        tpToDeath:
+            enabled: true
+            # Display the cause of the death in the tooltip? (Example: Â« You starved to death Â».)
+            displayCause: true
+    
+    inspector:
+        enabled: true
+        item: FEATHER
+    
+    # Add "(Right-click)" in the name of the spectators' tools (teleporter, etc.)?
+    newbieMode: true
 
-# Enable the spectators' tools (magma cream), to give spectators speed, night or underwater vision?
-spectatorsTools: true
-spectatorsToolsItem: magma_cream
+chat:
+    # Enable spectator-only chat, invisible to non-specs?
+    spectatorChat: true
+    
+    # Block commands while spectating?
+    blockCommands:
+        enabled: true
+        # Allow anyone with spectate.admin to bypass command blocking?
+        adminBypass: true
+        
+        # Commands allowed even without the bypass permission.
+        # The /me command is always available.
+        # Type the beginning of the command â€“ the plugin will accept all commands starting with that.
+        # Initial / is required.
+        whitelist:
+            - 
 
-# Enable the "teleport to death point" spectators' tool?
-tpToDeathTool: true
-# Display the cause of the death in the tooltip? (Example: « You starved to death ».)
-tpToDeathToolShowCause: true
 
-# Enable the player inspector (book)?
-inspector: true
-inspectorItem: book
+spectators:
+    # Prefix spectator names in the tab list?
+    # This will change the Scoreboard used, and restore the old one when spectator mode is disabled.
+    # If you see another plugin's sidebar/infos on players list disappearing when you enable the spectator mode,
+    # try to disable this.
+    tabListPrefix: true
+    
+    # See other spectators when you're spectating? (*requires spectators.tabListPrefix to be true*)
+    spectatorsSeeSpectators: true
 
-# Right-click on a head on the TP menu to see the inventory of this player?
-inspectPlayerFromTeleportationMenu: true
+# What to do when the spectator mode is changed (enabled or disabled)?
+onSpectatorModeChanged:
+    teleportation:
+        # Teleport the player to the spawn if there isn't any Main Lobby set
+        toSpawnWithoutLobby: true
+        
+        # When teleporting the players to the spawn (without main lobby), use the /spawn command, or
+        # the spawn point of the current world?
+        usingSpawnCommand: true
 
-# Display the health of the players in the tooltip, on the TP menu?
-playersHealthInTeleportationMenu: true
 
-# Display the relative location of the players in the tooltip, on the TP menu?
-playersLocationInTeleportationMenu: true
-
-# Enable spectator-only chat, invisible to non-specs?
-specchat: true
 # Show spectatorplus plugin messages to spectators?
-outputmessages: true
+outputMessages: true
+
 # Enable spectate mode when a player dies?
-deathspec: false
-
-# Prefix spectator names in the tab list?
-colouredtablist: true
-# See other spectators when you're spectating? (*requires colouredtablist to be true*)
-seespecs: false
-
-# Block commands while spectating?
-blockcmds: true
-# Allow anyone with spectate.admin to bypass command blocking?
-adminbypass: true
-
-# Add "(Right-click)"� in the name of the spectators' tools (teleporter, etc.)?
-newbieMode: true
-
-# Teleport the players to the spawn, if there isn't any main lobby set, when the spectator
-# mode is enabled/disabled?
-teleportToSpawnOnSpecChangeWithoutLobby: true
-
-# When teleporting the players to the spawn (without main lobby), use the /spawn command, or
-# the spawn point of the current world?
-useSpawnCommandToTeleport: true
+spectatorModeOnDeath: false
 
 # Should spectators be stopped from going out of the boundary of the arena they're in?
 # Stops them from generating far-off chunks
 enforceArenaBoundary: true
 
-# Config version (do not alter)
-version: 2.0
