@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -333,111 +334,52 @@ public class SpectateCommand implements CommandExecutor {
 	 */
 	private void doConfig(CommandSender sender, Command command, String label, String[] args) {
 		if(args.length == 2) { // /spec config <key>
-			if(p.toggles.getConfig().get(args[1]) != null) {
-				sender.sendMessage(SpectatorPlus.prefix+"The toggle "+ChatColor.RED+args[1]+ChatColor.GOLD+" is currently set to "+ChatColor.RED+p.toggles.getConfig().get(args[1]).toString()+ChatColor.GOLD+".");
+			Toggle toggle = Toggle.fromPath(args[1]);
+			if(toggle != null) {
+				sender.sendMessage(SpectatorPlus.prefix + "About the toggle " + ChatColor.RED + args[1]);
+				sender.sendMessage(ChatColor.AQUA + toggle.getDescription());
+				sender.sendMessage(ChatColor.GOLD + "Value: " + ChatColor.RED + p.toggles.get(toggle).toString());
+				sender.sendMessage(ChatColor.GOLD + "Default value: " + toggle.getDefaultValue().toString());
 			}
 			else {
 				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" does not exist!");
 			}
 		} else if(args.length >= 3) { // /spec config <key> <value> [temp]
-			String entry = args[1];
+			Toggle entry = Toggle.fromPath(args[1]);
 			boolean temp = (args.length > 3 && args[3] != null && args[3].equalsIgnoreCase("temp")) ? true : false;
-			boolean success = true;
 			String displayValue;
 			String displayTemp = (temp) ? " until next reload" : "";
-			// Booleans
-			if (p.parseBoolean(args[2]) != null) {
-				boolean value = (boolean) p.parseBoolean(args[2]);
-				displayValue = String.valueOf(value);
-				
-				switch(entry) {
-				case "compass":
-					p.getAPI().setCompass(value, temp);
-					break;
-				case "arenaclock":
-					p.getAPI().setArenaClock(value, temp);
-					break;
-				case "inspector":
-					p.getAPI().setInspector(value, temp);
-					break;
-				case "inspectPlayerFromTeleportationMenu":
-					p.getAPI().setInspectPlayerFromTeleportationMenu(value, temp);
-					break;
-				case "playersHealthInTeleportationMenu":
-					p.getAPI().setPlayersHealthInTeleportationMenu(value, temp);
-					break;
-				case "playersLocationInTeleportationMenu":
-					p.getAPI().setPlayersLocationInTeleportationMenu(value, temp);
-					break;
-				case "specchat":
-					p.getAPI().setSpectatorChatEnabled(value, temp);
-					break;
-				case "outputmessages":
-					p.getAPI().setOutputMessages(value, temp);
-					break;
-				case "deathspec":
-					p.getAPI().setSpectateOnDeath(value, temp);
-					break;
-				case "colouredtablist":
-					p.getAPI().setColouredTabList(value, temp);
-					break;
-				case "seespecs":
-					p.getAPI().setSeeSpectators(value, temp);
-					break;
-				case "blockcmds":
-					p.getAPI().setBlockCommands(value, temp);
-					break;
-				case "adminbypass":
-					p.getAPI().setAllowAdminBypassCommandBlocking(value, temp);
-					break;
-				case "tpToDeathTool":
-					p.getAPI().setTPToDeathTool(value, temp);
-					break;
-				case "tpToDeathToolShowCause":
-					p.getAPI().setShowCauseInTPToDeathTool(value, temp);
-					break;
-				case "newbieMode":
-					p.getAPI().setNewbieMode(value, temp);
-					break;
-				case "teleportToSpawnOnSpecChangeWithoutLobby":
-					p.getAPI().setTeleportToSpawnOnSpecChangeWithoutLobby(value, temp);
-					break;
-				case "useSpawnCommandToTeleport":
-					p.getAPI().setUseSpawnCommandToTeleport(value, temp);
-					break;
-				case "enforceArenaBoundary":
-					p.getAPI().setEnforceArenaBoundary(value, temp);
-					break;
-				default:
-					success = false;
-					break;
+			
+			if (entry != null) {
+				if(entry.getDataType() == Boolean.class) {
+					Boolean value = p.parseBoolean(args[2]);
+					if(value != null) {
+						p.toggles.set(entry, value);
+						displayValue = value.toString();
+					}
+					else {
+						p.toggles.set(entry, entry.getDefaultValue());
+						displayValue = entry.getDefaultValue().toString();
+					}
+				}
+				else if(entry.getDataType() == Material.class) {
+					Material value = Material.matchMaterial(args[2]);
+					if(value != null) {
+						p.toggles.set(entry, value);
+						displayValue = value.toString();
+					}
+					else {
+						p.toggles.set(entry, entry.getDefaultValue());
+						displayValue = entry.getDefaultValue().toString();
+					}
+				}
+				else {
+					sender.sendMessage(SpectatorPlus.prefix + ChatColor.DARK_RED + "You cannot edit the value of "+ChatColor.RED + entry.getPath() + ChatColor.DARK_RED+" (type " + ChatColor.RED + entry.getDataType().getName() + ChatColor.DARK_RED + ") from the game currently.");
+					return;
 				}
 				
-			} else /* Strings */ {
-				String value = args[2];
-				displayValue = value;
-				
-				switch(entry) {
-				case "compassItem":
-					p.getAPI().setCompassItem(value, temp);
-					break;
-				case "clockItem":
-					p.getAPI().setClockItem(value, temp);
-					break;
-				case "inspectorItem":
-					p.getAPI().setInspectorItem(value, temp);
-					break;
-				case "spectatorsToolsItem":
-					p.getAPI().setSpectatorsToolsItem(value, temp);
-					break;
-				default:
-					success = false;
-					break;
-				}
-				
-			}
-			if (success) {
 				sender.sendMessage(SpectatorPlus.prefix+"Set "+ChatColor.RED+entry+ChatColor.GOLD+" to "+ChatColor.RED+displayValue+ChatColor.GOLD+displayTemp);
+			
 			} else {
 				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+entry+ChatColor.DARK_RED+" does not exist!");
 			}

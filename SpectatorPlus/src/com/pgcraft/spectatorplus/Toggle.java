@@ -117,6 +117,20 @@ public enum Toggle {
 	}
 	
 	/**
+	 * Returns a Toggle from the path in the toggles.yml file.
+	 * 
+	 * @param path The path. Case-sensitive.
+	 * @return The Toggle (null if not found).
+	 */
+	public static Toggle fromPath(String path) {
+		for(Toggle toggle : values()) {
+			if(toggle.getPath().equals(path)) return toggle;
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Returns the path of this toggle in the toggles.yml file.
 	 * 
 	 * @return The path.

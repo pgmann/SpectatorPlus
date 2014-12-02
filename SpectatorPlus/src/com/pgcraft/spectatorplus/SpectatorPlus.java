@@ -51,8 +51,9 @@ public class SpectatorPlus extends JavaPlugin {
 	protected ConsoleCommandSender console;
 
 	protected ConfigAccessor setup = null;
-	protected ConfigAccessor toggles = null;
 	protected ConfigAccessor specs = null;
+	
+	protected ToggleManager toggles = null;
 	
 	protected SpectateCommand commands = null;
 	
@@ -109,7 +110,7 @@ public class SpectatorPlus extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		setup = new ConfigAccessor(this, "setup");
-		toggles = new ConfigAccessor(this, "toggles");
+		toggles = new ToggleManager(this, new ConfigAccessor(this, "toggles"));
 		specs = new ConfigAccessor(this, "spectators");
 		
 		console = getServer().getConsoleSender();
@@ -915,194 +916,40 @@ public class SpectatorPlus extends JavaPlugin {
 		// 'hardReload': true/false; a hard reload will reload the config values from file.
 		if (hardReload) {			
 			setup.saveDefaultConfig();
-			toggles.saveDefaultConfig();
+			toggles.getConfigAccessor().saveDefaultConfig();
 			specs.saveDefaultConfig();
 			
 			setup.reloadConfig();
-			toggles.reloadConfig();
+			toggles.getConfigAccessor().reloadConfig();
 			specs.reloadConfig();
 			
-			Set<String> togglesND = toggles.getConfig().getKeys(true); // ND = no defaults
-			
-			// Update config & add default values in
-			if (togglesND.contains("version") && toggles.getConfig().getDouble("version")<version) {
-				console.sendMessage(prefix+"Updating to version "+ChatColor.RED+version+ChatColor.GOLD+"...");
-			} else if (togglesND.contains("version") && toggles.getConfig().getDouble("version")>version) { // Placeholder for version checking in future...
-				console.sendMessage(ChatColor.GOLD+"Version "+ChatColor.RED+toggles.getConfig().getDouble("version")+ChatColor.GOLD+" available!");
-			}
+			toggles.upgrade();
 
-			// Compass: true/false
-			if (!togglesND.contains("compass")) {
-				toggles.getConfig().set("compass", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"compass: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			// -> Compass item: <item name>
-			if (!togglesND.contains("compassItem")) {
-				toggles.getConfig().set("compassItem", "compass");
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"compassItem: compass"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Arena Selector: true/false
-			if (!togglesND.contains("arenaclock")) {
-				toggles.getConfig().set("arenaclock", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"arenaclock: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			// -> Arena selector item: <item name>
-			if (!togglesND.contains("clockItem")) {
-				toggles.getConfig().set("clockItem", "watch");
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"clockItem: watch"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
+			compass = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_ENABLED);
+			clock = toggles.getBoolean(Toggle.TOOLS_ARENACHOOSER_ENABLED);
+			spectatorsTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_ENABLED);
+			tpToDeathTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_ENABLED);
+			tpToDeathToolShowCause = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE);
+			inspector = toggles.getBoolean(Toggle.TOOLS_INSPECTOR_ENABLED);
+			inspectFromTPMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_INSPECTOR);
+			playersHealthInTeleportationMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_HEALTH);
+			playersLocationInTeleportationMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_LOCATION);
+			specChat = toggles.getBoolean(Toggle.CHAT_SPECTATORCHAT);
+			output = toggles.getBoolean(Toggle.OUTPUT_MESSAGES);
+			death = toggles.getBoolean(Toggle.SPECTATOR_MODE_ON_DEATH);
+			scoreboard = toggles.getBoolean(Toggle.SPECTATORS_TABLIST_PREFIX);
+			seeSpecs = toggles.getBoolean(Toggle.SPECTATORS_SEE_OTHERS);
+			blockCmds = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ENABLED);
+			adminBypass = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ADMINBYPASS);
+			newbieMode = toggles.getBoolean(Toggle.TOOLS_NEWBIEMODE);
+			teleportToSpawnOnSpecChangeWithoutLobby = toggles.getBoolean(Toggle.ONSPECMODECHANGED_TELEPORTATION_TOSPAWN);
+			useSpawnCommandToTeleport = toggles.getBoolean(Toggle.ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD);
+			enforceArenaBoundary = toggles.getBoolean(Toggle.ENFORCE_ARENA_BOUNDARIES);
 			
-			// Spectators' tools: true/false
-			if (!togglesND.contains("spectatorsTools")) {
-				toggles.getConfig().set("spectatorsTools", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsTools: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			// -> Spectators' tools item: <item name>
-			if (!togglesND.contains("spectatorsToolsItem")) {
-				toggles.getConfig().set("spectatorsToolsItem", "magma_cream");
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"spectatorsToolsItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			
-			// Spectators' tool: TP to death: true/false
-			if (!togglesND.contains("tpToDeathTool")) {
-				toggles.getConfig().set("tpToDeathTool", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"tpToDeathTool: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			// Spectators' tool: TP to death: show death cause true/false
-			if (!togglesND.contains("tpToDeathToolShowCause")) {
-				toggles.getConfig().set("tpToDeathToolShowCause", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"tpToDeathToolShowCause: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			
-			// Inspector: true/false
-			if (!togglesND.contains("inspector")) {
-				toggles.getConfig().set("inspector", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspector: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			// -> Inspector item: <item name>
-			if (!togglesND.contains("inspectorItem")) {
-				toggles.getConfig().set("inspectorItem", "book");
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspectorItem: book"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			// -> Inspect from teleportation menu
-			if (!togglesND.contains("inspectPlayerFromTeleportationMenu")) {
-				toggles.getConfig().set("inspectPlayerFromTeleportationMenu", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"inspectPlayerFromTeleportationMenu: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			
-			if (!togglesND.contains("playersHealthInTeleportationMenu")) {
-				toggles.getConfig().set("playersHealthInTeleportationMenu", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"playersHealthInTeleportationMenu: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			if (!togglesND.contains("playersLocationInTeleportationMenu")) {
-				toggles.getConfig().set("playersLocationInTeleportationMenu", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"playersLocationInTeleportationMenu: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Spectator chat: true/false
-			if (!togglesND.contains("specchat")) {
-				toggles.getConfig().set("specchat", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"specchat: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Output messages from plugin: true/false
-			if (!togglesND.contains("outputmessages")) {
-				toggles.getConfig().set("outputmessages", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"outputmessages: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Spectate mode enable on death: true/false
-			if (!togglesND.contains("deathspec")) {
-				toggles.getConfig().set("deathspec", false);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"deathspec: false"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Prefix spectator names in tab list: true/false
-			if (!togglesND.contains("colouredtablist")) {
-				toggles.getConfig().set("colouredtablist", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"colouredtablist: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Can spectators see other spectators? true/false
-			if (!togglesND.contains("seespecs")) {
-				toggles.getConfig().set("seespecs", false);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"seespecs: false"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Block spectators from executing non-SpectatorPlus commands? true/false
-			if (!togglesND.contains("blockcmds")) {
-				toggles.getConfig().set("blockcmds", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"blockcmds: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Can admins bypass command blocking? true/false
-			if (!togglesND.contains("adminbypass")) {
-				toggles.getConfig().set("adminbypass", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"adminbypass: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			
-			// Display "(Right-click)" on the names of the misc tools (teleporter, etc.)? true/false
-			if(!togglesND.contains("newbieMode")) {
-				toggles.getConfig().set("newbieMode", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"newbieMode: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			
-			// Teleport the players to the spawn, if there isn't any main lobby set, when the spectator
-			// mode is enabled/disabled? true/false
-			if(!togglesND.contains("teleportToSpawnOnSpecChangeWithoutLobby")) {
-				toggles.getConfig().set("teleportToSpawnOnSpecChangeWithoutLobby", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"teleportToSpawnOnSpecChangeWithoutLobby: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			
-			// When teleporting the players to the spawn (without main lobby), use the /spawn command, or
-			// the spawn point of the current world?
-			if(!togglesND.contains("useSpawnCommandToTeleport")) {
-				toggles.getConfig().set("useSpawnCommandToTeleport", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"useSpawnCommandToTeleport: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-			
-			// When teleporting the players to the spawn (without main lobby), use the /spawn command, or
-			// the spawn point of the current world?
-			if(!togglesND.contains("enforceArenaBoundary")) {
-				toggles.getConfig().set("enforceArenaBoundary", true);
-				console.sendMessage(ChatColor.GOLD+"Added "+ChatColor.WHITE+"enforceArenaBoundary: true"+ChatColor.GOLD+" to "+ChatColor.WHITE+"toggles.yml"+ChatColor.GOLD+"...");
-			}
-
-			// Config was updated, fix version number.
-			toggles.getConfig().set("version",version);
-			toggles.saveConfig();
-
-			compass = toggles.getConfig().getBoolean("compass", true);
-			clock = toggles.getConfig().getBoolean("arenaclock", true);
-			spectatorsTools = toggles.getConfig().getBoolean("spectatorsTools", true);
-			tpToDeathTool = toggles.getConfig().getBoolean("tpToDeathTool", true);
-			tpToDeathToolShowCause = toggles.getConfig().getBoolean("tpToDeathToolShowCause", true);
-			inspector = toggles.getConfig().getBoolean("inspector", true);
-			inspectFromTPMenu = toggles.getConfig().getBoolean("inspectPlayerFromTeleportationMenu", true);
-			playersHealthInTeleportationMenu = toggles.getConfig().getBoolean("playersHealthInTeleportationMenu", true);
-			playersLocationInTeleportationMenu = toggles.getConfig().getBoolean("playersLocationInTeleportationMenu", true);
-			specChat = toggles.getConfig().getBoolean("specchat", true);
-			output = toggles.getConfig().getBoolean("outputmessages", true);
-			death = toggles.getConfig().getBoolean("deathspec", false);
-			scoreboard = toggles.getConfig().getBoolean("colouredtablist", true);
-			seeSpecs = toggles.getConfig().getBoolean("seespecs", false);
-			blockCmds = toggles.getConfig().getBoolean("blockcmds", true);
-			adminBypass = toggles.getConfig().getBoolean("adminbypass", true);
-			newbieMode = toggles.getConfig().getBoolean("newbieMode", true);
-			teleportToSpawnOnSpecChangeWithoutLobby = toggles.getConfig().getBoolean("teleportToSpawnOnSpecChangeWithoutLobby", true);
-			useSpawnCommandToTeleport = toggles.getConfig().getBoolean("useSpawnCommandToTeleport", true);
-			enforceArenaBoundary = toggles.getConfig().getBoolean("enforceArenaBoundary", true);
-			
-			compassItem = Material.matchMaterial(toggles.getConfig().getString("compassItem", "COMPASS"));
-			clockItem = Material.matchMaterial(toggles.getConfig().getString("clockItem", "WATCH"));
-			spectatorsToolsItem = Material.matchMaterial(toggles.getConfig().getString("spectatorsToolsItem", "MAGMA_CREAM"));
-			inspectorItem = Material.matchMaterial(toggles.getConfig().getString("inspectorItem", "BOOK"));
-			
-			if(compassItem == null) compassItem = Material.COMPASS;
-			if(clockItem == null) clockItem = Material.WATCH;
-			if(spectatorsToolsItem == null) spectatorsToolsItem = Material.MAGMA_CREAM;
-			if(inspectorItem == null) inspectorItem = Material.BOOK;
+			compassItem = toggles.getMaterial(Toggle.TOOLS_TELEPORTER_ITEM);
+			clockItem = toggles.getMaterial(Toggle.TOOLS_ARENACHOOSER_ITEM);
+			spectatorsToolsItem = toggles.getMaterial(Toggle.TOOLS_TOOLS_ITEM);
+			inspectorItem = toggles.getMaterial(Toggle.TOOLS_INSPECTOR_ITEM);
 			
 			try {
 				setSpectatorMode(SpectatorMode.fromString(setup.getConfig().getString("mode")));
@@ -1138,8 +985,9 @@ public class SpectatorPlus extends JavaPlugin {
 					team.addPlayer(target);
 				}
 			}
+			
 			// Incase seeSpecs was previously disabled...
-			seeSpecs = toggles.getConfig().getBoolean("seespecs", false);
+			seeSpecs = toggles.getBoolean(Toggle.SPECTATORS_SEE_OTHERS);
 		} else {
 			// seeSpecs relies on using scoreboard teams. Force-disable seeSpecs if scoreboard is disabled.
 			seeSpecs = false;

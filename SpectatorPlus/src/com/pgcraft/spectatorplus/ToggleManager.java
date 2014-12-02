@@ -3,9 +3,11 @@ package com.pgcraft.spectatorplus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
 
 /**
  * This class manages the SpectatorPlus' toggles.
@@ -27,6 +29,8 @@ public class ToggleManager {
 	public ToggleManager(SpectatorPlus plugin, ConfigAccessor toggles) {
 		this.p = plugin;
 		this.toggles = toggles;
+		
+		migrate();
 	}
 	
 	/**
@@ -66,6 +70,8 @@ public class ToggleManager {
 	 * @throws IllegalArgumentException if the type of the toggle is not compatible.
 	 */
 	public Boolean getBoolean(Toggle toggle) {
+		if(toggle == null) return null;
+		
 		Validate.isTrue(Boolean.class.isAssignableFrom(toggle.getDataType()), "Cannot cast this toggle to Boolean: ", toggle.getPath());
 		
 		return toggles.getConfig().getBoolean(toggle.getPath(), (boolean) toggle.getDefaultValue());
@@ -80,6 +86,8 @@ public class ToggleManager {
 	 * @throws IllegalArgumentException if the type of the toggle is not compatible.
 	 */
 	public String getString(Toggle toggle) {
+		if(toggle == null) return null;
+		
 		Validate.isTrue(String.class.isAssignableFrom(toggle.getDataType()), "Cannot cast this toggle to String: ", toggle.getPath());
 		
 		return toggles.getConfig().getString(toggle.getPath(), (String) toggle.getDefaultValue());
@@ -95,6 +103,8 @@ public class ToggleManager {
 	 */
 	@SuppressWarnings("rawtypes")
 	public List getList(Toggle toggle) {
+		if(toggle == null) return null;
+		
 		Validate.isTrue(List.class.isAssignableFrom(toggle.getDataType()), "Cannot cast this toggle to List: ", toggle.getPath());
 		
 		return toggles.getConfig().getList(toggle.getPath(), (List) toggle.getDefaultValue());
@@ -109,6 +119,8 @@ public class ToggleManager {
 	 * @throws IllegalArgumentException if the type of the toggle is not compatible.
 	 */
 	public Material getMaterial(Toggle toggle) {
+		if(toggle == null) return null;
+		
 		Validate.isTrue(Material.class.isAssignableFrom(toggle.getDataType()), "Cannot cast this toggle to Material: ", toggle.getPath());
 		
 		Material material = Material.matchMaterial(toggles.getConfig().getString(toggle.getPath(), ((Material) toggle.getDefaultValue()).toString()));
@@ -132,8 +144,11 @@ public class ToggleManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public void set(Toggle toggle, Object value) {
-		Validate.isTrue(toggle.getDataType().isAssignableFrom(value.getClass()), "Cannot cast this toggle to Boolean: ", toggle.getPath());
+		if(value == null) {
+			toggles.getConfig().set(toggle.getPath(), toggle.getDefaultValue());
+		}
 		
+		Validate.isTrue(toggle.getDataType().isAssignableFrom(value.getClass()), "Cannot cast the value of this toggle to the correct data type: ", toggle.getPath());
 		toggles.getConfig().set(toggle.getPath(), value);
 	}
 	
@@ -144,9 +159,48 @@ public class ToggleManager {
 		toggles.saveConfig();
 	}
 	
+	/**
+	 * Returns the internal configuration.
+	 * 
+	 * @return
+	 */
+	public Configuration getConfiguration() {
+		return toggles.getConfig();
+	}
 	
 	/**
-	 * Migrates the configuration from the old to the new one.
+	 * Returns the ConfigAccessor.
+	 * 
+	 * @return The ConfigAccessor.
+	 * @see {@link ConfigAccessor}.
+	 */
+	public ConfigAccessor getConfigAccessor() {
+		return toggles;
+	}
+	
+	
+	/**
+	 * Upgrade the configuration, populating the configuration file with new keys and the
+	 * appropried default values.
+	 */
+	protected void upgrade() {
+		p.getLogger().info("Upgrading toggles from version " + getVersion() + " to " + p.version + "...");
+		
+		Set<String> togglesND = getConfiguration().getKeys(true); // ND = no defaults
+		
+		for(Toggle toggle : Toggle.values()) {
+			if(!togglesND.contains(toggle.getPath())) {
+				set(toggle, toggle.getDefaultValue());
+				p.getLogger().info("Added " + toggle.getPath() + ": " + toggle.getDefaultValue().toString() + " to the toggles");
+			}
+		}
+		
+		setVersion(p.version);
+		save();
+	}
+	
+	/**
+	 * Migrates the configuration from the old to the new one, if some keys changed.
 	 */
 	protected void migrate() {
 		if (getVersion() == p.version) {
@@ -182,6 +236,7 @@ public class ToggleManager {
 		}
 		
 		for(Map.Entry<String, String> conversion : conversionTable.entrySet()) {
+			p.getLogger().info("Migrating " + conversion.getKey() + " to " + conversion.getValue() + "...");
 			toggles.getConfig().set(conversion.getValue(), toggles.getConfig().get(conversion.getKey()));
 			toggles.getConfig().set(conversion.getKey(), null);
 		}

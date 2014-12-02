@@ -94,7 +94,7 @@ public class SpectateCompleter implements TabCompleter {
 			if(args.length == 2) {
 				ArrayList<String> suggestions = new ArrayList<String>();
 				
-				for(String key : p.toggles.getConfig().getKeys(true)) {
+				for(String key : p.toggles.getConfiguration().getKeys(true)) {
 					if(!key.equals("version")) suggestions.add(key);
 				}
 				
@@ -102,37 +102,23 @@ public class SpectateCompleter implements TabCompleter {
 			}
 			
 			else if(args.length == 3) {
-				switch(args[1]) {
-					case "compass":
-					case "arenaclock":
-					case "inspector":
-					case "inspectPlayerFromTeleportationMenu":
-					case "playersHealthInTeleportationMenu":
-					case "playersLocationInTeleportationMenu":
-					case "specchat":
-					case "outputmessages":
-					case "deathspec":
-					case "colouredtablist":
-					case "seespecs":
-					case "blockcmds":
-					case "adminbypass":
-					case "tpToDeathTool":
-					case "tpToDeathToolShowCause":
-					case "newbieMode":
-					case "teleportToSpawnOnSpecChangeWithoutLobby":
-					case "useSpawnCommandToTeleport":
-					case "enforceArenaBoundary":
+				Toggle toggle = Toggle.fromPath(args[1]);
+				
+				if(toggle != null) {
+					if(toggle.getDataType() == Boolean.class) {
 						return getAutocompleteSuggestions(args[2], Arrays.asList("true", "false"));
-					case "compassItem":
-					case "clockItem":
-					case "inspectorItem":
-					case "spectatorsToolsItem":
+					}
+					else if(toggle.getDataType() == Material.class) {
 						ArrayList<String> suggestions = new ArrayList<String>();
 						for(Material material : Material.values()) {
 							suggestions.add(material.toString());
 						}
 						
 						return getAutocompleteSuggestions(args[2], suggestions);
+					}
+					else {
+						return null;
+					}
 				}
 			}
 			

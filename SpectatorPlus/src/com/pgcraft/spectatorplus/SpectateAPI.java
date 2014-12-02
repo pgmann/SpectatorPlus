@@ -158,43 +158,154 @@ public class SpectateAPI {
 	}
 	
 	/**
+	 * Sets a toggle.
+	 * 
+	 * @param toggle The toggle to set.
+	 * @param value The new value.
+	 * @param temp If true this change will not be saved in the config file.
+	 * 
+	 * @throws IllegalArgumentException if the type of the toggle is not compatible with the type of the value.
+	 * 
+	 * @since 2.1
+	 */
+	public void setConfig(Toggle toggle, Object value, boolean temp) {
+		if(!temp) {
+			p.toggles.set(toggle, value);
+			p.toggles.save();
+		}
+		
+		switch(toggle) {
+			case CHAT_BLOCKCOMMANDS_ADMINBYPASS:
+				p.adminBypass = (Boolean) value;
+				break;
+				
+			case CHAT_BLOCKCOMMANDS_ENABLED:
+				p.blockCmds = (Boolean) value;
+				break;
+				
+			case CHAT_BLOCKCOMMANDS_WHITELIST:
+				// Unimplemented
+				break;
+				
+			case CHAT_SPECTATORCHAT:
+				p.specChat = (Boolean) value;
+				break;
+				
+			case ENFORCE_ARENA_BOUNDARIES:
+				p.enforceArenaBoundary = (Boolean) value;
+				break;
+				
+			case ONSPECMODECHANGED_TELEPORTATION_TOSPAWN:
+				p.teleportToSpawnOnSpecChangeWithoutLobby = (Boolean) value;
+				break;
+				
+			case ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD:
+				p.useSpawnCommandToTeleport = (Boolean) value;
+				break;
+				
+			case OUTPUT_MESSAGES:
+				p.output = (Boolean) value;
+				break;
+				
+			case SPECTATORS_SEE_OTHERS:
+				p.seeSpecs = (Boolean) value;
+				break;
+				
+			case SPECTATORS_TABLIST_PREFIX:
+				p.scoreboard = (Boolean) value;
+				break;
+				
+			case SPECTATOR_MODE_ON_DEATH:
+				p.death = (Boolean) value;
+				break;
+				
+			case TOOLS_ARENACHOOSER_ENABLED:
+				p.clock = (Boolean) value;
+				break;
+				
+			case TOOLS_ARENACHOOSER_ITEM:
+				p.clockItem = (Material) value;
+				break;
+				
+			case TOOLS_INSPECTOR_ENABLED:
+				p.inspector = (Boolean) value;
+				break;
+				
+			case TOOLS_INSPECTOR_ITEM:
+				p.inspectorItem = (Material) value;
+				break;
+				
+			case TOOLS_NEWBIEMODE:
+				p.newbieMode = (Boolean) value;
+				break;
+				
+			case TOOLS_TELEPORTER_ENABLED:
+				p.compass = (Boolean) value;
+				break;
+				
+			case TOOLS_TELEPORTER_HEALTH:
+				p.playersHealthInTeleportationMenu = (Boolean) value;
+				break;
+				
+			case TOOLS_TELEPORTER_INSPECTOR:
+				p.inspectFromTPMenu = (Boolean) value;
+				break;
+				
+			case TOOLS_TELEPORTER_ITEM:
+				p.compassItem = (Material) value;
+				break;
+				
+			case TOOLS_TELEPORTER_LOCATION:
+				p.playersLocationInTeleportationMenu = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_ENABLED:
+				p.spectatorsTools = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_ITEM:
+				p.spectatorsToolsItem = (Material) value;
+				break;
+				
+			case TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE:
+				p.tpToDeathToolShowCause = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_TPTODEATH_ENABLED:
+				p.tpToDeathTool = (Boolean) value;
+				break;
+				
+			default:
+				break;
+		}
+	}
+	
+	/**
 	 * Enables (or disables) the teleporter (compass).
 	 * 
 	 * @param value Enabled if true.
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setCompass(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("compass", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.compass = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_TELEPORTER_ENABLED, value, temp);
 	}
 	
 	/**
 	 * Sets the item to be given as the teleporter (default: "compass").
 	 * 
-	 * @param value Item to be used instead of compass, invalid entries will default to "compass". Examples: "watch", "stone", "wool"
+	 * @param value Item to be used instead of compass.
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setCompassItem(String value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("compassItem", value);
-			p.toggles.saveConfig();
-		}
-		
-		if(value != null) {
-			p.compassItem = Material.matchMaterial(value);
-		}
-		
-		if(p.compassItem == null) p.compassItem = Material.COMPASS;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_TELEPORTER_ITEM, Material.matchMaterial(value), temp);
 	}
 	
 	/**
@@ -204,15 +315,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setArenaClock(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("arenaclock", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.clock = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_ARENACHOOSER_ENABLED, value, temp);
 	}
 	
 	/**
@@ -222,19 +329,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setClockItem(String value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("clockItem", value);
-			p.toggles.saveConfig();
-		}
-		
-		if(value != null) {
-			p.clockItem = Material.matchMaterial(value);
-		}
-		
-		if(p.clockItem == null) p.clockItem = Material.WATCH;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_ARENACHOOSER_ITEM, Material.matchMaterial(value), temp);
 	}
 	
 	/**
@@ -247,15 +346,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setSpectatorsTools(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("spectatorsTools", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.spectatorsTools = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_TOOLS_ENABLED, value, temp);
 	}
 	
 	/**
@@ -265,19 +360,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setSpectatorsToolsItem(String value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("spectatorsToolsItem", value);
-			p.toggles.saveConfig();
-		}
-		
-		if(value != null) {
-			p.spectatorsToolsItem = Material.matchMaterial(value);
-		}
-		
-		if(p.spectatorsToolsItem == null) p.spectatorsToolsItem = Material.MAGMA_CREAM;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_TOOLS_ITEM, Material.matchMaterial(value), temp);
 	}
 	
 	/**
@@ -287,21 +374,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setTPToDeathTool(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("tpToDeathTool", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.tpToDeathTool = value;
-		p.reloadConfig(false);
-		
-		if(!value) {
-			for(Player player : p.getServer().getOnlinePlayers()) {
-				p.getPlayerData(player).deathLocation = null;
-			}
-		}
+		setConfig(Toggle.TOOLS_TOOLS_TPTODEATH_ENABLED, value, temp);
 	}
 	
 	/**
@@ -312,21 +389,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setShowCauseInTPToDeathTool(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("tpToDeathToolShowCause", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.tpToDeathToolShowCause = value;
-		p.reloadConfig(false);
-		
-		if(!value) {
-			for(Player player : p.getServer().getOnlinePlayers()) {
-				p.getPlayerData(player).lastDeathMessage = null;
-			}
-		}
+		setConfig(Toggle.TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE, value, temp);
 	}
 	
 	/**
@@ -336,15 +403,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setInspector(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("inspector", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.inspector = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_INSPECTOR_ENABLED, value, temp);
 	}
 	
 	/**
@@ -354,19 +417,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setInspectorItem(String value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("inspectorItem", value);
-			p.toggles.saveConfig();
-		}
-		
-		if(value != null) {
-			p.inspectorItem = Material.matchMaterial(value);
-		}
-		
-		if(p.inspectorItem == null) p.inspectorItem = Material.BOOK;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_INSPECTOR_ITEM, Material.matchMaterial(value), temp);
 	}
 	
 	/**
@@ -377,15 +432,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setInspectPlayerFromTeleportationMenu(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("inspectPlayerFromTeleportationMenu", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.inspectFromTPMenu = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_TELEPORTER_INSPECTOR, value, temp);
 	}
 	
 	/**
@@ -396,15 +447,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setPlayersHealthInTeleportationMenu(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("playersHealthInTeleportationMenu", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.playersHealthInTeleportationMenu = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_TELEPORTER_HEALTH, value, temp);
 	}
 	
 	/**
@@ -416,15 +463,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setPlayersLocationInTeleportationMenu(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("playersLocationInTeleportationMenu", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.playersLocationInTeleportationMenu = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_TELEPORTER_LOCATION, value, temp);
 	}
 	
 	/**
@@ -434,15 +477,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setSpectatorChatEnabled(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("specchat", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.specChat = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.CHAT_SPECTATORCHAT, value, temp);
 	}
 	
 	/**
@@ -452,15 +491,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setOutputMessages(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("outputmessages", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.output = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.OUTPUT_MESSAGES, value, temp);
 	}
 	
 	/**
@@ -470,15 +505,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setSpectateOnDeath(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("deathspec", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.death = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.SPECTATOR_MODE_ON_DEATH, value, temp);
 	}
 	
 	/**
@@ -488,15 +519,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setColouredTabList(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("colouredtablist", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.scoreboard = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.SPECTATORS_TABLIST_PREFIX, value, temp);
 	}
 	
 	/**
@@ -506,15 +533,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setSeeSpectators(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("seespecs", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.seeSpecs = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.SPECTATORS_SEE_OTHERS, value, temp);
 	}
 	
 	/**
@@ -524,15 +547,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setBlockCommands(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("blockcmds", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.blockCmds = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.CHAT_BLOCKCOMMANDS_ENABLED, value, temp);
 	}
 	
 	/**
@@ -542,15 +561,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 1.9.2
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setAllowAdminBypassCommandBlocking(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("adminbypass", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.adminBypass = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.CHAT_BLOCKCOMMANDS_ADMINBYPASS, value, temp);
 	}
 	
 	/**
@@ -560,15 +575,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setNewbieMode(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("newbieMode", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.newbieMode = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.TOOLS_NEWBIEMODE, value, temp);
 	}
 	
 	/**
@@ -579,15 +590,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setTeleportToSpawnOnSpecChangeWithoutLobby(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("teleportToSpawnOnSpecChangeWithoutLobby", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.teleportToSpawnOnSpecChangeWithoutLobby = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.ONSPECMODECHANGED_TELEPORTATION_TOSPAWN, value, temp);
 	}
 	
 	/**
@@ -598,15 +605,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setUseSpawnCommandToTeleport(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("useSpawnCommandToTeleport", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.useSpawnCommandToTeleport = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD, value, temp);
 	}
 	
 	/**
@@ -617,15 +620,11 @@ public class SpectateAPI {
 	 * @param temp If true this change will not be saved in the config file.
 	 * 
 	 * @since 2.0
+	 * @deprecated Use {@link #setConfig(Toggle, Object, boolean)} instead.
 	 */
+	@Deprecated
 	public void setEnforceArenaBoundary(boolean value, boolean temp) {
-		if(!temp) {
-			p.toggles.getConfig().set("enforceArenaBoundary", value);
-			p.toggles.saveConfig();
-		}
-		
-		p.enforceArenaBoundary = value;
-		p.reloadConfig(false);
+		setConfig(Toggle.ENFORCE_ARENA_BOUNDARIES, value, temp);
 	}
 	
 	/**
