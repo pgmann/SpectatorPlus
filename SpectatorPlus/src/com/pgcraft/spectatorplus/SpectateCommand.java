@@ -383,7 +383,7 @@ public class SpectateCommand implements CommandExecutor {
 				}
 				
 				p.reloadConfig(false);
-				sender.sendMessage(SpectatorPlus.prefix+"Set "+ChatColor.RED+entry+ChatColor.GOLD+" to "+ChatColor.RED+displayValue+ChatColor.GOLD+displayTemp);
+				sender.sendMessage(SpectatorPlus.prefix+"Set "+ChatColor.RED+entry.getPath()+ChatColor.GOLD+" to "+ChatColor.RED+displayValue+ChatColor.GOLD+displayTemp);
 			
 			} else {
 				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" doesn't exist!");
