@@ -342,7 +342,7 @@ public class SpectateCommand implements CommandExecutor {
 				sender.sendMessage(ChatColor.GOLD + "Default value: " + toggle.getDefaultValue().toString());
 			}
 			else {
-				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" does not exist!");
+				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" doesn't exist!");
 			}
 		} else if(args.length >= 3) { // /spec config <key> <value> [temp]
 			Toggle entry = Toggle.fromPath(args[1]);

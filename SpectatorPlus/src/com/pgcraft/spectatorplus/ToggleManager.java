@@ -210,6 +210,7 @@ public class ToggleManager {
 		HashMap<String, String> conversionTable = new HashMap<String, String>();
 		
 		if(getVersion() <= 2.0) {
+			conversionTable.put("enforceArenaBoundary", "enforceArenaBoundaries");
 			conversionTable.put("compass", "tools.teleporter.enabled");
 			conversionTable.put("compassItem", "tools.teleporter.item");
 			conversionTable.put("arenaclock", "tools.arenaChooser.enabled");
