@@ -149,7 +149,7 @@ public class ToggleManager {
 		}
 		
 		Validate.isTrue(toggle.getDataType().isAssignableFrom(value.getClass()), "Cannot cast the value of this toggle to the correct data type: ", toggle.getPath());
-		toggles.getConfig().set(toggle.getPath(), value);
+		toggles.getConfig().set(toggle.getPath(), value.toString());
 	}
 	
 	/**
