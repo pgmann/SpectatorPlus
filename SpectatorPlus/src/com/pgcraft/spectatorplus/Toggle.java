@@ -51,6 +51,10 @@ public enum Toggle {
 	
 	SPECTATORS_TABLIST_PREFIX("spectators.tabListPrefix", Boolean.class, true, "Prefix spectator names in the tab list? This will change the Scoreboard used, and restore the old one when spectator mode is disabled. If you see another plugin's sidebar/infos on players list disappearing when you enable the spectator mode, try to disable this."),
 	SPECTATORS_SEE_OTHERS("spectators.spectatorsSeeSpectators", Boolean.class, true, "See other spectators when you're spectating? (*requires spectators.tabListPrefix to be true*)"),
+
+	// Skript Integration, for allowing click events...
+	
+	SKRIPT_INTEGRATION("skriptIntegration", Boolean.class, false, "Enable Skript integration? Only set to true if needed."),
 	
 	// What to do when the spectator mode is changed (enabled or disabled)?
 	

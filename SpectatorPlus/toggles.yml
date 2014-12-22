@@ -80,6 +80,10 @@ onSpectatorModeChanged:
         usingSpawnCommand: true
 
 
+# Enable Skript integration? Only set to true if needed.
+skriptIntegration: true
+
+
 # Show spectatorplus plugin messages to spectators?
 outputMessages: true
 
