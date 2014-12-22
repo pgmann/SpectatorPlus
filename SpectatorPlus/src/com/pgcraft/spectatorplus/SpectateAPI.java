@@ -215,6 +215,10 @@ public class SpectateAPI {
 				p.scoreboard = (Boolean) value;
 				break;
 				
+			case SKRIPT_INTEGRATION:
+				p.skriptInt = (Boolean) value;
+				break;
+				
 			case SPECTATOR_MODE_ON_DEATH:
 				p.death = (Boolean) value;
 				break;

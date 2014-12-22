@@ -69,7 +69,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary, skriptInt;
 	
 	protected SpectatorMode mode = SpectatorMode.ANY;
 	
@@ -944,6 +944,7 @@ public class SpectatorPlus extends JavaPlugin {
 		death = toggles.getBoolean(Toggle.SPECTATOR_MODE_ON_DEATH);
 		scoreboard = toggles.getBoolean(Toggle.SPECTATORS_TABLIST_PREFIX);
 		seeSpecs = toggles.getBoolean(Toggle.SPECTATORS_SEE_OTHERS);
+		skriptInt = toggles.getBoolean(Toggle.SKRIPT_INTEGRATION);
 		blockCmds = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ENABLED);
 		adminBypass = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ADMINBYPASS);
 		newbieMode = toggles.getBoolean(Toggle.TOOLS_NEWBIEMODE);
