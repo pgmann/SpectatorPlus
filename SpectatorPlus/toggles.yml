@@ -81,7 +81,7 @@ onSpectatorModeChanged:
 
 
 # Enable Skript integration? Only set to true if needed.
-skriptIntegration: true
+skriptIntegration: false
 
 
 # Show spectatorplus plugin messages to spectators?

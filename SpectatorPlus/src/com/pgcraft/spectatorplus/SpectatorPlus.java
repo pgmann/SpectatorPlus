@@ -970,7 +970,7 @@ public class SpectatorPlus extends JavaPlugin {
 				board = manager.getNewScoreboard();
 				board.registerNewObjective("health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
 				team = board.registerNewTeam("spec");
-				team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY.toString() + "Dead" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
+				team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
 				team.setSuffix(ChatColor.RESET.toString());
 				for (Player target : getServer().getOnlinePlayers()) {
 					if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
