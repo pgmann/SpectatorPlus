@@ -228,7 +228,6 @@ public class ToggleManager {
 			conversionTable.put("deathspec", "spectatorModeOnDeath");
 			conversionTable.put("colouredtablist", "spectators.tabListPrefix");
 			conversionTable.put("seespecs", "spectators.spectatorsSeeSpectators");
-			conversionTable.put("skriptInt", "skriptIntegration");
 			conversionTable.put("blockcmds", "chat.blockCommands.enabled");
 			conversionTable.put("adminbypass", "chat.blockCommands.adminBypass");
 			conversionTable.put("newbieMode", "tools.newbieMode");
