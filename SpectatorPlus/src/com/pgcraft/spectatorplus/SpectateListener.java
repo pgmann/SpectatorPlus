@@ -545,7 +545,7 @@ public class SpectateListener implements Listener {
 		
 		// Cancel chest opening animation, doors, anything when the player right clicks.
 		if (p.getPlayerData(e.getPlayer()).spectating) {
-			if(p.skriptInt){
+			if(!p.skriptInt){
 				e.setCancelled(true);
 			}
 			if(e.hasBlock()) {
