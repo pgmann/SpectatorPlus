@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
  * <p>
  * Use the methods of this class to manage spectators, arenas and everything else.
  */
-@SuppressWarnings("deprecation")
 public class SpectateAPI {
 	private SpectatorPlus p;
 	

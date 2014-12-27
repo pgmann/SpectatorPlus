@@ -3,7 +3,6 @@ package com.pgcraft.spectatorplus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -695,10 +694,12 @@ public class SpectateListener implements Listener {
 	/**
 	 * Used to:<br>
 	 *  - prevent a command to be executed if the player is a spectator and the option is set in the config;<br>
-	 *  - catch /me commands to show them into the spectator chat.
+	 *  - catch /me commands to show them into the spectator chat;<br>
+	 *  - allow specified commands from the whitelist section to be executed.
 	 * 
 	 * @param e
 	 */
+	@SuppressWarnings("unchecked")
 	@EventHandler
 	protected void onCommandPreprocess(PlayerCommandPreprocessEvent e) {
 		if(p.specChat && e.getMessage().startsWith("/me ") && p.getPlayerData(e.getPlayer()).spectating) {
@@ -710,15 +711,24 @@ public class SpectateListener implements Listener {
 		if (p.blockCmds) {
 			if (e.getPlayer().hasPermission("spectate.admin") && p.adminBypass) {
 				// Do nothing
-			} else if (!(e.getMessage().startsWith("/spec ") || e.getMessage().startsWith("/spectate ") || e.getMessage().startsWith("/me ")) && p.getPlayerData(e.getPlayer()).spectating) {
-				Iterator<String> iter = ((ArrayList<String>) p.toggles.get(Toggle.CHAT_BLOCKCOMMANDS_WHITELIST)).iterator();
-				boolean allowed = false;
-				while (iter.hasNext()) {
-					if (e.getMessage().startsWith(iter.next()+" ")) {
-						allowed = true;
+			} else if (!(e.getMessage().startsWith("/spec ") || e.getMessage().equalsIgnoreCase("/spec") || e.getMessage().startsWith("/spectate ") || e.getMessage().equalsIgnoreCase("/spectate") || e.getMessage().startsWith("/me ") || e.getMessage().equalsIgnoreCase("/me")) && p.getPlayerData(e.getPlayer()).spectating) {
+				// Command whitelist
+				try {
+					Iterator<String> iter = ((ArrayList<String>) p.toggles.get(Toggle.CHAT_BLOCKCOMMANDS_WHITELIST)).iterator();
+					boolean allowed = false;
+					while (iter.hasNext()) {
+						String compare = iter.next();
+						if (e.getMessage().startsWith(compare+" ") || e.getMessage().equalsIgnoreCase(compare)) {
+							allowed = true;
+						}
 					}
-				}
-				if (!allowed) {
+					if (!allowed) {
+						e.getPlayer().sendMessage(SpectatorPlus.prefix+"Command blocked!");
+						e.setCancelled(true);
+					}
+				} catch (ClassCastException err) { // caused by casting to ArrayList<String> error
+					p.console.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"The command whitelist section isn't formatted correctly, ignoring it!");
+					// cancel the command.
 					e.getPlayer().sendMessage(SpectatorPlus.prefix+"Command blocked!");
 					e.setCancelled(true);
 				}
