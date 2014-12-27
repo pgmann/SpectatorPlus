@@ -145,11 +145,12 @@ public class ToggleManager {
 	@SuppressWarnings("unchecked")
 	public void set(Toggle toggle, Object value) {
 		if(value == null) {
-			toggles.getConfig().set(toggle.getPath(), toggle.getDefaultValue());
+			toggles.getConfig().set(toggle.getPath(), toggle.getDefaultValue().toString());
 		}
 		
 		Validate.isTrue(toggle.getDataType().isAssignableFrom(value.getClass()), "Cannot cast the value of this toggle to the correct data type: ", toggle.getPath());
-		toggles.getConfig().set(toggle.getPath(), value);
+		
+		toggles.getConfig().set(toggle.getPath(), value.toString());
 	}
 	
 	/**
@@ -184,8 +185,6 @@ public class ToggleManager {
 	 * appropried default values.
 	 */
 	protected void upgrade() {
-		p.getLogger().info("Upgrading toggles from version " + getVersion() + " to " + p.version + "...");
-		
 		Set<String> togglesND = getConfiguration().getKeys(true); // ND = no defaults
 		
 		for(Toggle toggle : Toggle.values()) {

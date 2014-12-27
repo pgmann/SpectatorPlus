@@ -228,6 +228,7 @@ public class SpectatorPlus extends JavaPlugin {
 	 * Generates a player head ItemStack to be displayed in the teleportation GUI.
 	 * 
 	 * @param player The player
+	 * @param inventoryViewer The spectator viewing the inventory (position relative to that player).
 	 * @param hidden True if the player is a displayed hidden player.
 	 * @return The head.
 	 */
@@ -910,9 +911,13 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 	}
 
-
+	/**
+	 * Reload the configuration.
+	 * 
+	 * @param hardReload If true, the configuration will be reloaded from the disk.
+	 */
 	protected void reloadConfig(boolean hardReload) {
-		// 'hardReload': true/false; a hard reload will reload the config values from file.
+		// A hard reload will reload the config values from file.
 		if (hardReload) {			
 			setup.saveDefaultConfig();
 			toggles.getConfigAccessor().saveDefaultConfig();
@@ -922,43 +927,42 @@ public class SpectatorPlus extends JavaPlugin {
 			toggles.getConfigAccessor().reloadConfig();
 			specs.reloadConfig();
 			
-			toggles.upgrade();
-
-			compass = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_ENABLED);
-			clock = toggles.getBoolean(Toggle.TOOLS_ARENACHOOSER_ENABLED);
-			spectatorsTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_ENABLED);
-			tpToDeathTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_ENABLED);
-			tpToDeathToolShowCause = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE);
-			inspector = toggles.getBoolean(Toggle.TOOLS_INSPECTOR_ENABLED);
-			inspectFromTPMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_INSPECTOR);
-			playersHealthInTeleportationMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_HEALTH);
-			playersLocationInTeleportationMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_LOCATION);
-			specChat = toggles.getBoolean(Toggle.CHAT_SPECTATORCHAT);
-			output = toggles.getBoolean(Toggle.OUTPUT_MESSAGES);
-			death = toggles.getBoolean(Toggle.SPECTATOR_MODE_ON_DEATH);
-			scoreboard = toggles.getBoolean(Toggle.SPECTATORS_TABLIST_PREFIX);
-			seeSpecs = toggles.getBoolean(Toggle.SPECTATORS_SEE_OTHERS);
-			blockCmds = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ENABLED);
-			adminBypass = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ADMINBYPASS);
-			newbieMode = toggles.getBoolean(Toggle.TOOLS_NEWBIEMODE);
-			teleportToSpawnOnSpecChangeWithoutLobby = toggles.getBoolean(Toggle.ONSPECMODECHANGED_TELEPORTATION_TOSPAWN);
-			useSpawnCommandToTeleport = toggles.getBoolean(Toggle.ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD);
-			enforceArenaBoundary = toggles.getBoolean(Toggle.ENFORCE_ARENA_BOUNDARIES);
-			
-			compassItem = toggles.getMaterial(Toggle.TOOLS_TELEPORTER_ITEM);
-			clockItem = toggles.getMaterial(Toggle.TOOLS_ARENACHOOSER_ITEM);
-			spectatorsToolsItem = toggles.getMaterial(Toggle.TOOLS_TOOLS_ITEM);
-			inspectorItem = toggles.getMaterial(Toggle.TOOLS_INSPECTOR_ITEM);
-			
-			try {
-				setSpectatorMode(SpectatorMode.fromString(setup.getConfig().getString("mode")));
-			} catch(IllegalArgumentException e) {
-				getLogger().warning("The SpectatorPlus' mode set in the config (" + setup.getConfig().getString("mode") + ") is invalid; using the ANY mode.");
-				setSpectatorMode(SpectatorMode.ANY);
-			}
-			
-		} // ...end hardReload
-
+			toggles.upgrade();	
+		}
+		
+		compass = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_ENABLED);
+		clock = toggles.getBoolean(Toggle.TOOLS_ARENACHOOSER_ENABLED);
+		spectatorsTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_ENABLED);
+		tpToDeathTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_ENABLED);
+		tpToDeathToolShowCause = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE);
+		inspector = toggles.getBoolean(Toggle.TOOLS_INSPECTOR_ENABLED);
+		inspectFromTPMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_INSPECTOR);
+		playersHealthInTeleportationMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_HEALTH);
+		playersLocationInTeleportationMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_LOCATION);
+		specChat = toggles.getBoolean(Toggle.CHAT_SPECTATORCHAT);
+		output = toggles.getBoolean(Toggle.OUTPUT_MESSAGES);
+		death = toggles.getBoolean(Toggle.SPECTATOR_MODE_ON_DEATH);
+		scoreboard = toggles.getBoolean(Toggle.SPECTATORS_TABLIST_PREFIX);
+		seeSpecs = toggles.getBoolean(Toggle.SPECTATORS_SEE_OTHERS);
+		blockCmds = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ENABLED);
+		adminBypass = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ADMINBYPASS);
+		newbieMode = toggles.getBoolean(Toggle.TOOLS_NEWBIEMODE);
+		teleportToSpawnOnSpecChangeWithoutLobby = toggles.getBoolean(Toggle.ONSPECMODECHANGED_TELEPORTATION_TOSPAWN);
+		useSpawnCommandToTeleport = toggles.getBoolean(Toggle.ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD);
+		enforceArenaBoundary = toggles.getBoolean(Toggle.ENFORCE_ARENA_BOUNDARIES);
+		
+		compassItem = toggles.getMaterial(Toggle.TOOLS_TELEPORTER_ITEM);
+		clockItem = toggles.getMaterial(Toggle.TOOLS_ARENACHOOSER_ITEM);
+		spectatorsToolsItem = toggles.getMaterial(Toggle.TOOLS_TOOLS_ITEM);
+		inspectorItem = toggles.getMaterial(Toggle.TOOLS_INSPECTOR_ITEM);
+		
+		try {
+			setSpectatorMode(SpectatorMode.fromString(setup.getConfig().getString("mode")));
+		} catch(IllegalArgumentException e) {
+			getLogger().warning("The SpectatorPlus' mode set in the config (" + setup.getConfig().getString("mode") + ") is invalid; using the ANY mode.");
+			setSpectatorMode(SpectatorMode.ANY);
+		}
+		
 		if (scoreboard) {
 			if (manager==null) { // After a reload, if 'scoreboard' is kept on, the same scoreboard will be used.
 				manager = getServer().getScoreboardManager();
@@ -966,6 +970,7 @@ public class SpectatorPlus extends JavaPlugin {
 				board.registerNewObjective("health", "health").setDisplaySlot(DisplaySlot.PLAYER_LIST);
 				team = board.registerNewTeam("spec");
 				team.setPrefix(ChatColor.DARK_GRAY + "[" + ChatColor.GRAY + "Spec" + ChatColor.DARK_GRAY + "] " + ChatColor.GRAY);
+				team.setSuffix(ChatColor.RESET.toString());
 				for (Player target : getServer().getOnlinePlayers()) {
 					if (user.containsKey(target.getName()) && user.get(target.getName()).spectating) {
 					}
