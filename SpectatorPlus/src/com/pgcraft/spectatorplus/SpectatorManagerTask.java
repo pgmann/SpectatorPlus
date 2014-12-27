@@ -26,7 +26,8 @@ public class SpectatorManagerTask extends BukkitRunnable {
 		for (Player target:p.getServer().getOnlinePlayers()) {
 			if (p.getPlayerData(target).spectating) {
 				// Spectators should always be able to fly.
-				target.setAllowFlight(true);
+				// to help prevent glitches when enabling/disabling flight, only set allow flight when it's not already on.
+				if (!target.getAllowFlight()) target.setAllowFlight(true);
 				
 				// In arena mode, if boundaries are enforced, check if spectators are not inside the boundary.
 				// [Spawn allows free movement (before choosing an arena).]
