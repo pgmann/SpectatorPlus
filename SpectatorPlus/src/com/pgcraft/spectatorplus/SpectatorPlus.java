@@ -69,7 +69,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
 	
 	protected SpectatorMode mode = SpectatorMode.ANY;
 	
@@ -568,54 +568,94 @@ public class SpectatorPlus extends JavaPlugin {
 		Location deathPoint = getPlayerData(spectator).deathLocation;
 		
 		
+		
 		// Normal speed
 		ItemStack normalSpeed = new ItemStack(Material.STRING);
 		ItemMeta meta = normalSpeed.getItemMeta();
 		meta.setDisplayName(TOOL_NORMAL_SPEED_NAME);
+		normalSpeed.setItemMeta(meta);
+		
 		if(speedLevel == 0) {
 			meta.setLore(activeLore);
+			normalSpeed.setItemMeta(meta);
+			
+			if(glowOnActiveTools) {
+				GlowEffect.addGlow(normalSpeed);
+			}
 		}
-		normalSpeed.setItemMeta(meta);
+		
 		GUIContent[0] = normalSpeed;
+		
 		
 		// Speed I
 		ItemStack speedI = new ItemStack(Material.FEATHER);
 		meta = speedI.getItemMeta();
 		meta.setDisplayName(TOOL_SPEED_I_NAME);
+		speedI.setItemMeta(meta);
+		
 		if(speedLevel == 1) {
 			meta.setLore(activeLore);
+			speedI.setItemMeta(meta);
+			
+			if(glowOnActiveTools) {
+				GlowEffect.addGlow(speedI);
+			}
 		}
-		speedI.setItemMeta(meta);
+		
 		GUIContent[1] = speedI;
+		
 		
 		// Speed II
 		ItemStack speedII = new ItemStack(Material.FEATHER, 2);
 		meta = speedII.getItemMeta();
 		meta.setDisplayName(TOOL_SPEED_II_NAME);
+		speedII.setItemMeta(meta);
+		
 		if(speedLevel == 2) {
 			meta.setLore(activeLore);
+			speedII.setItemMeta(meta);
+			
+			if(glowOnActiveTools) {
+				GlowEffect.addGlow(speedII);
+			}
 		}
-		speedII.setItemMeta(meta);
+		
 		GUIContent[2] = speedII;
+		
 		
 		// Speed III
 		ItemStack speedIII = new ItemStack(Material.FEATHER, 3);
 		meta = speedIII.getItemMeta();
 		meta.setDisplayName(TOOL_SPEED_III_NAME);
+		speedIII.setItemMeta(meta);
+		
 		if(speedLevel == 3) {
 			meta.setLore(activeLore);
+			speedIII.setItemMeta(meta);
+			
+			if(glowOnActiveTools) {
+				GlowEffect.addGlow(speedIII);
+			}
 		}
-		speedIII.setItemMeta(meta);
+		
 		GUIContent[3] = speedIII;
+		
 		
 		// Speed IV
 		ItemStack speedIV = new ItemStack(Material.FEATHER, 4);
 		meta = speedIV.getItemMeta();
 		meta.setDisplayName(TOOL_SPEED_IV_NAME);
+		speedIV.setItemMeta(meta);
+		
 		if(speedLevel == 4) {
 			meta.setLore(activeLore);
+			speedIV.setItemMeta(meta);
+			
+			if(glowOnActiveTools) {
+				GlowEffect.addGlow(speedIV);
+			}
 		}
-		speedIV.setItemMeta(meta);
+		
 		GUIContent[4] = speedIV;
 		
 		
@@ -935,6 +975,7 @@ public class SpectatorPlus extends JavaPlugin {
 		spectatorsTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_ENABLED);
 		tpToDeathTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_ENABLED);
 		tpToDeathToolShowCause = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE);
+		glowOnActiveTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_GLOW);
 		inspector = toggles.getBoolean(Toggle.TOOLS_INSPECTOR_ENABLED);
 		inspectFromTPMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_INSPECTOR);
 		playersHealthInTeleportationMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_HEALTH);

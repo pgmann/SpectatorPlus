@@ -34,6 +34,7 @@ public enum Toggle {
 	TOOLS_TOOLS_ITEM(Material.class, Material.MAGMA_CREAM, "The item to use as the spectators' tools"),
 	TOOLS_TOOLS_TPTODEATH_ENABLED("tools.tools.tpToDeath.enabled", Boolean.class, true, "Add a tool to allow dead spectators to teleport themselves to their death point?"),
 	TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE("tools.tools.tpToDeath.displayCause", Boolean.class, true, "Display the cause of the death in the tooltip? (Example: « You starved to death ».)"),
+	TOOLS_TOOLS_GLOW("tools.tools.glowEffectIfActive", Boolean.class, true, "Add an enchantment-like effect on the currently active tools?"),
 	
 	TOOLS_INSPECTOR_ENABLED(Boolean.class, true, "If true, spectators will be able to see the players' inventories using an item in their hotbar, right-clicking the player."),
 	TOOLS_INSPECTOR_ITEM(Material.class, Material.FEATHER, "The item used as the inspector."),

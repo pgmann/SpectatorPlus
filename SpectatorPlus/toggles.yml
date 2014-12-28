@@ -27,6 +27,8 @@ tools:
         enabled: true
         item: MAGMA_CREAM
         
+        glowEffectIfActive: true
+        
         tpToDeath:
             enabled: true
             # Display the cause of the death in the tooltip? (Example: Â« You starved to death Â».)

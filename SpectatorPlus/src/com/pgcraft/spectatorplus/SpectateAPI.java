@@ -274,6 +274,10 @@ public class SpectateAPI {
 				p.tpToDeathTool = (Boolean) value;
 				break;
 				
+			case TOOLS_TOOLS_GLOW:
+				p.glowOnActiveTools = (Boolean) value;
+				break;
+				
 			default:
 				break;
 		}
