@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -863,6 +864,16 @@ public class SpectateListener implements Listener {
 						else {
 							spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
 							spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
+						}
+					}
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_DIVING_SUIT_NAME)) {
+						if(spectator.getInventory().getBoots() != null && spectator.getInventory().getBoots().getType() == Material.DIAMOND_BOOTS) {
+							spectator.getInventory().setBoots(null);
+						}
+						else {
+							ItemStack boots = new ItemStack(Material.DIAMOND_BOOTS);
+							boots.addEnchantment(Enchantment.DEPTH_STRIDER, 3);
+							spectator.getInventory().setBoots(boots);
 						}
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_TP_TO_DEATH_POINT_NAME)) {

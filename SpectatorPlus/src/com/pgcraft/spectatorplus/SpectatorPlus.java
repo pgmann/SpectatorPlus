@@ -17,6 +17,7 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -92,6 +93,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
 	protected final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
 	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
+	protected final static String TOOL_DIVING_SUIT_NAME = ChatColor.BLUE + "Diving Suit";
 	protected final static String TOOL_TP_TO_DEATH_POINT_NAME = ChatColor.YELLOW + "Go to your death point";
 
 	/**
@@ -574,6 +576,11 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 		}
 		
+		Boolean divingSuitEquiped = false;
+		if(spectator.getInventory().getBoots() != null && spectator.getInventory().getBoots().getType() == Material.DIAMOND_BOOTS) {
+			divingSuitEquiped = true;
+		}
+		
 		List<String> activeLore = new ArrayList<String>();
 		activeLore.add("" + ChatColor.GRAY + ChatColor.ITALIC + "Active");
 		
@@ -689,7 +696,26 @@ public class SpectatorPlus extends JavaPlugin {
 			toolsOnLine2.add(nightVision);
 		}
 		
-		// To add here: no clip and underwater suit
+		// Diving suit (Depth-Strider-III boots)
+		if(divingSuitTool) {
+			ItemStack divingSuit = new ItemStack(Material.DIAMOND_BOOTS);
+			meta = divingSuit.getItemMeta();
+			meta.setDisplayName(TOOL_DIVING_SUIT_NAME);
+			if(divingSuitEquiped) {
+				meta.setLore(activeLore);
+			}
+			List<String> lore = meta.getLore();
+			if(lore == null) lore = new ArrayList<String>();
+			lore.add(ChatColor.GRAY + "Get a pair of Depth Strider III boots");
+			meta.setLore(lore);
+			divingSuit.setItemMeta(meta);
+			
+			if(divingSuitEquiped && glowOnActiveTools) {
+				GlowEffect.addGlow(divingSuit);
+			}
+			
+			toolsOnLine2.add(divingSuit);
+		}
 		
 		// Teleportation to the death point
 		ItemStack tpToDeathPoint = null;
@@ -728,7 +754,7 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 			else {
 				GUIContent[offset + 2] = toolsOnLine2.get(0);
-				GUIContent[offset + 6] = toolsOnLine2.get(0);
+				GUIContent[offset + 6] = toolsOnLine2.get(1);
 			}
 		}
 		else if(lineSize == 3) {
