@@ -69,7 +69,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
 	
 	protected SpectatorMode mode = SpectatorMode.ANY;
 	
@@ -973,6 +973,10 @@ public class SpectatorPlus extends JavaPlugin {
 		compass = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_ENABLED);
 		clock = toggles.getBoolean(Toggle.TOOLS_ARENACHOOSER_ENABLED);
 		spectatorsTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_ENABLED);
+		divingSuitTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_DIVINGSUIT);
+		nightVisionTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_NIGHTVISION);
+		noClipTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_NOCLIP);
+		speedTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_SPEED);
 		tpToDeathTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_ENABLED);
 		tpToDeathToolShowCause = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE);
 		glowOnActiveTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_GLOW);

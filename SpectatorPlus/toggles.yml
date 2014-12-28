@@ -29,6 +29,12 @@ tools:
         
         glowEffectIfActive: true
         
+        # What spectators can get from the spectators' tools?
+        speed: true         # They can get speed
+        nightVision: true   # They can get night-vision and water breathing
+        divingSuit: true    # They can get some Depth-Strider-III boots
+        noClipMode: true    # They can get a no-clip mode (i.e. the vanilla spectator mode)
+        
         tpToDeath:
             enabled: true
             # Display the cause of the death in the tooltip? (Example: Â« You starved to death Â».)
