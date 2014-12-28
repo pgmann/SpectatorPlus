@@ -783,7 +783,7 @@ public class SpectateListener implements Listener {
 	 * @param e
 	 */
 	@EventHandler
-	protected void onInventoryClick(InventoryClickEvent e) {
+	protected void onInventoryClick(InventoryClickEvent e) {		
 		if (p.getPlayerData((Player) e.getWhoClicked()).spectating) {
 			
 			// Cancel the event to prevent the item from being taken
