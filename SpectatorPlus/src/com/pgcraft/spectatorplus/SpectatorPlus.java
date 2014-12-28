@@ -541,7 +541,24 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	
 	protected void showSpectatorsOptionsGUI(Player spectator) {
-		Inventory gui = Bukkit.getServer().createInventory(spectator, 9, SPEC_TOOLS_TITLE);
+		// We first need to know what is the size of the inventory
+		
+		// If a death location is registered for this player, and if every tool is
+		// enabled, a line will have to be added.
+		// That's why this is defined here, not below.
+		// If the "tp to death" tool is disabled, the death location is not set. So it's useless to
+		// check this here.
+		Location deathPoint = getPlayerData(spectator).deathLocation;
+		
+		int height = 0, offset = 0;
+		if(speedTool) {
+			height++;
+			offset = 9;
+		}
+		if(divingSuitTool || nightVisionTool || noClipTool || tpToDeathTool) height++;
+		if(divingSuitTool && nightVisionTool && noClipTool && tpToDeathTool && deathPoint != null) height++;
+		
+		Inventory gui = Bukkit.getServer().createInventory(spectator, height * 9, SPEC_TOOLS_TITLE);
 		ItemStack[] GUIContent = gui.getContents();
 		
 		// Retrieves the current speed level, and the other enabled effects
@@ -560,137 +577,168 @@ public class SpectatorPlus extends JavaPlugin {
 		List<String> activeLore = new ArrayList<String>();
 		activeLore.add("" + ChatColor.GRAY + ChatColor.ITALIC + "Active");
 		
-		// If a death location is registered for this player, the position of the "night vision" tool
-		// is not the same (6 with death point registered; 8 without).
-		// That's why this is defined here, not below.
-		// If the "tp to death" tool is disabled, the death location is not set. So it's useless to
-		// check this here.
-		Location deathPoint = getPlayerData(spectator).deathLocation;
+		ItemMeta meta;
 		
-		
-		
-		// Normal speed
-		ItemStack normalSpeed = new ItemStack(Material.STRING);
-		ItemMeta meta = normalSpeed.getItemMeta();
-		meta.setDisplayName(TOOL_NORMAL_SPEED_NAME);
-		normalSpeed.setItemMeta(meta);
-		
-		if(speedLevel == 0) {
-			meta.setLore(activeLore);
+		if(speedTool) {
+			
+			// Normal speed
+			ItemStack normalSpeed = new ItemStack(Material.STRING);
+			meta = normalSpeed.getItemMeta();
+			meta.setDisplayName(TOOL_NORMAL_SPEED_NAME);
 			normalSpeed.setItemMeta(meta);
 			
-			if(glowOnActiveTools) {
-				GlowEffect.addGlow(normalSpeed);
+			if(speedLevel == 0) {
+				meta.setLore(activeLore);
+				normalSpeed.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(normalSpeed);
+				}
 			}
-		}
-		
-		GUIContent[0] = normalSpeed;
-		
-		
-		// Speed I
-		ItemStack speedI = new ItemStack(Material.FEATHER);
-		meta = speedI.getItemMeta();
-		meta.setDisplayName(TOOL_SPEED_I_NAME);
-		speedI.setItemMeta(meta);
-		
-		if(speedLevel == 1) {
-			meta.setLore(activeLore);
+			
+			GUIContent[2] = normalSpeed;
+			
+			
+			// Speed I
+			ItemStack speedI = new ItemStack(Material.FEATHER);
+			meta = speedI.getItemMeta();
+			meta.setDisplayName(TOOL_SPEED_I_NAME);
 			speedI.setItemMeta(meta);
 			
-			if(glowOnActiveTools) {
-				GlowEffect.addGlow(speedI);
+			if(speedLevel == 1) {
+				meta.setLore(activeLore);
+				speedI.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(speedI);
+				}
 			}
-		}
-		
-		GUIContent[1] = speedI;
-		
-		
-		// Speed II
-		ItemStack speedII = new ItemStack(Material.FEATHER, 2);
-		meta = speedII.getItemMeta();
-		meta.setDisplayName(TOOL_SPEED_II_NAME);
-		speedII.setItemMeta(meta);
-		
-		if(speedLevel == 2) {
-			meta.setLore(activeLore);
+			
+			GUIContent[3] = speedI;
+			
+			
+			// Speed II
+			ItemStack speedII = new ItemStack(Material.FEATHER, 2);
+			meta = speedII.getItemMeta();
+			meta.setDisplayName(TOOL_SPEED_II_NAME);
 			speedII.setItemMeta(meta);
 			
-			if(glowOnActiveTools) {
-				GlowEffect.addGlow(speedII);
+			if(speedLevel == 2) {
+				meta.setLore(activeLore);
+				speedII.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(speedII);
+				}
 			}
-		}
-		
-		GUIContent[2] = speedII;
-		
-		
-		// Speed III
-		ItemStack speedIII = new ItemStack(Material.FEATHER, 3);
-		meta = speedIII.getItemMeta();
-		meta.setDisplayName(TOOL_SPEED_III_NAME);
-		speedIII.setItemMeta(meta);
-		
-		if(speedLevel == 3) {
-			meta.setLore(activeLore);
+			
+			GUIContent[4] = speedII;
+			
+			
+			// Speed III
+			ItemStack speedIII = new ItemStack(Material.FEATHER, 3);
+			meta = speedIII.getItemMeta();
+			meta.setDisplayName(TOOL_SPEED_III_NAME);
 			speedIII.setItemMeta(meta);
 			
-			if(glowOnActiveTools) {
-				GlowEffect.addGlow(speedIII);
+			if(speedLevel == 3) {
+				meta.setLore(activeLore);
+				speedIII.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(speedIII);
+				}
 			}
-		}
-		
-		GUIContent[3] = speedIII;
-		
-		
-		// Speed IV
-		ItemStack speedIV = new ItemStack(Material.FEATHER, 4);
-		meta = speedIV.getItemMeta();
-		meta.setDisplayName(TOOL_SPEED_IV_NAME);
-		speedIV.setItemMeta(meta);
-		
-		if(speedLevel == 4) {
-			meta.setLore(activeLore);
+			
+			GUIContent[5] = speedIII;
+			
+			
+			// Speed IV
+			ItemStack speedIV = new ItemStack(Material.FEATHER, 4);
+			meta = speedIV.getItemMeta();
+			meta.setDisplayName(TOOL_SPEED_IV_NAME);
 			speedIV.setItemMeta(meta);
 			
-			if(glowOnActiveTools) {
-				GlowEffect.addGlow(speedIV);
+			if(speedLevel == 4) {
+				meta.setLore(activeLore);
+				speedIV.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(speedIV);
+				}
 			}
+			
+			GUIContent[6] = speedIV;
 		}
 		
-		GUIContent[4] = speedIV;
-		
+		ArrayList<ItemStack> toolsOnLine2 = new ArrayList<ItemStack>();
 		
 		// Night vision
-		ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
-		meta = nightVision.getItemMeta();
-		if(nightVisionActive) {
-			nightVision.setType(Material.ENDER_PEARL);
-			meta.setDisplayName(TOOL_NIGHT_VISION_ACTIVE_NAME);
-		}
-		else {
-			meta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
-		}
-		nightVision.setItemMeta(meta);
-		if(deathPoint == null) { // No "TP to death point" tool: position #8.
-			GUIContent[8] = nightVision;
-		}
-		else {
-			GUIContent[6] = nightVision;
+		if(nightVisionTool) {
+			ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
+			meta = nightVision.getItemMeta();
+			if(nightVisionActive) {
+				nightVision.setType(Material.ENDER_PEARL);
+				meta.setDisplayName(TOOL_NIGHT_VISION_ACTIVE_NAME);
+			}
+			else {
+				meta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
+			}
+			nightVision.setItemMeta(meta);
+			
+			toolsOnLine2.add(nightVision);
 		}
 		
+		// To add here: no clip and underwater suit
 		
 		// Teleportation to the death point
+		ItemStack tpToDeathPoint = null;
 		if(deathPoint != null) {
-			ItemStack tpToDeathPoint = new ItemStack(Material.NETHER_STAR);
+			tpToDeathPoint = new ItemStack(Material.NETHER_STAR);
 			meta = tpToDeathPoint.getItemMeta();
 			meta.setDisplayName(TOOL_TP_TO_DEATH_POINT_NAME);
+			
 			// The death message is never set if it is disabled: check useless (same as above).
 			if(getPlayerData(spectator).lastDeathMessage != null) {
 				List<String> lore = new ArrayList<String>();
 				lore.add("" + ChatColor.GRAY + getPlayerData(spectator).lastDeathMessage);
 				meta.setLore(lore);
 			}
+			
 			tpToDeathPoint.setItemMeta(meta);
-			GUIContent[8] = tpToDeathPoint;
+		}
+		
+		
+		// Line 2 (and 3): display
+		int lineSize = toolsOnLine2.size();
+		if(lineSize == 1) {
+			if(deathPoint != null) {
+				GUIContent[offset + 2] = toolsOnLine2.get(0);
+				GUIContent[offset + 6] = tpToDeathPoint;
+			}
+			else {
+				GUIContent[offset + 4] = toolsOnLine2.get(0);
+			}
+		}
+		else if(lineSize == 2) {
+			if(deathPoint != null) {
+				GUIContent[offset + 2] = toolsOnLine2.get(0);
+				GUIContent[offset + 4] = toolsOnLine2.get(1);
+				GUIContent[offset + 6] = tpToDeathPoint;
+			}
+			else {
+				GUIContent[offset + 2] = toolsOnLine2.get(0);
+				GUIContent[offset + 6] = toolsOnLine2.get(0);
+			}
+		}
+		else if(lineSize == 3) {
+			GUIContent[offset + 2] = toolsOnLine2.get(0);
+			GUIContent[offset + 4] = toolsOnLine2.get(1);
+			GUIContent[offset + 6] = toolsOnLine2.get(2);
+			
+			if(deathPoint != null) {
+				GUIContent[offset + 13] = tpToDeathPoint;
+			}
 		}
 		
 		
