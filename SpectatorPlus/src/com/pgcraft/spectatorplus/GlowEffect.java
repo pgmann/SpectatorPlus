@@ -20,7 +20,6 @@ package com.pgcraft.spectatorplus;
 
 import java.lang.reflect.Field;
 
-import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.enchantments.EnchantmentWrapper;

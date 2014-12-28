@@ -17,7 +17,6 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -94,6 +93,8 @@ public class SpectatorPlus extends JavaPlugin {
 	protected final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
 	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
 	protected final static String TOOL_DIVING_SUIT_NAME = ChatColor.BLUE + "Diving Suit";
+	protected final static String TOOL_NOCLIP_NAME = ChatColor.LIGHT_PURPLE + "No-clip mode";
+	protected final static String TOOL_NOCLIP_QUIT_NAME = ChatColor.DARK_GREEN + "Go back to the real "; //... spectator's name
 	protected final static String TOOL_TP_TO_DEATH_POINT_NAME = ChatColor.YELLOW + "Go to your death point";
 
 	/**
@@ -679,6 +680,16 @@ public class SpectatorPlus extends JavaPlugin {
 		}
 		
 		ArrayList<ItemStack> toolsOnLine2 = new ArrayList<ItemStack>();
+		
+		// No-clip mode
+		if(noClipTool) {
+			ItemStack noClip = new ItemStack(Material.BARRIER);
+			meta = noClip.getItemMeta();
+			meta.setDisplayName(TOOL_NOCLIP_NAME);
+			noClip.setItemMeta(meta);
+			
+			toolsOnLine2.add(noClip);
+		}
 		
 		// Night vision
 		if(nightVisionTool) {
@@ -1434,63 +1445,114 @@ public class SpectatorPlus extends JavaPlugin {
 	protected void updateSpectatorInventory(Player spectator) {
 		// Empty the inventory first...
 		spectator.getInventory().clear();
-
-		String rightClick = "", rightClickPlayer = "";
-		if(newbieMode) {
-			rightClick = ChatColor.GRAY + " (Right-click)";
-			rightClickPlayer = ChatColor.GRAY + " (Right-click a player)";
+		
+		/* Classic spectator inventory */
+		if(spectator.getGameMode() == GameMode.ADVENTURE) {
+			
+			String rightClick = "", rightClickPlayer = "";
+			if(newbieMode) {
+				rightClick = ChatColor.GRAY + " (Right-click)";
+				rightClickPlayer = ChatColor.GRAY + " (Right-click a player)";
+			}
+	
+			// Give them compass if the toggle is on
+			if (compass) {
+				ItemStack compass = new ItemStack(compassItem, 1);
+				ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
+				compassMeta.setDisplayName(ChatColor.AQUA +""+ ChatColor.BOLD + "Teleporter" + rightClick);
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose a player");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to teleport to");
+				compassMeta.setLore(lore);
+				compass.setItemMeta(compassMeta);
+				spectator.getInventory().setItem(0, compass);
+			}
+	
+			// Give them clock (only for arena mode and if the toggle is on)
+			if (clock && mode == SpectatorMode.ARENA) {
+				ItemStack watch = new ItemStack(clockItem, 1);
+				ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
+				watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector" + rightClick);
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose an arena");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to spectate in");
+				watchMeta.setLore(lore);
+				watch.setItemMeta(watchMeta);
+				spectator.getInventory().setItem(1, watch);
+			}
+	
+			// Give them magma cream (spectators tools) if the toggle is on
+			if(spectatorsTools) {
+				ItemStack tools = new ItemStack(spectatorsToolsItem, 1);
+				ItemMeta toolsMeta = tools.getItemMeta();
+				toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools" + rightClick);
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to open the spectator");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "tools menu");
+				toolsMeta.setLore(lore);
+				tools.setItemMeta(toolsMeta);
+				spectator.getInventory().setItem(4, tools);
+			}
+	
+			// Give them book if the toggle is on
+			if(inspector) {
+				ItemStack book = new ItemStack(inspectorItem, 1);
+				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
+				bookMeta.setDisplayName(ChatColor.DARK_AQUA +""+ ChatColor.BOLD + "Inspector" + rightClickPlayer);
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " a player to see their");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "inventory, armour, health & more!");
+				bookMeta.setLore(lore);
+				book.setItemMeta(bookMeta);
+				spectator.getInventory().setItem(8, book);
+			}
 		}
-
-		// Give them compass if the toggle is on
-		if (compass) {
-			ItemStack compass = new ItemStack(compassItem, 1);
-			ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
-			compassMeta.setDisplayName(ChatColor.AQUA +""+ ChatColor.BOLD + "Teleporter" + rightClick);
-			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose a player");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to teleport to");
-			compassMeta.setLore(lore);
-			compass.setItemMeta(compassMeta);
-			spectator.getInventory().setItem(0, compass);
-		}
-
-		// Give them clock (only for arena mode and if the toggle is on)
-		if (clock && mode == SpectatorMode.ARENA) {
-			ItemStack watch = new ItemStack(clockItem, 1);
-			ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
-			watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector" + rightClick);
-			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose an arena");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to spectate in");
-			watchMeta.setLore(lore);
-			watch.setItemMeta(watchMeta);
-			spectator.getInventory().setItem(1, watch);
-		}
-
-		// Give them magma cream (spectators tools) if the toggle is on
-		if(spectatorsTools) {
-			ItemStack tools = new ItemStack(spectatorsToolsItem, 1);
-			ItemMeta toolsMeta = tools.getItemMeta();
-			toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools" + rightClick);
-			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to open the spectator");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "tools menu");
-			toolsMeta.setLore(lore);
-			tools.setItemMeta(toolsMeta);
-			spectator.getInventory().setItem(4, tools);
-		}
-
-		// Give them book if the toggle is on
-		if(inspector) {
-			ItemStack book = new ItemStack(inspectorItem, 1);
-			ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
-			bookMeta.setDisplayName(ChatColor.DARK_AQUA +""+ ChatColor.BOLD + "Inspector" + rightClickPlayer);
-			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " a player to see their");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "inventory, armour, health & more!");
-			bookMeta.setLore(lore);
-			book.setItemMeta(bookMeta);
-			spectator.getInventory().setItem(8, book);
+		
+		/* No-clip spectator inventory */
+		else if(spectator.getGameMode() == GameMode.SPECTATOR) {
+			
+			ItemStack quitNoClip = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+			SkullMeta sMeta = (SkullMeta) quitNoClip.getItemMeta();
+				sMeta.setDisplayName(TOOL_NOCLIP_QUIT_NAME + spectator.getName());
+				List<String> lore = new ArrayList<String>();
+				lore.add(ChatColor.GRAY + "Disables the no-clip mode");
+				lore.add(ChatColor.RED + "Cannot work (Bukkit bug), use " + ChatColor.GOLD + "/spec b");
+				sMeta.setLore(lore);
+				sMeta.setOwner(spectator.getName());
+			quitNoClip.setItemMeta(sMeta);
+			
+			
+			if(nightVisionTool) {
+				Boolean nightVisionActive = false;
+				for(PotionEffect effect : spectator.getActivePotionEffects()) {
+					if(effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
+						nightVisionActive = true;
+						break;
+					}
+				}
+				
+				ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
+				ItemMeta iMeta = nightVision.getItemMeta();
+				if(nightVisionActive) {
+					nightVision.setType(Material.ENDER_PEARL);
+					iMeta.setDisplayName(TOOL_NIGHT_VISION_ACTIVE_NAME);
+				}
+				else {
+					iMeta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
+				}
+				lore = new ArrayList<String>();
+				lore.add(ChatColor.RED + "Cannot work currently (Bukkit bug);");
+				lore.add(ChatColor.RED + "disable the no-clip mode to use that.");
+				iMeta.setLore(lore);
+				nightVision.setItemMeta(iMeta);
+				
+				spectator.getInventory().setItem(20, nightVision);
+				spectator.getInventory().setItem(24, quitNoClip);
+			}
+			
+			else {
+				spectator.getInventory().setItem(22, quitNoClip);
+			}
 		}
 
 		spectator.updateInventory();
