@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -34,6 +35,7 @@ public class SpectateCommand implements CommandExecutor {
 		commands.add("say");
 		commands.add("config");
 		commands.add("hide");
+		commands.add("b"); // Temporary workaround
 	}
 
 
@@ -709,6 +711,31 @@ public class SpectateCommand implements CommandExecutor {
 
 	}
 	
+	
+	/**
+	 * This is a temporary workaround to quit the no-clip mode for spectators.
+	 * <p>
+	 * Usage: /spec b
+	 * <p>
+	 * Why? Because there's currently a bug in Bukkit: the InventoryClickEvent
+	 * is not called when the player is in spectator gamemode. So, we cannot use
+	 * our usual inventory-based GUIs.
+	 * 
+	 * @param sender
+	 * @param command
+	 * @param label
+	 * @param args
+	 */
+	private void doB(CommandSender sender, Command command, String label, String[] args) {
+		if(sender instanceof Player && p.getPlayerData((Player) sender).spectating && ((Player) sender).getGameMode() == GameMode.SPECTATOR) {
+			((Player) sender).setGameMode(GameMode.ADVENTURE);
+			
+			((Player) sender).setAllowFlight(true);
+			((Player) sender).setFlying(true);
+			
+			p.updateSpectatorInventory((Player) sender);
+		}
+	}
 	
 	/**
 	 * Returns a list of the commands.
