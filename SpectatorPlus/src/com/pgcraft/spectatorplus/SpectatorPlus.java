@@ -1,5 +1,8 @@
 package com.pgcraft.spectatorplus;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -798,6 +801,36 @@ public class SpectatorPlus extends JavaPlugin {
 			spectator.sendMessage(prefix + "Teleported you to " + ChatColor.RED + target.getName());
 		}
 	}
+	
+	/**
+	 * Sets whether the player collides with entities.
+	 * 
+	 * @param player The player.
+	 * @param collides Whether the player should collide with entities or not.
+	 * 
+	 * @return true if the change was successful (compatible server, i.e. Spigot currently); false else.
+	 */
+	private boolean setCollidesWithEntities(Player player, boolean collides) {
+		try {
+			// We need to call player.spigot.setCollidesWithEntities(collides) .
+			
+			Field playerSpigotField = player.getClass().getDeclaredField("spigot");
+			playerSpigotField.setAccessible(true);
+
+			Class<?> playerSpigotClazz = playerSpigotField.getType();
+			Object playerSpigotObject = playerSpigotField.get(player);
+
+
+			playerSpigotClazz.getDeclaredMethod("setCollidesWithEntities", boolean.class)
+			                 .invoke(playerSpigotObject, collides);
+
+			return true;
+			
+		} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ignored) {
+			// Cannot enable/disable collisions :(
+			return false;
+		}
+	}
 
 	/**
 	 * Checks for problems and enables spectator mode for spectator, on behalf of sender.
@@ -872,6 +905,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Disable interaction
 			getPlayerData(spectator).spectating = true;
+			setCollidesWithEntities(spectator, false);
 
 			updateSpectatorInventory(spectator);
 
@@ -973,6 +1007,8 @@ public class SpectatorPlus extends JavaPlugin {
 			
 			// Allow interaction
 			getPlayerData(spectator).spectating = false;
+			setCollidesWithEntities(spectator, true);
+			
 			spectator.setAllowFlight(false);
 			spectator.setGameMode(getPlayerData(spectator).oldGameMode);
 			
