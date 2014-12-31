@@ -149,18 +149,12 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to prevent spectators from placing blocks, and teleport spectators blocking players from placing blocks.
+	 * Used to teleport spectators blocking players from placing blocks.
 	 * 
 	 * @param e
 	 */
 	@EventHandler(priority=EventPriority.HIGHEST) // This event is the last to be executed, as lower priorities are executed first.
 	protected void onBlockPlace(BlockPlaceEvent e) {
-		if (p.getPlayerData(e.getPlayer()).spectating) {
-			e.setCancelled(true);
-			if(p.output) {
-				e.getPlayer().sendMessage(SpectatorPlus.prefix + "You cannot place blocks while in spectate mode!");
-			}
-		}
 		
 		// Get location of the block that is going to be placed 
 		Location blockL = e.getBlock().getLocation();
@@ -367,23 +361,12 @@ public class SpectateListener implements Listener {
 	}
 	
 	/**
-	 * Used to:<br>
-	 *  - prevent spectator from breaking blocks;<br>
-	 *  - setup an arena, if the command was sent before by this player.
+	 * Used to setup an arena, if the command was sent before by this player.
 	 * 
 	 * @param e
 	 */
 	@EventHandler
 	protected void onBlockBreak(BlockBreakEvent e) {
-		// Cancel if the player is a spectator. Fires only when the block is fully broken.
-		if (p.getPlayerData(e.getPlayer()).spectating) {
-			e.setCancelled(true);
-			
-			if(p.output) {
-				e.getPlayer().sendMessage(SpectatorPlus.prefix + "You cannot break blocks while in spectate mode!");
-			}
-		}
-		
 		// Set up mode
 		if(p.arenaSetup(e.getPlayer(), e.getBlock())) {
 			e.setCancelled(true);
