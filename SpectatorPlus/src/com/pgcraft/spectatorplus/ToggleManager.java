@@ -27,7 +27,7 @@ public class ToggleManager {
 	 * @param toggles The toggles.
 	 */
 	public ToggleManager(SpectatorPlus plugin, ConfigAccessor toggles) {
-		this.p = plugin;
+		p = plugin;
 		this.toggles = toggles;
 		
 		migrate();
@@ -144,13 +144,162 @@ public class ToggleManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public void set(Toggle toggle, Object value) {
+		set(toggle, value, false);
+	}
+	
+	/**
+	 * Sets the value of the given toggle.
+	 * 
+	 * @param toggle The toggle.
+	 * @param value The value. If null, the default value for this toggle is used.
+	 * @param temp If true, this will only be reflected in the memory, not saved in the toggles.yml file.
+	 * 
+	 * @throws NullPointerException if the toggle is null.
+	 * @throws IllegalArgumentException if the type of the toggle is not compatible with the type of the value.
+	 */
+	@SuppressWarnings("unchecked")
+	public void set(Toggle toggle, Object value, boolean temp) {
+		if(toggle == null) {
+			throw new NullPointerException("The toggle cannot be null");
+		}
 		if(value == null) {
-			toggles.getConfig().set(toggle.getPath(), toggle.getDefaultValue().toString());
+			value = toggle.getDefaultValue();
 		}
 		
 		Validate.isTrue(toggle.getDataType().isAssignableFrom(value.getClass()), "Cannot cast the value of this toggle to the correct data type: ", toggle.getPath());
 		
-		toggles.getConfig().set(toggle.getPath(), value.toString());
+		
+		// The value of the toggle is updated in memory
+		switch(toggle) {
+			case CHAT_BLOCKCOMMANDS_ADMINBYPASS:
+				p.adminBypass = (Boolean) value;
+				break;
+				
+			case CHAT_BLOCKCOMMANDS_ENABLED:
+				p.blockCmds = (Boolean) value;
+				break;
+				
+			case CHAT_BLOCKCOMMANDS_WHITELIST:
+				// Unimplemented
+				break;
+				
+			case CHAT_SPECTATORCHAT:
+				p.specChat = (Boolean) value;
+				break;
+				
+			case ENFORCE_ARENA_BOUNDARIES:
+				p.enforceArenaBoundary = (Boolean) value;
+				break;
+				
+			case ONSPECMODECHANGED_TELEPORTATION_TOSPAWN:
+				p.teleportToSpawnOnSpecChangeWithoutLobby = (Boolean) value;
+				break;
+				
+			case ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD:
+				p.useSpawnCommandToTeleport = (Boolean) value;
+				break;
+				
+			case OUTPUT_MESSAGES:
+				p.output = (Boolean) value;
+				break;
+				
+			case SPECTATORS_SEE_OTHERS:
+				p.seeSpecs = (Boolean) value;
+				break;
+				
+			case SPECTATORS_TABLIST_PREFIX:
+				p.scoreboard = (Boolean) value;
+				break;
+				
+			case SPECTATOR_MODE_ON_DEATH:
+				p.death = (Boolean) value;
+				break;
+				
+			case TOOLS_ARENACHOOSER_ENABLED:
+				p.clock = (Boolean) value;
+				break;
+				
+			case TOOLS_ARENACHOOSER_ITEM:
+				p.clockItem = (Material) value;
+				break;
+				
+			case TOOLS_INSPECTOR_ENABLED:
+				p.inspector = (Boolean) value;
+				break;
+				
+			case TOOLS_INSPECTOR_ITEM:
+				p.inspectorItem = (Material) value;
+				break;
+				
+			case TOOLS_NEWBIEMODE:
+				p.newbieMode = (Boolean) value;
+				break;
+				
+			case TOOLS_TELEPORTER_ENABLED:
+				p.compass = (Boolean) value;
+				break;
+				
+			case TOOLS_TELEPORTER_HEALTH:
+				p.playersHealthInTeleportationMenu = (Boolean) value;
+				break;
+				
+			case TOOLS_TELEPORTER_INSPECTOR:
+				p.inspectFromTPMenu = (Boolean) value;
+				break;
+				
+			case TOOLS_TELEPORTER_ITEM:
+				p.compassItem = (Material) value;
+				break;
+				
+			case TOOLS_TELEPORTER_LOCATION:
+				p.playersLocationInTeleportationMenu = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_ENABLED:
+				p.spectatorsTools = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_ITEM:
+				p.spectatorsToolsItem = (Material) value;
+				break;
+				
+			case TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE:
+				p.tpToDeathToolShowCause = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_TPTODEATH_ENABLED:
+				p.tpToDeathTool = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_GLOW:
+				p.glowOnActiveTools = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_DIVINGSUIT:
+				p.divingSuitTool = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_NIGHTVISION:
+				p.nightVisionTool = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_NOCLIP:
+				p.noClipTool = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_SPEED:
+				p.speedTool = (Boolean) value;
+				break;
+				
+			default:
+				break;
+		}
+		
+		// If we want to keep this value, the configuration file is updated.
+		if(!temp) {
+			toggles.getConfig().set(toggle.getPath(), value.toString());
+			save();
+		}
 	}
 	
 	/**

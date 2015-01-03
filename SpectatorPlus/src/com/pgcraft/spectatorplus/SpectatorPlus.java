@@ -64,15 +64,15 @@ public class SpectatorPlus extends JavaPlugin {
 	private SpectateAPI api = null;
 
 	// Manage toggles
-	protected boolean compass;
+	protected Boolean compass;
 	protected Material compassItem;
-	protected boolean clock;
+	protected Boolean clock;
 	protected Material clockItem;
-	protected boolean spectatorsTools;
+	protected Boolean spectatorsTools;
 	protected Material spectatorsToolsItem;
-	protected boolean inspector;
+	protected Boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
+	protected Boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
 	
 	protected SpectatorMode mode = SpectatorMode.ANY;
 	
@@ -133,8 +133,10 @@ public class SpectatorPlus extends JavaPlugin {
 		// Add players already online to this plugin's database
 		for (Player player : getServer().getOnlinePlayers()) {
 			user.put(player.getName(), new PlayerObject());
-
-			// Re-enable spectate mode if necessary
+		}
+		
+		// Re-enable spectate mode if necessary
+		for(Player player : getServer().getOnlinePlayers()) {
 			if (specs.getConfig().contains(player.getName())) {
 				enableSpectate(player, (CommandSender) player, true);
 			}
