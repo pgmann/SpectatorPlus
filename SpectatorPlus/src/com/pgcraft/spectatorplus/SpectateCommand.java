@@ -714,9 +714,11 @@ public class SpectateCommand implements CommandExecutor {
 	 * <p>
 	 * Usage: /spec b
 	 * <p>
-	 * Why? Because there's currently a bug in Bukkit: the InventoryClickEvent
-	 * is not called when the player is in spectator gamemode. So, we cannot use
-	 * our usual inventory-based GUIs.
+	 * Why? Because there was a bug in Bukkit: the InventoryClickEvent was not called
+	 * when the player was in the spectator gamemode. So, it was impossible to use our
+	 * usual inventory-based GUIs.
+	 * <p>
+	 * The bug is now fixed, but this is kept here for the servers not updated.
 	 * 
 	 * @param sender
 	 * @param command

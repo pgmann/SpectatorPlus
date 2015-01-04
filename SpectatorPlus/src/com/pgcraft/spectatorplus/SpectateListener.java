@@ -872,7 +872,6 @@ public class SpectateListener implements Listener {
 						
 						spectator.sendMessage(ChatColor.GREEN + "No-clip mode enabled");
 						spectator.sendMessage(ChatColor.GRAY + "Open your inventory to access controls or to quit the no-clip mode");
-						spectator.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Due to a bug in Bukkit, use " + ChatColor.GOLD + "" + ChatColor.BOLD + "/spec b" + ChatColor.RED + "" + ChatColor.BOLD + " to quit the no-clip mode.");
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_TP_TO_DEATH_POINT_NAME)) {
 						spectator.teleport(p.getPlayerData(spectator).deathLocation.setDirection(spectator.getLocation().getDirection()));
@@ -893,25 +892,35 @@ public class SpectateListener implements Listener {
 				ItemStack toolSelected = e.getCurrentItem();
 				Player spectator = (Player) e.getWhoClicked();
 				
-				if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_ACTIVE_NAME)
-						|| toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_INACTIVE_NAME)) {
-					if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
-						spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
-						spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
+				try {
+					if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_ACTIVE_NAME)
+							|| toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_INACTIVE_NAME)) {
+						if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
+							spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
+							spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
+						}
+						else {
+							spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
+							spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
+						}
+						
+						spectator.closeInventory();
+						p.updateSpectatorInventory(spectator);
 					}
-					else {
-						spectator.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
-						spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
+					
+					else if(toolSelected.getItemMeta().getDisplayName().startsWith(SpectatorPlus.TOOL_NOCLIP_QUIT_NAME)) {
+						spectator.setGameMode(GameMode.ADVENTURE);
+						
+						spectator.setAllowFlight(true);
+						spectator.setFlying(true);
+						
+						spectator.closeInventory();
+						p.updateSpectatorInventory(spectator);
 					}
-				}
-				
-				else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NOCLIP_QUIT_NAME)) {
-					spectator.setGameMode(GameMode.ADVENTURE);
-					
-					spectator.setAllowFlight(true);
-					spectator.setFlying(true);
-					
-					p.updateSpectatorInventory(spectator);
+				} catch(NullPointerException ex) {
+					// This happens if there isn't any meta, aka here if the spectator
+					// clicks on an empty slot.
+					// In this case, nothing happens, and the inventory is not closed.
 				}
 			}
 		}

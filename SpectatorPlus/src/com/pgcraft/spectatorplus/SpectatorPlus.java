@@ -1557,7 +1557,7 @@ public class SpectatorPlus extends JavaPlugin {
 				sMeta.setDisplayName(TOOL_NOCLIP_QUIT_NAME + spectator.getName());
 				List<String> lore = new ArrayList<String>();
 				lore.add(ChatColor.GRAY + "Disables the no-clip mode");
-				lore.add(ChatColor.RED + "Cannot work (Bukkit bug), use " + ChatColor.GOLD + "/spec b");
+				lore.add(ChatColor.DARK_GRAY + "You can also use /spec b");
 				sMeta.setLore(lore);
 				sMeta.setOwner(spectator.getName());
 			quitNoClip.setItemMeta(sMeta);
@@ -1581,10 +1581,6 @@ public class SpectatorPlus extends JavaPlugin {
 				else {
 					iMeta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
 				}
-				lore = new ArrayList<String>();
-				lore.add(ChatColor.RED + "Cannot work currently (Bukkit bug);");
-				lore.add(ChatColor.RED + "disable the no-clip mode to use that.");
-				iMeta.setLore(lore);
 				nightVision.setItemMeta(iMeta);
 				
 				spectator.getInventory().setItem(20, nightVision);
