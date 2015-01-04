@@ -563,7 +563,7 @@ public class SpectatorPlus extends JavaPlugin {
 			height++;
 			offset = 9;
 		}
-		if(divingSuitTool || nightVisionTool || noClipTool || tpToDeathTool) height++;
+		if(divingSuitTool || nightVisionTool || noClipTool || (tpToDeathTool && deathPoint != null)) height++;
 		if(divingSuitTool && nightVisionTool && noClipTool && tpToDeathTool && deathPoint != null) height++;
 		
 		Inventory gui = Bukkit.getServer().createInventory(spectator, height * 9, SPEC_TOOLS_TITLE);
@@ -753,7 +753,10 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		// Line 2 (and 3): display
 		int lineSize = toolsOnLine2.size();
-		if(lineSize == 1) {
+		if(lineSize == 0 && deathPoint != null) {
+			GUIContent[offset + 4] = tpToDeathPoint;
+		}
+		else if(lineSize == 1) {
 			if(deathPoint != null) {
 				GUIContent[offset + 2] = toolsOnLine2.get(0);
 				GUIContent[offset + 6] = tpToDeathPoint;
@@ -1617,9 +1620,17 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @since 2.0
 	 */	
 	protected PlayerObject getPlayerData(Player target) {
-		return user.get(target.getName());
+		PlayerObject data = user.get(target.getName());
+		
+		// Just in case
+		if(data == null) {
+			data = new PlayerObject();
+			user.put(target.getName(), data);
+		}
+		
+		return data;
 	}
-
+	
 	/**
 	 * Returns the API.
 	 * 
