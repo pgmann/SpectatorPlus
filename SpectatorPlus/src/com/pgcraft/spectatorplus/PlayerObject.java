@@ -21,6 +21,13 @@ public class PlayerObject {
 	protected boolean teleporting;
 	
 	/**
+	 * True if the player can change his gamemode.
+	 * <p>
+	 * Used to bypass the gamemode lock when using the no-clip mode.
+	 */
+	protected boolean gamemodeChangeAllowed = false;
+	
+	/**
 	 * The ID of the current arena the spectator is in.
 	 */
 	protected UUID arena;

@@ -32,8 +32,13 @@ public enum Toggle {
 	
 	TOOLS_TOOLS_ENABLED(Boolean.class, true, "Speed, night or underwater vision, teleportation to death location"),
 	TOOLS_TOOLS_ITEM(Material.class, Material.MAGMA_CREAM, "The item to use as the spectators' tools"),
+	TOOLS_TOOLS_SPEED(Boolean.class, true, "Allow the spectator to change their speed through the spectators' tools"),
+	TOOLS_TOOLS_NIGHTVISION("tools.tools.nightVision", Boolean.class, true, "Allow the spectators to enable a night-vision effect"),
+	TOOLS_TOOLS_DIVINGSUIT("tools.tools.divingSuit", Boolean.class, true, "Allow the spectators to get some Depth-Strider-III boots through the spectators' tools"),
+	TOOLS_TOOLS_NOCLIP("tools.tools.noClipMode", Boolean.class, true, "Allow the spectators to enable a no-clip mode (the vanilla spectator mode) through the spectators' tools"),
 	TOOLS_TOOLS_TPTODEATH_ENABLED("tools.tools.tpToDeath.enabled", Boolean.class, true, "Add a tool to allow dead spectators to teleport themselves to their death point?"),
 	TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE("tools.tools.tpToDeath.displayCause", Boolean.class, true, "Display the cause of the death in the tooltip? (Example: « You starved to death ».)"),
+	TOOLS_TOOLS_GLOW("tools.tools.glowEffectIfActive", Boolean.class, true, "Add an enchantment-like effect on the currently active tools?"),
 	
 	TOOLS_INSPECTOR_ENABLED(Boolean.class, true, "If true, spectators will be able to see the players' inventories using an item in their hotbar, right-clicking the player."),
 	TOOLS_INSPECTOR_ITEM(Material.class, Material.FEATHER, "The item used as the inspector."),

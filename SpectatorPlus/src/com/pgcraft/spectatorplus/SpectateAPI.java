@@ -274,8 +274,29 @@ public class SpectateAPI {
 				p.tpToDeathTool = (Boolean) value;
 				break;
 				
+			case TOOLS_TOOLS_GLOW:
+				p.glowOnActiveTools = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_DIVINGSUIT:
+				p.divingSuitTool = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_NIGHTVISION:
+				p.nightVisionTool = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_NOCLIP:
+				p.noClipTool = (Boolean) value;
+				break;
+				
+			case TOOLS_TOOLS_SPEED:
+				p.speedTool = (Boolean) value;
+				break;
+				
 			default:
 				break;
+				
 		}
 	}
 	

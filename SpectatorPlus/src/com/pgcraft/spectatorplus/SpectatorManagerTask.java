@@ -12,7 +12,6 @@ import org.bukkit.scheduler.BukkitRunnable;
  * 
  * @param event
  */
-@SuppressWarnings("deprecation")
 public class SpectatorManagerTask extends BukkitRunnable {
 	SpectatorPlus p;
 	

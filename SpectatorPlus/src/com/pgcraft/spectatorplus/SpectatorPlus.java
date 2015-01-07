@@ -37,7 +37,6 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("deprecation")
 public class SpectatorPlus extends JavaPlugin {
 
 	protected HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
@@ -69,7 +68,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
+	protected boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
 	
 	protected SpectatorMode mode = SpectatorMode.ANY;
 	
@@ -92,6 +91,9 @@ public class SpectatorPlus extends JavaPlugin {
 	protected final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
 	protected final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
 	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
+	protected final static String TOOL_DIVING_SUIT_NAME = ChatColor.BLUE + "Diving Suit";
+	protected final static String TOOL_NOCLIP_NAME = ChatColor.LIGHT_PURPLE + "No-clip mode";
+	protected final static String TOOL_NOCLIP_QUIT_NAME = ChatColor.DARK_GREEN + "Go back to the real "; //... spectator's name
 	protected final static String TOOL_TP_TO_DEATH_POINT_NAME = ChatColor.YELLOW + "Go to your death point";
 
 	/**
@@ -541,7 +543,24 @@ public class SpectatorPlus extends JavaPlugin {
 	
 	
 	protected void showSpectatorsOptionsGUI(Player spectator) {
-		Inventory gui = Bukkit.getServer().createInventory(spectator, 9, SPEC_TOOLS_TITLE);
+		// We first need to know what is the size of the inventory
+		
+		// If a death location is registered for this player, and if every tool is
+		// enabled, a line will have to be added.
+		// That's why this is defined here, not below.
+		// If the "tp to death" tool is disabled, the death location is not set. So it's useless to
+		// check this here.
+		Location deathPoint = getPlayerData(spectator).deathLocation;
+		
+		int height = 0, offset = 0;
+		if(speedTool) {
+			height++;
+			offset = 9;
+		}
+		if(divingSuitTool || nightVisionTool || noClipTool || tpToDeathTool) height++;
+		if(divingSuitTool && nightVisionTool && noClipTool && tpToDeathTool && deathPoint != null) height++;
+		
+		Inventory gui = Bukkit.getServer().createInventory(spectator, height * 9, SPEC_TOOLS_TITLE);
 		ItemStack[] GUIContent = gui.getContents();
 		
 		// Retrieves the current speed level, and the other enabled effects
@@ -557,100 +576,205 @@ public class SpectatorPlus extends JavaPlugin {
 			}
 		}
 		
+		Boolean divingSuitEquiped = false;
+		if(spectator.getInventory().getBoots() != null && spectator.getInventory().getBoots().getType() == Material.DIAMOND_BOOTS) {
+			divingSuitEquiped = true;
+		}
+		
 		List<String> activeLore = new ArrayList<String>();
 		activeLore.add("" + ChatColor.GRAY + ChatColor.ITALIC + "Active");
 		
-		// If a death location is registered for this player, the position of the "night vision" tool
-		// is not the same (6 with death point registered; 8 without).
-		// That's why this is defined here, not below.
-		// If the "tp to death" tool is disabled, the death location is not set. So it's useless to
-		// check this here.
-		Location deathPoint = getPlayerData(spectator).deathLocation;
+		ItemMeta meta;
 		
-		
-		// Normal speed
-		ItemStack normalSpeed = new ItemStack(Material.STRING);
-		ItemMeta meta = normalSpeed.getItemMeta();
-		meta.setDisplayName(TOOL_NORMAL_SPEED_NAME);
-		if(speedLevel == 0) {
-			meta.setLore(activeLore);
+		if(speedTool) {
+			
+			// Normal speed
+			ItemStack normalSpeed = new ItemStack(Material.STRING);
+			meta = normalSpeed.getItemMeta();
+			meta.setDisplayName(TOOL_NORMAL_SPEED_NAME);
+			normalSpeed.setItemMeta(meta);
+			
+			if(speedLevel == 0) {
+				meta.setLore(activeLore);
+				normalSpeed.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(normalSpeed);
+				}
+			}
+			
+			GUIContent[2] = normalSpeed;
+			
+			
+			// Speed I
+			ItemStack speedI = new ItemStack(Material.FEATHER);
+			meta = speedI.getItemMeta();
+			meta.setDisplayName(TOOL_SPEED_I_NAME);
+			speedI.setItemMeta(meta);
+			
+			if(speedLevel == 1) {
+				meta.setLore(activeLore);
+				speedI.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(speedI);
+				}
+			}
+			
+			GUIContent[3] = speedI;
+			
+			
+			// Speed II
+			ItemStack speedII = new ItemStack(Material.FEATHER, 2);
+			meta = speedII.getItemMeta();
+			meta.setDisplayName(TOOL_SPEED_II_NAME);
+			speedII.setItemMeta(meta);
+			
+			if(speedLevel == 2) {
+				meta.setLore(activeLore);
+				speedII.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(speedII);
+				}
+			}
+			
+			GUIContent[4] = speedII;
+			
+			
+			// Speed III
+			ItemStack speedIII = new ItemStack(Material.FEATHER, 3);
+			meta = speedIII.getItemMeta();
+			meta.setDisplayName(TOOL_SPEED_III_NAME);
+			speedIII.setItemMeta(meta);
+			
+			if(speedLevel == 3) {
+				meta.setLore(activeLore);
+				speedIII.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(speedIII);
+				}
+			}
+			
+			GUIContent[5] = speedIII;
+			
+			
+			// Speed IV
+			ItemStack speedIV = new ItemStack(Material.FEATHER, 4);
+			meta = speedIV.getItemMeta();
+			meta.setDisplayName(TOOL_SPEED_IV_NAME);
+			speedIV.setItemMeta(meta);
+			
+			if(speedLevel == 4) {
+				meta.setLore(activeLore);
+				speedIV.setItemMeta(meta);
+				
+				if(glowOnActiveTools) {
+					GlowEffect.addGlow(speedIV);
+				}
+			}
+			
+			GUIContent[6] = speedIV;
 		}
-		normalSpeed.setItemMeta(meta);
-		GUIContent[0] = normalSpeed;
 		
-		// Speed I
-		ItemStack speedI = new ItemStack(Material.FEATHER);
-		meta = speedI.getItemMeta();
-		meta.setDisplayName(TOOL_SPEED_I_NAME);
-		if(speedLevel == 1) {
-			meta.setLore(activeLore);
+		ArrayList<ItemStack> toolsOnLine2 = new ArrayList<ItemStack>();
+		
+		// No-clip mode
+		if(noClipTool) {
+			ItemStack noClip = new ItemStack(Material.BARRIER);
+			meta = noClip.getItemMeta();
+			meta.setDisplayName(TOOL_NOCLIP_NAME);
+			noClip.setItemMeta(meta);
+			
+			toolsOnLine2.add(noClip);
 		}
-		speedI.setItemMeta(meta);
-		GUIContent[1] = speedI;
-		
-		// Speed II
-		ItemStack speedII = new ItemStack(Material.FEATHER, 2);
-		meta = speedII.getItemMeta();
-		meta.setDisplayName(TOOL_SPEED_II_NAME);
-		if(speedLevel == 2) {
-			meta.setLore(activeLore);
-		}
-		speedII.setItemMeta(meta);
-		GUIContent[2] = speedII;
-		
-		// Speed III
-		ItemStack speedIII = new ItemStack(Material.FEATHER, 3);
-		meta = speedIII.getItemMeta();
-		meta.setDisplayName(TOOL_SPEED_III_NAME);
-		if(speedLevel == 3) {
-			meta.setLore(activeLore);
-		}
-		speedIII.setItemMeta(meta);
-		GUIContent[3] = speedIII;
-		
-		// Speed IV
-		ItemStack speedIV = new ItemStack(Material.FEATHER, 4);
-		meta = speedIV.getItemMeta();
-		meta.setDisplayName(TOOL_SPEED_IV_NAME);
-		if(speedLevel == 4) {
-			meta.setLore(activeLore);
-		}
-		speedIV.setItemMeta(meta);
-		GUIContent[4] = speedIV;
-		
 		
 		// Night vision
-		ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
-		meta = nightVision.getItemMeta();
-		if(nightVisionActive) {
-			nightVision.setType(Material.ENDER_PEARL);
-			meta.setDisplayName(TOOL_NIGHT_VISION_ACTIVE_NAME);
-		}
-		else {
-			meta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
-		}
-		nightVision.setItemMeta(meta);
-		if(deathPoint == null) { // No "TP to death point" tool: position #8.
-			GUIContent[8] = nightVision;
-		}
-		else {
-			GUIContent[6] = nightVision;
+		if(nightVisionTool) {
+			ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
+			meta = nightVision.getItemMeta();
+			if(nightVisionActive) {
+				nightVision.setType(Material.ENDER_PEARL);
+				meta.setDisplayName(TOOL_NIGHT_VISION_ACTIVE_NAME);
+			}
+			else {
+				meta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
+			}
+			nightVision.setItemMeta(meta);
+			
+			toolsOnLine2.add(nightVision);
 		}
 		
+		// Diving suit (Depth-Strider-III boots)
+		if(divingSuitTool) {
+			ItemStack divingSuit = new ItemStack(Material.DIAMOND_BOOTS);
+			meta = divingSuit.getItemMeta();
+			meta.setDisplayName(TOOL_DIVING_SUIT_NAME);
+			if(divingSuitEquiped) {
+				meta.setLore(activeLore);
+			}
+			List<String> lore = meta.getLore();
+			if(lore == null) lore = new ArrayList<String>();
+			lore.add(ChatColor.GRAY + "Get a pair of Depth Strider III boots");
+			meta.setLore(lore);
+			divingSuit.setItemMeta(meta);
+			
+			if(divingSuitEquiped && glowOnActiveTools) {
+				GlowEffect.addGlow(divingSuit);
+			}
+			
+			toolsOnLine2.add(divingSuit);
+		}
 		
 		// Teleportation to the death point
+		ItemStack tpToDeathPoint = null;
 		if(deathPoint != null) {
-			ItemStack tpToDeathPoint = new ItemStack(Material.NETHER_STAR);
+			tpToDeathPoint = new ItemStack(Material.NETHER_STAR);
 			meta = tpToDeathPoint.getItemMeta();
 			meta.setDisplayName(TOOL_TP_TO_DEATH_POINT_NAME);
+			
 			// The death message is never set if it is disabled: check useless (same as above).
 			if(getPlayerData(spectator).lastDeathMessage != null) {
 				List<String> lore = new ArrayList<String>();
 				lore.add("" + ChatColor.GRAY + getPlayerData(spectator).lastDeathMessage);
 				meta.setLore(lore);
 			}
+			
 			tpToDeathPoint.setItemMeta(meta);
-			GUIContent[8] = tpToDeathPoint;
+		}
+		
+		
+		// Line 2 (and 3): display
+		int lineSize = toolsOnLine2.size();
+		if(lineSize == 1) {
+			if(deathPoint != null) {
+				GUIContent[offset + 2] = toolsOnLine2.get(0);
+				GUIContent[offset + 6] = tpToDeathPoint;
+			}
+			else {
+				GUIContent[offset + 4] = toolsOnLine2.get(0);
+			}
+		}
+		else if(lineSize == 2) {
+			if(deathPoint != null) {
+				GUIContent[offset + 2] = toolsOnLine2.get(0);
+				GUIContent[offset + 4] = toolsOnLine2.get(1);
+				GUIContent[offset + 6] = tpToDeathPoint;
+			}
+			else {
+				GUIContent[offset + 2] = toolsOnLine2.get(0);
+				GUIContent[offset + 6] = toolsOnLine2.get(1);
+			}
+		}
+		else if(lineSize == 3) {
+			GUIContent[offset + 2] = toolsOnLine2.get(0);
+			GUIContent[offset + 4] = toolsOnLine2.get(1);
+			GUIContent[offset + 6] = toolsOnLine2.get(2);
+			
+			if(deathPoint != null) {
+				GUIContent[offset + 13] = tpToDeathPoint;
+			}
 		}
 		
 		
@@ -933,8 +1057,13 @@ public class SpectatorPlus extends JavaPlugin {
 		compass = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_ENABLED);
 		clock = toggles.getBoolean(Toggle.TOOLS_ARENACHOOSER_ENABLED);
 		spectatorsTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_ENABLED);
+		divingSuitTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_DIVINGSUIT);
+		nightVisionTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_NIGHTVISION);
+		noClipTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_NOCLIP);
+		speedTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_SPEED);
 		tpToDeathTool = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_ENABLED);
 		tpToDeathToolShowCause = toggles.getBoolean(Toggle.TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE);
+		glowOnActiveTools = toggles.getBoolean(Toggle.TOOLS_TOOLS_GLOW);
 		inspector = toggles.getBoolean(Toggle.TOOLS_INSPECTOR_ENABLED);
 		inspectFromTPMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_INSPECTOR);
 		playersHealthInTeleportationMenu = toggles.getBoolean(Toggle.TOOLS_TELEPORTER_HEALTH);
@@ -1315,63 +1444,114 @@ public class SpectatorPlus extends JavaPlugin {
 	protected void updateSpectatorInventory(Player spectator) {
 		// Empty the inventory first...
 		spectator.getInventory().clear();
-
-		String rightClick = "", rightClickPlayer = "";
-		if(newbieMode) {
-			rightClick = ChatColor.GRAY + " (Right-click)";
-			rightClickPlayer = ChatColor.GRAY + " (Right-click a player)";
+		
+		/* Classic spectator inventory */
+		if(spectator.getGameMode() == GameMode.ADVENTURE) {
+			
+			String rightClick = "", rightClickPlayer = "";
+			if(newbieMode) {
+				rightClick = ChatColor.GRAY + " (Right-click)";
+				rightClickPlayer = ChatColor.GRAY + " (Right-click a player)";
+			}
+	
+			// Give them compass if the toggle is on
+			if (compass) {
+				ItemStack compass = new ItemStack(compassItem, 1);
+				ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
+				compassMeta.setDisplayName(ChatColor.AQUA +""+ ChatColor.BOLD + "Teleporter" + rightClick);
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose a player");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to teleport to");
+				compassMeta.setLore(lore);
+				compass.setItemMeta(compassMeta);
+				spectator.getInventory().setItem(0, compass);
+			}
+	
+			// Give them clock (only for arena mode and if the toggle is on)
+			if (clock && mode == SpectatorMode.ARENA) {
+				ItemStack watch = new ItemStack(clockItem, 1);
+				ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
+				watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector" + rightClick);
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose an arena");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to spectate in");
+				watchMeta.setLore(lore);
+				watch.setItemMeta(watchMeta);
+				spectator.getInventory().setItem(1, watch);
+			}
+	
+			// Give them magma cream (spectators tools) if the toggle is on
+			if(spectatorsTools) {
+				ItemStack tools = new ItemStack(spectatorsToolsItem, 1);
+				ItemMeta toolsMeta = tools.getItemMeta();
+				toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools" + rightClick);
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to open the spectator");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "tools menu");
+				toolsMeta.setLore(lore);
+				tools.setItemMeta(toolsMeta);
+				spectator.getInventory().setItem(4, tools);
+			}
+	
+			// Give them book if the toggle is on
+			if(inspector) {
+				ItemStack book = new ItemStack(inspectorItem, 1);
+				ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
+				bookMeta.setDisplayName(ChatColor.DARK_AQUA +""+ ChatColor.BOLD + "Inspector" + rightClickPlayer);
+				List<String> lore = new ArrayList<String>();
+					lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " a player to see their");
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "inventory, armour, health & more!");
+				bookMeta.setLore(lore);
+				book.setItemMeta(bookMeta);
+				spectator.getInventory().setItem(8, book);
+			}
 		}
-
-		// Give them compass if the toggle is on
-		if (compass) {
-			ItemStack compass = new ItemStack(compassItem, 1);
-			ItemMeta compassMeta = (ItemMeta)compass.getItemMeta();
-			compassMeta.setDisplayName(ChatColor.AQUA +""+ ChatColor.BOLD + "Teleporter" + rightClick);
-			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose a player");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to teleport to");
-			compassMeta.setLore(lore);
-			compass.setItemMeta(compassMeta);
-			spectator.getInventory().setItem(0, compass);
-		}
-
-		// Give them clock (only for arena mode and if the toggle is on)
-		if (clock && mode == SpectatorMode.ARENA) {
-			ItemStack watch = new ItemStack(clockItem, 1);
-			ItemMeta watchMeta = (ItemMeta)watch.getItemMeta();
-			watchMeta.setDisplayName(ChatColor.DARK_RED +""+ ChatColor.BOLD + "Arena selector" + rightClick);
-			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to choose an arena");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "to spectate in");
-			watchMeta.setLore(lore);
-			watch.setItemMeta(watchMeta);
-			spectator.getInventory().setItem(1, watch);
-		}
-
-		// Give them magma cream (spectators tools) if the toggle is on
-		if(spectatorsTools) {
-			ItemStack tools = new ItemStack(spectatorsToolsItem, 1);
-			ItemMeta toolsMeta = tools.getItemMeta();
-			toolsMeta.setDisplayName(ChatColor.DARK_GREEN +""+ ChatColor.BOLD + "Spectators' tools" + rightClick);
-			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to open the spectator");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "tools menu");
-			toolsMeta.setLore(lore);
-			tools.setItemMeta(toolsMeta);
-			spectator.getInventory().setItem(4, tools);
-		}
-
-		// Give them book if the toggle is on
-		if(inspector) {
-			ItemStack book = new ItemStack(inspectorItem, 1);
-			ItemMeta bookMeta = (ItemMeta)book.getItemMeta();
-			bookMeta.setDisplayName(ChatColor.DARK_AQUA +""+ ChatColor.BOLD + "Inspector" + rightClickPlayer);
-			List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GOLD +""+ ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " a player to see their");
-				lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "inventory, armour, health & more!");
-			bookMeta.setLore(lore);
-			book.setItemMeta(bookMeta);
-			spectator.getInventory().setItem(8, book);
+		
+		/* No-clip spectator inventory */
+		else if(spectator.getGameMode() == GameMode.SPECTATOR) {
+			
+			ItemStack quitNoClip = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+			SkullMeta sMeta = (SkullMeta) quitNoClip.getItemMeta();
+				sMeta.setDisplayName(TOOL_NOCLIP_QUIT_NAME + spectator.getName());
+				List<String> lore = new ArrayList<String>();
+				lore.add(ChatColor.GRAY + "Disables the no-clip mode");
+				lore.add(ChatColor.RED + "Cannot work (Bukkit bug), use " + ChatColor.GOLD + "/spec b");
+				sMeta.setLore(lore);
+				sMeta.setOwner(spectator.getName());
+			quitNoClip.setItemMeta(sMeta);
+			
+			
+			if(nightVisionTool) {
+				Boolean nightVisionActive = false;
+				for(PotionEffect effect : spectator.getActivePotionEffects()) {
+					if(effect.getType().equals(PotionEffectType.NIGHT_VISION)) {
+						nightVisionActive = true;
+						break;
+					}
+				}
+				
+				ItemStack nightVision = new ItemStack(Material.EYE_OF_ENDER);
+				ItemMeta iMeta = nightVision.getItemMeta();
+				if(nightVisionActive) {
+					nightVision.setType(Material.ENDER_PEARL);
+					iMeta.setDisplayName(TOOL_NIGHT_VISION_ACTIVE_NAME);
+				}
+				else {
+					iMeta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
+				}
+				lore = new ArrayList<String>();
+				lore.add(ChatColor.RED + "Cannot work currently (Bukkit bug);");
+				lore.add(ChatColor.RED + "disable the no-clip mode to use that.");
+				iMeta.setLore(lore);
+				nightVision.setItemMeta(iMeta);
+				
+				spectator.getInventory().setItem(20, nightVision);
+				spectator.getInventory().setItem(24, quitNoClip);
+			}
+			
+			else {
+				spectator.getInventory().setItem(22, quitNoClip);
+			}
 		}
 
 		spectator.updateInventory();
