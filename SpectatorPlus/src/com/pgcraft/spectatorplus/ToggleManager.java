@@ -142,7 +142,6 @@ public class ToggleManager {
 	 * 
 	 * @throws IllegalArgumentException if the type of the toggle is not compatible with the type of the value.
 	 */
-	@SuppressWarnings("unchecked")
 	public void set(Toggle toggle, Object value) {
 		set(toggle, value, false);
 	}
