@@ -1,5 +1,8 @@
 package com.pgcraft.spectatorplus;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,15 +63,15 @@ public class SpectatorPlus extends JavaPlugin {
 	private SpectateAPI api = null;
 
 	// Manage toggles
-	protected boolean compass;
+	protected Boolean compass;
 	protected Material compassItem;
-	protected boolean clock;
+	protected Boolean clock;
 	protected Material clockItem;
-	protected boolean spectatorsTools;
+	protected Boolean spectatorsTools;
 	protected Material spectatorsToolsItem;
-	protected boolean inspector;
+	protected Boolean inspector;
 	protected Material inspectorItem;
-	protected boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
+	protected Boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
 	
 	protected SpectatorMode mode = SpectatorMode.ANY;
 	
@@ -129,8 +132,10 @@ public class SpectatorPlus extends JavaPlugin {
 		// Add players already online to this plugin's database
 		for (Player player : getServer().getOnlinePlayers()) {
 			user.put(player.getName(), new PlayerObject());
-
-			// Re-enable spectate mode if necessary
+		}
+		
+		// Re-enable spectate mode if necessary
+		for(Player player : getServer().getOnlinePlayers()) {
 			if (specs.getConfig().contains(player.getName())) {
 				enableSpectate(player, (CommandSender) player, true);
 			}
@@ -557,7 +562,7 @@ public class SpectatorPlus extends JavaPlugin {
 			height++;
 			offset = 9;
 		}
-		if(divingSuitTool || nightVisionTool || noClipTool || tpToDeathTool) height++;
+		if(divingSuitTool || nightVisionTool || noClipTool || (tpToDeathTool && deathPoint != null)) height++;
 		if(divingSuitTool && nightVisionTool && noClipTool && tpToDeathTool && deathPoint != null) height++;
 		
 		Inventory gui = Bukkit.getServer().createInventory(spectator, height * 9, SPEC_TOOLS_TITLE);
@@ -747,7 +752,10 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		// Line 2 (and 3): display
 		int lineSize = toolsOnLine2.size();
-		if(lineSize == 1) {
+		if(lineSize == 0 && deathPoint != null) {
+			GUIContent[offset + 4] = tpToDeathPoint;
+		}
+		else if(lineSize == 1) {
 			if(deathPoint != null) {
 				GUIContent[offset + 2] = toolsOnLine2.get(0);
 				GUIContent[offset + 6] = tpToDeathPoint;
@@ -795,6 +803,36 @@ public class SpectatorPlus extends JavaPlugin {
 
 		if(output) {
 			spectator.sendMessage(prefix + "Teleported you to " + ChatColor.RED + target.getName());
+		}
+	}
+	
+	/**
+	 * Sets whether the player collides with entities.
+	 * 
+	 * @param player The player.
+	 * @param collides Whether the player should collide with entities or not.
+	 * 
+	 * @return true if the change was successful (compatible server, i.e. Spigot currently); false else.
+	 */
+	private boolean setCollidesWithEntities(Player player, boolean collides) {
+		try {
+			// We need to call player.spigot.setCollidesWithEntities(collides) .
+			
+			Field playerSpigotField = player.getClass().getDeclaredField("spigot");
+			playerSpigotField.setAccessible(true);
+
+			Class<?> playerSpigotClazz = playerSpigotField.getType();
+			Object playerSpigotObject = playerSpigotField.get(player);
+
+
+			playerSpigotClazz.getDeclaredMethod("setCollidesWithEntities", boolean.class)
+			                 .invoke(playerSpigotObject, collides);
+
+			return true;
+			
+		} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ignored) {
+			// Cannot enable/disable collisions :(
+			return false;
 		}
 	}
 
@@ -871,6 +909,7 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Disable interaction
 			getPlayerData(spectator).spectating = true;
+			setCollidesWithEntities(spectator, false);
 
 			updateSpectatorInventory(spectator);
 
@@ -972,6 +1011,8 @@ public class SpectatorPlus extends JavaPlugin {
 			
 			// Allow interaction
 			getPlayerData(spectator).spectating = false;
+			setCollidesWithEntities(spectator, true);
+			
 			spectator.setAllowFlight(false);
 			spectator.setGameMode(getPlayerData(spectator).oldGameMode);
 			
@@ -1515,7 +1556,7 @@ public class SpectatorPlus extends JavaPlugin {
 				sMeta.setDisplayName(TOOL_NOCLIP_QUIT_NAME + spectator.getName());
 				List<String> lore = new ArrayList<String>();
 				lore.add(ChatColor.GRAY + "Disables the no-clip mode");
-				lore.add(ChatColor.RED + "Cannot work (Bukkit bug), use " + ChatColor.GOLD + "/spec b");
+				lore.add(ChatColor.DARK_GRAY + "You can also use /spec b");
 				sMeta.setLore(lore);
 				sMeta.setOwner(spectator.getName());
 			quitNoClip.setItemMeta(sMeta);
@@ -1539,10 +1580,6 @@ public class SpectatorPlus extends JavaPlugin {
 				else {
 					iMeta.setDisplayName(TOOL_NIGHT_VISION_INACTIVE_NAME);
 				}
-				lore = new ArrayList<String>();
-				lore.add(ChatColor.RED + "Cannot work currently (Bukkit bug);");
-				lore.add(ChatColor.RED + "disable the no-clip mode to use that.");
-				iMeta.setLore(lore);
 				nightVision.setItemMeta(iMeta);
 				
 				spectator.getInventory().setItem(20, nightVision);
@@ -1578,9 +1615,17 @@ public class SpectatorPlus extends JavaPlugin {
 	 * @since 2.0
 	 */	
 	protected PlayerObject getPlayerData(Player target) {
-		return user.get(target.getName());
+		PlayerObject data = user.get(target.getName());
+		
+		// Just in case
+		if(data == null) {
+			data = new PlayerObject();
+			user.put(target.getName(), data);
+		}
+		
+		return data;
 	}
-
+	
 	/**
 	 * Returns the API.
 	 * 

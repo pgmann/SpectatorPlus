@@ -355,36 +355,33 @@ public class SpectateCommand implements CommandExecutor {
 			if (entry != null) {
 				if(entry.getDataType() == Boolean.class) {
 					Boolean value = p.parseBoolean(args[2]);
+					p.toggles.set(entry, value, temp);
+					
 					if(value != null) {
-						p.toggles.set(entry, value);
 						displayValue = value.toString();
 					}
 					else {
-						p.toggles.set(entry, entry.getDefaultValue());
 						displayValue = entry.getDefaultValue().toString();
 					}
 				}
+				
 				else if(entry.getDataType() == Material.class) {
 					Material value = Material.matchMaterial(args[2]);
+					p.toggles.set(entry, value, temp);
+					
 					if(value != null) {
-						p.toggles.set(entry, value);
 						displayValue = value.toString();
 					}
 					else {
-						p.toggles.set(entry, entry.getDefaultValue());
 						displayValue = entry.getDefaultValue().toString();
 					}
 				}
+				
 				else {
-					sender.sendMessage(SpectatorPlus.prefix + ChatColor.DARK_RED + "You cannot edit the value of "+ChatColor.RED + entry.getPath() + ChatColor.DARK_RED+" (type " + ChatColor.RED + entry.getDataType().getName() + ChatColor.DARK_RED + ") from the game currently.");
+					sender.sendMessage(SpectatorPlus.prefix + ChatColor.DARK_RED + "You cannot edit the value of "+ChatColor.RED + entry.getPath() + ChatColor.DARK_RED+" (type " + ChatColor.RED + entry.getDataType().getSimpleName() + ChatColor.DARK_RED + ") from the game currently.");
 					return;
 				}
 				
-				if(!temp) {
-					p.toggles.save();
-				}
-				
-				p.reloadConfig(false);
 				sender.sendMessage(SpectatorPlus.prefix+"Set "+ChatColor.RED+entry.getPath()+ChatColor.GOLD+" to "+ChatColor.RED+displayValue+ChatColor.GOLD+displayTemp);
 			
 			} else {
@@ -717,9 +714,11 @@ public class SpectateCommand implements CommandExecutor {
 	 * <p>
 	 * Usage: /spec b
 	 * <p>
-	 * Why? Because there's currently a bug in Bukkit: the InventoryClickEvent
-	 * is not called when the player is in spectator gamemode. So, we cannot use
-	 * our usual inventory-based GUIs.
+	 * Why? Because there was a bug in Bukkit: the InventoryClickEvent was not called
+	 * when the player was in the spectator gamemode. So, it was impossible to use our
+	 * usual inventory-based GUIs.
+	 * <p>
+	 * The bug is now fixed, but this is kept here for the servers not updated.
 	 * 
 	 * @param sender
 	 * @param command
