@@ -82,6 +82,10 @@ public class SpectateListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGHEST)
 	protected void onPlayerJoin(PlayerJoinEvent e) {
 		
+		if(e.getPlayer().hasPermission("spectate.admin.hide.auto")) {
+			p.getPlayerData(e.getPlayer()).hideFromTp = true;
+		}
+		
 		if(!p.user.containsKey(e.getPlayer().getName())) {
 			p.user.put(e.getPlayer().getName(), new PlayerObject());
 		}
