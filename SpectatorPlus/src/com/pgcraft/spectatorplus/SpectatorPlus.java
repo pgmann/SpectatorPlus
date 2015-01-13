@@ -355,7 +355,7 @@ public class SpectatorPlus extends JavaPlugin {
 					int pos1z = currentArena.getCorner1().getBlockZ();
 					int pos2z = currentArena.getCorner2().getBlockZ();
 					// pos1 should have the highest co-ords of the arena, pos2 the lowest
-					if (!getPlayerData(player).spectating) {
+					if (!getPlayerData(player).spectating && player.getWorld().equals(spectator.getWorld())) {
 						if (Math.floor(where.getY()) < Math.floor(pos1y) && Math.floor(where.getY()) > Math.floor(pos2y)) {
 							if (Math.floor(where.getX()) < pos1x && Math.floor(where.getX()) > pos2x) {
 								if (Math.floor(where.getZ()) < pos1z && Math.floor(where.getZ()) > pos2z) {
