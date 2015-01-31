@@ -691,6 +691,18 @@ public class SpectatorPlus extends JavaPlugin {
 			ItemStack noClip = new ItemStack(Material.BARRIER);
 			meta = noClip.getItemMeta();
 			meta.setDisplayName(TOOL_NOCLIP_NAME);
+			meta.setLore(Arrays.asList(
+					ChatColor.GRAY + "Allows you to go through all the blocks.",
+					//ChatColor.GRAY + "blocks.",
+					"",
+					ChatColor.GRAY + "You can also first-spectate a player",
+					ChatColor.GRAY + "by left-clicking on him",
+					ChatColor.DARK_GRAY + "Use Shift to quit the first-person",
+					ChatColor.DARK_GRAY + "spectator mode.",
+					"",
+					ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "In this mode, open your inventory",
+					ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "to access controls!"));
+			
 			noClip.setItemMeta(meta);
 			
 			toolsOnLine2.add(noClip);
