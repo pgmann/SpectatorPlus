@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-@SuppressWarnings("deprecation")
 public class SpectateCompleter implements TabCompleter {
 	
 	private SpectatorPlus p = null;

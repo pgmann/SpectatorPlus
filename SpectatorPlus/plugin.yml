@@ -62,6 +62,9 @@ permissions:
   spectate.admin.hide.see:
     description: Players with this permission will still be able to see hidden players
     default: op
+  spectate.admin.hide.auto:
+    description: When you log in, you are hidden from the teleporter by default
+    default: false
   spectate.admin.config:
     description: Allows you to edit the plugin configuration ingame
     default: op

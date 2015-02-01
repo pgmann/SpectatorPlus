@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -80,6 +81,10 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler(priority=EventPriority.HIGHEST)
 	protected void onPlayerJoin(PlayerJoinEvent e) {
+		
+		if(e.getPlayer().hasPermission("spectate.admin.hide.auto")) {
+			p.getPlayerData(e.getPlayer()).hideFromTp = true;
+		}
 		
 		if(!p.user.containsKey(e.getPlayer().getName())) {
 			p.user.put(e.getPlayer().getName(), new PlayerObject());
@@ -509,8 +514,9 @@ public class SpectateListener implements Listener {
 	 * 
 	 * @param e
 	 */
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGH)
 	protected void onPlayerInteract(PlayerInteractEvent e) {
+		// Right-click with teleporter
 		if (p.getPlayerData(e.getPlayer()).spectating && e.getMaterial() == p.compassItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			if (p.mode == SpectatorMode.ARENA) {
 				UUID region = p.getPlayerData(e.getPlayer()).arena;
@@ -520,11 +526,13 @@ public class SpectateListener implements Listener {
 			}
 		}
 		
+		// Right-click with arena selector
 		if (p.getPlayerData(e.getPlayer()).spectating && e.getMaterial() == p.clockItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			e.setCancelled(true);
 			p.showArenaGUI(e.getPlayer());
 		}
 		
+		// Right-click with spectators' tools
 		if (p.getPlayerData(e.getPlayer()).spectating && e.getMaterial() == p.spectatorsToolsItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			e.setCancelled(true);
 			p.showSpectatorsOptionsGUI(e.getPlayer());
@@ -544,10 +552,20 @@ public class SpectateListener implements Listener {
 						
 						if(original.getType().equals(InventoryType.CHEST) && original.getSize() > 27) {
 							// Double chest. Using the same method lead to an exception (because InventoryType.CHEST is limited to 27 items).
-							copy = p.getServer().createInventory(e.getPlayer(), original.getSize(), original.getTitle());
+							// Change title from "container.chest" to "Chest" if necessary.
+							String title;
+							if (original.getTitle().startsWith("container.")) title = WordUtils.capitalizeFully(original.getType().toString());
+							else title = original.getTitle();
+							
+							copy = p.getServer().createInventory(e.getPlayer(), original.getSize(), title);
 						}
 						else {
-							copy = p.getServer().createInventory(e.getPlayer(), original.getType(), original.getTitle());
+							// Change title from "container.chest" to "Chest", "Furnace", etc, if necessary.
+							String title;
+							if (original.getTitle().startsWith("container.")) title = WordUtils.capitalizeFully(original.getType().toString());
+							else title = original.getTitle();
+							
+							copy = p.getServer().createInventory(e.getPlayer(), original.getType(), title);
 						}
 						
 						copy.setContents(original.getContents());

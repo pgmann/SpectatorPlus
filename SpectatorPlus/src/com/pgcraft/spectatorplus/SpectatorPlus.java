@@ -2,7 +2,6 @@ package com.pgcraft.spectatorplus;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -40,7 +39,6 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings("deprecation")
 public class SpectatorPlus extends JavaPlugin {
 
 	protected HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
@@ -357,7 +355,7 @@ public class SpectatorPlus extends JavaPlugin {
 					int pos1z = currentArena.getCorner1().getBlockZ();
 					int pos2z = currentArena.getCorner2().getBlockZ();
 					// pos1 should have the highest co-ords of the arena, pos2 the lowest
-					if (!getPlayerData(player).spectating) {
+					if (!getPlayerData(player).spectating && player.getWorld().equals(spectator.getWorld())) {
 						if (Math.floor(where.getY()) < Math.floor(pos1y) && Math.floor(where.getY()) > Math.floor(pos2y)) {
 							if (Math.floor(where.getX()) < pos1x && Math.floor(where.getX()) > pos2x) {
 								if (Math.floor(where.getZ()) < pos1z && Math.floor(where.getZ()) > pos2z) {
