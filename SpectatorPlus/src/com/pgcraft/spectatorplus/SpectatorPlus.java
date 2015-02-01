@@ -130,6 +130,8 @@ public class SpectatorPlus extends JavaPlugin {
 			setSpectatorMode(SpectatorMode.ANY);
 		}
 		
+		reloadConfig(true); // Load config values.
+		
 		// Add players already online to this plugin's database
 		for (Player player : getServer().getOnlinePlayers()) {
 			user.put(player.getName(), new PlayerObject());
@@ -141,8 +143,6 @@ public class SpectatorPlus extends JavaPlugin {
 				enableSpectate(player, (CommandSender) player, true);
 			}
 		}
-		
-		reloadConfig(true); // Load config values.
 
 		// Register event listeners
 		getServer().getPluginManager().registerEvents(new SpectateListener(this), this);
