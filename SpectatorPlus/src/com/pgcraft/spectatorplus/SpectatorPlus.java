@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.text.DecimalFormat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -60,6 +61,8 @@ public class SpectatorPlus extends JavaPlugin {
 	protected ArenasManager arenasManager = null;
 	
 	private SpectateAPI api = null;
+	
+	protected DecimalFormat format;
 
 	// Manage toggles
 	protected Boolean compass;
@@ -157,6 +160,7 @@ public class SpectatorPlus extends JavaPlugin {
 		SpectateCompleter completer = new SpectateCompleter(this);
 		this.getCommand("spectate").setTabCompleter(completer);
 		this.getCommand("spec").setTabCompleter(completer);
+		format = new DecimalFormat("0.0");
 	}
 
 	/**
@@ -535,7 +539,7 @@ public class SpectatorPlus extends JavaPlugin {
 				foodMeta.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Food");
 				lore = new ArrayList<String>();
 					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Food level: " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getFoodLevel() + ChatColor.DARK_GRAY + ChatColor.ITALIC + "/20");
-					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Saturation: " + ChatColor.GOLD + ChatColor.ITALIC + inventoryOwner.getSaturation());
+					lore.add(ChatColor.DARK_GRAY +""+ ChatColor.ITALIC + "Saturation: " + ChatColor.GOLD + ChatColor.ITALIC + format.format(inventoryOwner.getSaturation()));
 				foodMeta.setLore(lore);
 			GUIContent[inventory.getSize() + 17].setItemMeta(foodMeta);
 		}
