@@ -17,10 +17,19 @@ permissions:
       spectate.admin: true
     default: false
   spectate.use:
-    description: Allows you to spectate (recommended for players)
+    description: Allows you to enable and disable spectate mode for yourself (recommended for players)
+    default: op
+    children:
+      spectate.use.on: true
+      spectate.use.off: true
+  spectate.use.on:
+    description: Allows you to enable spectate mode for yourself
+    default: op
+  spectate.use.off:
+    description: Allows you to disable spectate mode for yourself
     default: op
   spectate.use.others:
-    description: Allows you to change spectate mode for others [/spec on <player>]
+    description: Allows you to enable and disable spectate mode for others [/spec on <player>]
     default: op
   spectate.admin:
     description: Allows you to manage all setup and admin commands in SpectatorPlus

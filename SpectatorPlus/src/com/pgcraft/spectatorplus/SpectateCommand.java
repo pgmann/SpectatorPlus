@@ -165,7 +165,7 @@ public class SpectateCommand implements CommandExecutor {
 			switch(args[0]) {
 			case "on":
 			case "off":
-				permission = (args.length >= 2) ? "spectate.use.others" : "spectate.use";
+				permission = (args.length >= 2) ? "spectate.use.others" : "spectate.use."+args[0];
 				break;
 
 			case "arena":
@@ -206,14 +206,17 @@ public class SpectateCommand implements CommandExecutor {
 		}
 
 		String message = null;
+		String word = null;
 		switch(args[0]) {
 		case "on":
+			word="enable";
 		case "off":
+			if(word==null)word="disable";
 			if(args.length >= 2) {
 				message = "You can't change the spectate mode of others!";
 			}
 			else {
-				message = "You can't change your spectate mode!";
+				message = "You can't "+word+" your spectate mode!";
 			}
 			break;
 
@@ -235,7 +238,8 @@ public class SpectateCommand implements CommandExecutor {
 
 		case "mode":
 			message = "You can't change the plugin mode.";
-
+			break;
+			
 		case "say":
 			message = "You can't broadcast a message to the spectators' chat.";
 			break;
