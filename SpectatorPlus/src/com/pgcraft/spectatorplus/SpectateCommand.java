@@ -3,8 +3,11 @@ package com.pgcraft.spectatorplus;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.logging.Level;
 
 import org.apache.commons.lang.WordUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -14,28 +17,41 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@SuppressWarnings({"unused"})
+@SuppressWarnings({"unused","deprecation"})
 public class SpectateCommand implements CommandExecutor {
 
 	private SpectatorPlus p = null;
-	private ArrayList<String> commands = new ArrayList<String>();
+	private HashMap<String, String> commands = new HashMap<String, String>();
 
-
+//ender.sendMessage(ChatColor.RED + "/spec <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
+//
+//	sender.sendMessage(ChatColor.RED + "/spec arena <" + playerOnly + "add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>" + ChatColor.GOLD + ": Manages arenas");
+//	sender.sendMessage(ChatColor.RED + playerOnly + "/spec lobby <set/del>" + ChatColor.GOLD + playerOnly + ": Adds/deletes the spectator lobby");		
+//	sender.sendMessage(ChatColor.RED + "/spec mode <world/any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
+//
+//	sender.sendMessage(ChatColor.RED + playerOnly + "/spec player <player>" + ChatColor.GOLD + playerOnly + ": Teleports the sender (spectator only) to <player>");
+//
+//	sender.sendMessage(ChatColor.RED + "/spec say <message>" + ChatColor.GOLD + ": Sends a message to spectator chat");
+//
+//	sender.sendMessage(ChatColor.RED + "/spec config" + ChatColor.GOLD + ": Edit configuration from ingame");
+//	sender.sendMessage(ChatColor.RED + "/spec reload" + ChatColor.GOLD + ": Reloads configuration");
+//	
+//	sender.sendMessage(ChatColor.RED + "/spec hide [player]" + ChatColor.GOLD + ": Toggles whether you are shown in the spectator GUI");
 	public SpectateCommand(SpectatorPlus p) {
 		this.p = p;
 
-		commands.add("on");
-		commands.add("off");
-		commands.add("arena");
-		commands.add("lobby");
-		commands.add("player");
-		commands.add("p");
-		commands.add("reload");
-		commands.add("mode");
-		commands.add("say");
-		commands.add("config");
-		commands.add("hide");
-		commands.add("b"); // Temporary workaround
+		commands.put("on","&7/&coff &7[&dtarget&7]#Enable or disable spectate mode [for target]");
+		commands.put("off", "@on");
+		commands.put("arena", "#Manage, set up and remove arenas");
+		commands.put("lobby", " &7<&5set&7/&5del&7>#Set or delete the spectator lobby point");
+		commands.put("player", " &7<&5target&7>#Teleports you to the specified target");
+		commands.put("p", "@player");
+		commands.put("reload", "#Reloads this plugin's configuration");
+		commands.put("mode", " &7<&5any&7/&5arena&7/&5world&7>#Change who spectators can teleport to");
+		commands.put("say", " &7<&5message&7>#Broadcasts a message to spectator chat");
+		commands.put("config", "#Edit plugin configuration from ingame");
+		commands.put("hide", " &7[&dplayer&7]#Hide [player] from the spectator GUI");
+		commands.put("b", "#Go back to normal spectate mode from no-clip mode"); // Temporary workaround
 	}
 
 
@@ -64,13 +80,13 @@ public class SpectateCommand implements CommandExecutor {
 		String subcommandName = args[0].toLowerCase();
 
 		// First: subcommand existence.
-		if(!this.commands.contains(subcommandName)) {
+		if(!this.commands.containsKey(subcommandName)) {
 			sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
 			return true;
 		}
 
 		// Second: is the sender allowed?
-		if(!isAllowed(sender, command, args)) {
+		if(!isAllowed(sender, args)) {
 			unauthorized(sender, command, args);
 			return true;
 		}
@@ -99,6 +115,33 @@ public class SpectateCommand implements CommandExecutor {
 	}
 
 	/**
+	 * Gets the message for a command.<br>
+	 * '#' splits the usage from the description.<br>
+	 * '&' can be used to parse colour codes.
+	 * @param cmd a command. Get it from the commands hashmap.
+	 * @return The formatted result message ready for printing to the player.
+	 */
+	private String parseHelpMsg(String cmd) {
+		String msg=commands.get(cmd);
+		msg=ChatColor.translateAlternateColorCodes('&', msg);
+		String[] msgArr=msg.split("#", 2);
+		if(msgArr.length<2) {
+			Bukkit.getLogger().log(Level.WARNING, "Problem showing help for the command "+cmd+"! Please report this!");
+		}
+		msg=ChatColor.DARK_AQUA+"/spec "+ChatColor.RED+cmd+msgArr[0]+ChatColor.GOLD+": "+msgArr[1];
+		return msg;
+	}
+	/**
+	 * An '@' followed by a word means the command is an alias of that 'word'.
+	 * @param msg a command's help message. Get it from the commands hashmap.
+	 * @return boolean indicating if the input msg is an alias command or not.
+	 */
+	private boolean isHelpMsgAlias(String cmd) {
+		String msg=commands.get(cmd);
+		return (msg.charAt(0) == '@');
+	}
+	
+	/**
 	 * Prints the plugin main help page.
 	 * 
 	 * @param sender The help will be displayer for this sender.
@@ -109,28 +152,43 @@ public class SpectateCommand implements CommandExecutor {
 		if(!(sender instanceof Player)) {
 			playerOnly = ChatColor.STRIKETHROUGH.toString();
 		}
-
-
-		sender.sendMessage(ChatColor.GOLD + "            ~~ " + ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus" + ChatColor.GOLD + " ~~            ");
-
-		sender.sendMessage(ChatColor.RED + "/spec <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
-
-		sender.sendMessage(ChatColor.RED + "/spec arena <" + playerOnly + "add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>" + ChatColor.GOLD + ": Manages arenas");
-		sender.sendMessage(ChatColor.RED + playerOnly + "/spec lobby <set/del>" + ChatColor.GOLD + playerOnly + ": Adds/deletes the spectator lobby");		
-		sender.sendMessage(ChatColor.RED + "/spec mode <world/any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
-
-		sender.sendMessage(ChatColor.RED + playerOnly + "/spec player <player>" + ChatColor.GOLD + playerOnly + ": Teleports the sender (spectator only) to <player>");
-
-		sender.sendMessage(ChatColor.RED + "/spec say <message>" + ChatColor.GOLD + ": Sends a message to spectator chat");
-
-		sender.sendMessage(ChatColor.RED + "/spec config" + ChatColor.GOLD + ": Edit configuration from ingame");
-		sender.sendMessage(ChatColor.RED + "/spec reload" + ChatColor.GOLD + ": Reloads configuration");
 		
-		sender.sendMessage(ChatColor.RED + "/spec hide [player]" + ChatColor.GOLD + ": Toggles whether you are shown in the spectator GUI");
-
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.DARK_AQUA + "Strikethrough commands can only be executed as a player.");
+		ArrayList<String> allowedCmds = new ArrayList<String>();
+		for(String cmd : commands.keySet()) {
+			if(isAllowed(sender, cmd.split(" "))) {
+				allowedCmds.add(cmd); // Add all allowed cmds to an ArrayList
+			}
 		}
+		
+		sender.sendMessage(""
+				+ ChatColor.DARK_RED+ChatColor.BOLD+"Spectator"+ChatColor.RED+ChatColor.BOLD+"Plus"
+				+ ChatColor.GOLD+ChatColor.BOLD+" Help");
+		
+		for (String cmd : allowedCmds) {
+			if (!isHelpMsgAlias(cmd)) sender.sendMessage(parseHelpMsg(cmd));
+		}
+		
+		if(allowedCmds.isEmpty()) {
+			sender.sendMessage(ChatColor.RED + "Aww, there are no commands you can use :(");
+		}
+//		sender.sendMessage(ChatColor.RED + "/spec <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
+//
+//		sender.sendMessage(ChatColor.RED + "/spec arena <" + playerOnly + "add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>" + ChatColor.GOLD + ": Manages arenas");
+//		sender.sendMessage(ChatColor.RED + playerOnly + "/spec lobby <set/del>" + ChatColor.GOLD + playerOnly + ": Adds/deletes the spectator lobby");		
+//		sender.sendMessage(ChatColor.RED + "/spec mode <world/any/arena>" + ChatColor.GOLD + ": Sets who players can teleport to");
+//
+//		sender.sendMessage(ChatColor.RED + playerOnly + "/spec player <player>" + ChatColor.GOLD + playerOnly + ": Teleports the sender (spectator only) to <player>");
+//
+//		sender.sendMessage(ChatColor.RED + "/spec say <message>" + ChatColor.GOLD + ": Sends a message to spectator chat");
+//
+//		sender.sendMessage(ChatColor.RED + "/spec config" + ChatColor.GOLD + ": Edit configuration from ingame");
+//		sender.sendMessage(ChatColor.RED + "/spec reload" + ChatColor.GOLD + ": Reloads configuration");
+//		
+//		sender.sendMessage(ChatColor.RED + "/spec hide [player]" + ChatColor.GOLD + ": Toggles whether you are shown in the spectator GUI");
+
+//		if (!(sender instanceof Player)) {
+//			sender.sendMessage(ChatColor.DARK_AQUA + "Strikethrough commands can only be executed as a player.");
+//		}
 	}
 
 	/**
@@ -142,7 +200,7 @@ public class SpectateCommand implements CommandExecutor {
 	 * 
 	 * @return boolean The allowance status.
 	 */
-	private boolean isAllowed(CommandSender sender, Command command, String[] args) {
+	private boolean isAllowed(CommandSender sender, String[] args) {
 
 		// The console is always allowed
 		if(!(sender instanceof Player)) {
@@ -176,14 +234,17 @@ public class SpectateCommand implements CommandExecutor {
 			case "say":
 				permission = "spectate.admin." + args[0];
 				break;
+				
 			case "hide":
 				permission = (args.length >= 2) ? "spectate.admin.hide.others" : "spectate.admin.hide.self";
 				break;
 				
 			case "player":
 			case "p":
-				return true; // always allowed
-
+			case "b":
+				permission = "spectate.use";
+				break;
+				
 			default:
 				permission = "spectate"; // Should never happens. But, just in case...
 				break;
@@ -744,7 +805,7 @@ public class SpectateCommand implements CommandExecutor {
 	 * Returns a list of the commands.
 	 * @return
 	 */
-	protected ArrayList<String> getCommands() {
+	protected HashMap<String, String> getCommands() {
 		return commands;
 	}
 }

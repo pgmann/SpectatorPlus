@@ -4,6 +4,7 @@ import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Material;
@@ -181,6 +182,21 @@ public class SpectateCompleter implements TabCompleter {
 	 */
 	private List<String> getAutocompleteSuggestions(String typed, List<String> suggestionsList) {
 		return getAutocompleteSuggestions(typed, suggestionsList, 0);
+	}
+	
+	/**
+	 * Returns a list of autocompletion suggestions based on what the user typed and on a list of
+	 * available commands.
+	 * 
+	 * @param typed What the user typed.
+	 * @param suggestionsList The list of the suggestions.
+	 * 
+	 * @return The list of matching suggestions.
+	 */
+	private List<String> getAutocompleteSuggestions(String typed, HashMap<String, String> suggestionsList) {
+		ArrayList<String> newSuggestionsList = new ArrayList<String>();
+		newSuggestionsList.addAll(suggestionsList.keySet());
+		return getAutocompleteSuggestions(typed, newSuggestionsList, 0);
 	}
 	
 	

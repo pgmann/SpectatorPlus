@@ -40,6 +40,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
+@SuppressWarnings("deprecation")
 public class SpectatorPlus extends JavaPlugin {
 
 	protected HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
