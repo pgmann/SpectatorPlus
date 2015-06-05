@@ -30,6 +30,8 @@ public class Arena implements ConfigurationSerializable {
 	private Location lobby = null;
 	
 	private Boolean registered = false;
+
+	private Boolean enabled = true;
 	
 	/**
 	 * Standard constructor.<br>
@@ -46,7 +48,6 @@ public class Arena implements ConfigurationSerializable {
 		
 		this.corner1 = corner1;
 		this.corner2 = corner2;
-		
 	}
 	
 	/**
@@ -55,33 +56,42 @@ public class Arena implements ConfigurationSerializable {
 	 * @param serialized The serialized version, returned by {@link #serialize()}.
 	 */
 	public Arena(Map<String,Object> serialized) {
-		
+
 		this.id = UUID.fromString((String) serialized.get("id"));
 		this.name = (String) serialized.get("name");
-		
+
 		World world = Bukkit.getWorld((String) serialized.get("world"));
 
-		if(world == null) {
-			Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Using the default world instead.");
+		if (world == null) {
+			Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Please fix that in the setup.yml file. This arena will be disabled until this is fixed.");
 			world = Bukkit.getWorlds().get(0);
+			setEnabled(false);
 		}
 
 		this.corner1 = ((Vector) serialized.get("corner1")).toLocation(world);
 		this.corner2 = ((Vector) serialized.get("corner2")).toLocation(world);
-		
-		if(serialized.get("lobby.location") != null) {
+
+		if (serialized.get("lobby.location") != null) {
 			World worldLobby = Bukkit.getWorld((String) serialized.get("lobby.world"));
 
-			if(worldLobby == null) {
+			if (worldLobby == null) {
 				Bukkit.getLogger().severe("[SpectatorPlus] The world of the lobby of the arena " + name + " does not exists!! Using the default world instead.");
 				worldLobby = Bukkit.getWorlds().get(0);
+				setEnabled(false);
 			}
 
 			this.lobby = ((Vector) serialized.get("lobby.location")).toLocation(worldLobby);
 		}
-		
+
 		this.registered = (Boolean) serialized.get("registered");
-		
+
+		// Migration
+		if (serialized.containsKey("enabled")) {
+			this.enabled = (Boolean) serialized.get("enabled");
+		} else {
+			this.enabled = true;
+		}
+
 	}
 	
 	/**
@@ -100,9 +110,11 @@ public class Arena implements ConfigurationSerializable {
 			world = corner1.getWorld();
 		} else {
 			world = Bukkit.getWorlds().get(0);
-			Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Using the default world instead.");
+
+			Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Using the default world instead and disabling this arena. You should fix that in the setup.yml file.");
+			setEnabled(false);
 		}
-		
+
 		serialized.put("id", id.toString());
 		serialized.put("name", name);
 		serialized.put("world", world.getName());
@@ -115,8 +127,9 @@ public class Arena implements ConfigurationSerializable {
 				world = lobby.getWorld();
 			} else {
 				world = Bukkit.getWorlds().get(0);
-				Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Using the default world instead.");
 
+				Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Storing the default world instead and disabling this arena. You should fix that in the setup.yml file.");
+				setEnabled(false);
 			}
 
 			serialized.put("lobby.location", lobby.toVector());
@@ -128,6 +141,8 @@ public class Arena implements ConfigurationSerializable {
 		}
 		
 		serialized.put("registered", registered);
+
+		serialized.put("enabled", enabled);
 		
 		return serialized;
 	}
@@ -230,8 +245,26 @@ public class Arena implements ConfigurationSerializable {
 	protected void setRegistered(boolean registered) {
 		this.registered = registered;
 	}
-	
-	
+
+	/**
+	 * Returns true if this arena is enabled.
+	 *
+	 * @return True if enabled.
+	 */
+	public Boolean isEnabled() {
+		return enabled;
+	}
+
+	/**
+	 * Enables or disables this arena.
+	 *
+	 * @param enabled The status.
+	 */
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+
 	@Override
 	public int hashCode() {
 		return this.getUUID().hashCode();
@@ -239,10 +272,6 @@ public class Arena implements ConfigurationSerializable {
 	
 	@Override
 	public boolean equals(Object other) {
-		if(!(other instanceof Arena)) {
-			return false;
-		}
-		
-		return ((Arena) other).getUUID().equals(this.getUUID());
+		return other instanceof Arena && ((Arena) other).getUUID().equals(this.getUUID());
 	}
 }

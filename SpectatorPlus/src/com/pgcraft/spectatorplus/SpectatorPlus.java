@@ -426,13 +426,15 @@ public class SpectatorPlus extends JavaPlugin {
 
 
 		for (Arena arena : arenasManager.getArenas()) {
-			ItemStack arenaBook = new ItemStack(Material.BOOK, 1);
+			if(arena.isEnabled()) {
+				ItemStack arenaBook = new ItemStack(Material.BOOK, 1);
 
-			ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
-			meta.setDisplayName(arena.getName());
-			arenaBook.setItemMeta(meta);
+				ItemMeta meta = arenaBook.getItemMeta();
+				meta.setDisplayName(arena.getName());
+				arenaBook.setItemMeta(meta);
 
-			gui.addItem(arenaBook);
+				gui.addItem(arenaBook);
+			}
 		}
 
 		spectator.openInventory(gui);
