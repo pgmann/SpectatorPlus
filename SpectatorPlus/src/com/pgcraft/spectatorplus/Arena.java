@@ -60,11 +60,23 @@ public class Arena implements ConfigurationSerializable {
 		this.name = (String) serialized.get("name");
 		
 		World world = Bukkit.getWorld((String) serialized.get("world"));
+
+		if(world == null) {
+			Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Using the default world instead.");
+			world = Bukkit.getWorlds().get(0);
+		}
+
 		this.corner1 = ((Vector) serialized.get("corner1")).toLocation(world);
 		this.corner2 = ((Vector) serialized.get("corner2")).toLocation(world);
 		
 		if(serialized.get("lobby.location") != null) {
 			World worldLobby = Bukkit.getWorld((String) serialized.get("lobby.world"));
+
+			if(worldLobby == null) {
+				Bukkit.getLogger().severe("[SpectatorPlus] The world of the lobby of the arena " + name + " does not exists!! Using the default world instead.");
+				worldLobby = Bukkit.getWorlds().get(0);
+			}
+
 			this.lobby = ((Vector) serialized.get("lobby.location")).toLocation(worldLobby);
 		}
 		
@@ -82,16 +94,33 @@ public class Arena implements ConfigurationSerializable {
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> serialized = new HashMap<String,Object>();
+
+		World world;
+		if(corner1.getWorld() != null) {
+			world = corner1.getWorld();
+		} else {
+			world = Bukkit.getWorlds().get(0);
+			Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Using the default world instead.");
+		}
 		
 		serialized.put("id", id.toString());
 		serialized.put("name", name);
-		serialized.put("world", corner1.getWorld().getName());
+		serialized.put("world", world.getName());
 		serialized.put("corner1", corner1.toVector());
 		serialized.put("corner2", corner2.toVector());
 		
 		if(lobby != null) {
+
+			if(lobby.getWorld() != null) {
+				world = lobby.getWorld();
+			} else {
+				world = Bukkit.getWorlds().get(0);
+				Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Using the default world instead.");
+
+			}
+
 			serialized.put("lobby.location", lobby.toVector());
-			serialized.put("lobby.world", lobby.getWorld().getName());
+			serialized.put("lobby.world", world.getName());
 		}
 		else {
 			serialized.put("lobby.location", null);
