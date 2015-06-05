@@ -11,6 +11,8 @@
 *~
 
 SpectatorPlus/.settings/
+SpectatorPlus/.idea/
 SpectatorPlus/bin/
 SpectatorPlus/target/
 
+*.iml
