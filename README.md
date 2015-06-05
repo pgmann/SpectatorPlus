@@ -17,4 +17,5 @@ You can find [the API's JavaDoc here](http://depot.carrade.eu/html/bukkit/doc/sp
 
 ### ~ Continuous Integration server ~
 
-The source code of this repository is automatically built and [is always available here](http://jenkins.carrade.eu/job/SpectatorPlus/).
+The source code of this repository is automatically built and [is always available here](http://ci.pgmann.cf/job/SpectatorPlus/).
+Older development builds [can be obtained here](http://jenkins.carrade.eu/job/SpectatorPlus/) instead.

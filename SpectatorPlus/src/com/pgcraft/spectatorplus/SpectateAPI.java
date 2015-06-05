@@ -11,9 +11,11 @@ import org.bukkit.entity.Player;
  */
 public class SpectateAPI {
 	private SpectatorPlus p;
+	private static SpectateAPI INSTANCE;
 	
 	protected SpectateAPI(SpectatorPlus p) {
 		this.p = p;
+		INSTANCE=this;
 	}
 	
 	/**
@@ -600,5 +602,15 @@ public class SpectateAPI {
 	 */
 	public void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
 		p.sendSpectatorMessage(sender, message, isAction);
+	}
+	
+	/**
+	 * Used to make access to the API much easier.<br>
+	 * <pre>SpectateAPI.getAPI();</pre>
+	 * can now be used to get a reference to the running instance.
+	 * @return the running instance of SpectateAPI.
+	 */
+	public static SpectateAPI getAPI() {
+		return INSTANCE;
 	}
 }
