@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Player;
 
 /**
  * This class manages the SpectatorPlus' toggles.
@@ -210,6 +212,20 @@ public class ToggleManager {
 				p.scoreboard = (Boolean) value;
 				break;
 				
+			case SPECTATORS_USE_VANILLA:
+				p.vanillaSpectate = (Boolean) value;
+				GameMode gm = (p.vanillaSpectate)? GameMode.SPECTATOR : GameMode.ADVENTURE;
+				for (Player target : p.getServer().getOnlinePlayers()) {
+					if (p.getPlayerData(target) != null && p.getPlayerData(target).spectating) {
+						// Update each player to reflect the new gamemode.
+						p.getPlayerData(target).gamemodeChangeAllowed=true;
+						target.setGameMode(gm);
+						p.getPlayerData(target).gamemodeChangeAllowed=false;
+					}
+				}
+				p.updateSpectatorInventories();
+				break;
+				
 			case SPECTATOR_MODE_ON_DEATH:
 				p.death = (Boolean) value;
 				break;
@@ -330,7 +346,7 @@ public class ToggleManager {
 	
 	/**
 	 * Upgrade the configuration, populating the configuration file with new keys and the
-	 * appropried default values.
+	 * appropriate default values.
 	 */
 	protected void upgrade() {
 		Set<String> togglesND = getConfiguration().getKeys(true); // ND = no defaults

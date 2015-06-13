@@ -927,13 +927,19 @@ public class SpectateListener implements Listener {
 					}
 					
 					else if(toolSelected.getItemMeta().getDisplayName().startsWith(SpectatorPlus.TOOL_NOCLIP_QUIT_NAME)) {
-						spectator.setGameMode(GameMode.ADVENTURE);
-						
-						spectator.setAllowFlight(true);
-						spectator.setFlying(true);
-						
-						spectator.closeInventory();
-						p.updateSpectatorInventory(spectator);
+						// Take care of the vanilla spectate mode - spectators should always be in SPECTATOR gamemode then.
+						// (this item is removed from the GUI in this case, so technically this should never be needed)
+						if(!p.vanillaSpectate) {
+							spectator.setGameMode(GameMode.ADVENTURE);
+
+							spectator.setAllowFlight(true);
+							spectator.setFlying(true);
+
+							spectator.closeInventory();
+							p.updateSpectatorInventory(spectator);
+						} else {
+							spectator.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Exiting no-clip mode is disabled.");
+						}
 					}
 				} catch(NullPointerException ex) {
 					// This happens if there isn't any meta, aka here if the spectator

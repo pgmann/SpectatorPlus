@@ -19,6 +19,14 @@ import org.bukkit.Material;
 @SuppressWarnings("rawtypes")
 public enum Toggle {
 	
+	/*  Adding a toggle CHECKLIST
+	 *  - Add the toggle to toggles.yml
+	 *  - Add the toggle here in Toggle.java
+	 *  - Add it to the ToggleManager's set(Toggle, Object, Boolean) method.
+	 *  - Declare related variable in SpectatorPlus.java
+	 *  - Add the declared variable to reloadConfig(Boolean), also in SpectatorPlus.java
+	 */
+	
 	// Tools-related toggles
 	
 	TOOLS_TELEPORTER_ENABLED(Boolean.class, true, "If true the teleportation menu will be available for spectators."),
@@ -56,6 +64,7 @@ public enum Toggle {
 	
 	SPECTATORS_TABLIST_PREFIX("spectators.tabListPrefix", Boolean.class, true, "Prefix spectator names in the tab list? This will change the Scoreboard used, and restore the old one when spectator mode is disabled. If you see another plugin's sidebar/infos on players list disappearing when you enable the spectator mode, try to disable this."),
 	SPECTATORS_SEE_OTHERS("spectators.spectatorsSeeSpectators", Boolean.class, true, "See other spectators when you're spectating? (*requires spectators.tabListPrefix to be true*)"),
+	SPECTATORS_USE_VANILLA("spectators.useVanillaMode", Boolean.class, false, "Use vanilla spectate mode (gamemode 3) instead of adventure mode. Same as no-clip mode tool, but mandatory."),
 	
 	// What to do when the spectator mode is changed (enabled or disabled)?
 	

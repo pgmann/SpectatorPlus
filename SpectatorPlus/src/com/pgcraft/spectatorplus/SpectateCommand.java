@@ -792,12 +792,16 @@ public class SpectateCommand implements CommandExecutor {
 	 */
 	private void doB(CommandSender sender, Command command, String label, String[] args) {
 		if(sender instanceof Player && p.getPlayerData((Player) sender).spectating && ((Player) sender).getGameMode() == GameMode.SPECTATOR) {
-			((Player) sender).setGameMode(GameMode.ADVENTURE);
-			
-			((Player) sender).setAllowFlight(true);
-			((Player) sender).setFlying(true);
-			
-			p.updateSpectatorInventory((Player) sender);
+			if(!p.vanillaSpectate) {
+				((Player) sender).setGameMode(GameMode.ADVENTURE);
+
+				((Player) sender).setAllowFlight(true);
+				((Player) sender).setFlying(true);
+
+				p.updateSpectatorInventory((Player) sender);
+			} else {
+				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Exiting no-clip mode is disabled.");
+			}
 		}
 	}
 	

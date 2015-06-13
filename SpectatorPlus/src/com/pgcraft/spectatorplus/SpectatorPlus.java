@@ -74,7 +74,7 @@ public class SpectatorPlus extends JavaPlugin {
 	protected Material spectatorsToolsItem;
 	protected Boolean inspector;
 	protected Material inspectorItem;
-	protected Boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
+	protected Boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, vanillaSpectate, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary;
 	
 	protected SpectatorMode mode = SpectatorMode.ANY;
 	
@@ -913,7 +913,8 @@ public class SpectatorPlus extends JavaPlugin {
 
 			// Gamemode, 'ghost' and inventory
 			getPlayerData(spectator).oldGameMode = spectator.getGameMode();
-			spectator.setGameMode(GameMode.ADVENTURE);
+			GameMode gm = (vanillaSpectate)? GameMode.SPECTATOR : GameMode.ADVENTURE;
+			spectator.setGameMode(gm);
 			
 			savePlayerInv(spectator);
 			getPlayerData(spectator).effects = spectator.getActivePotionEffects();
@@ -964,6 +965,8 @@ public class SpectatorPlus extends JavaPlugin {
 
 			specs.getConfig().set(spectator.getName(), true);
 			specs.saveConfig();
+			
+			
 		}
 	}
 	
@@ -1131,6 +1134,7 @@ public class SpectatorPlus extends JavaPlugin {
 		output = toggles.getBoolean(Toggle.OUTPUT_MESSAGES);
 		death = toggles.getBoolean(Toggle.SPECTATOR_MODE_ON_DEATH);
 		scoreboard = toggles.getBoolean(Toggle.SPECTATORS_TABLIST_PREFIX);
+		vanillaSpectate = toggles.getBoolean(Toggle.SPECTATORS_USE_VANILLA);
 		seeSpecs = toggles.getBoolean(Toggle.SPECTATORS_SEE_OTHERS);
 		blockCmds = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ENABLED);
 		adminBypass = toggles.getBoolean(Toggle.CHAT_BLOCKCOMMANDS_ADMINBYPASS);
@@ -1206,6 +1210,18 @@ public class SpectatorPlus extends JavaPlugin {
 		
 		// Update all spectators' inventories
 		updateSpectatorInventories();
+		
+		for (Player target : getServer().getOnlinePlayers()) {
+			if (getPlayerData(target) != null && getPlayerData(target).spectating) {
+				if(vanillaSpectate) {
+					// Set all spectators to SPECTATOR gamemode.
+					target.setGameMode(GameMode.SPECTATOR);
+				} else {
+					// Set all spectators to ADVENTURE gamemode.
+					target.setGameMode(GameMode.ADVENTURE);
+				}
+			}
+		}
 	}
 
 	/**
@@ -1571,9 +1587,13 @@ public class SpectatorPlus extends JavaPlugin {
 			
 			ItemStack quitNoClip = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 			SkullMeta sMeta = (SkullMeta) quitNoClip.getItemMeta();
-				sMeta.setDisplayName(TOOL_NOCLIP_QUIT_NAME + spectator.getName());
+				String disableExit="";
+				if(vanillaSpectate) {
+					disableExit = ChatColor.RED+""+ChatColor.BOLD+" DISABLED";
+				}
+				sMeta.setDisplayName(TOOL_NOCLIP_QUIT_NAME + spectator.getName() +disableExit);
 				List<String> lore = new ArrayList<String>();
-				lore.add(ChatColor.GRAY + "Disables the no-clip mode");
+				lore.add(ChatColor.GRAY + "Leave no-clip mode");
 				lore.add(ChatColor.DARK_GRAY + "You can also use /spec b");
 				sMeta.setLore(lore);
 				sMeta.setOwner(spectator.getName());

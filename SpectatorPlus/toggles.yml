@@ -29,7 +29,7 @@ tools:
         
         glowEffectIfActive: true
         
-        #Â What spectators can get from the spectators' tools?
+        # What spectators can get from the spectators' tools?
         speed: true         # They can get speed
         nightVision: true   # They can get night-vision and water breathing
         divingSuit: true    # They can get some Depth-Strider-III boots
@@ -37,7 +37,7 @@ tools:
         
         tpToDeath:
             enabled: true
-            # Display the cause of the death in the tooltip? (Example: Ã‚Â« You starved to death Ã‚Â».)
+            # Display the cause of the death in the tooltip? (Example: « You starved to death ».)
             displayCause: true
     
     inspector:
@@ -75,6 +75,9 @@ spectators:
     
     # See other spectators when you're spectating? (*requires spectators.tabListPrefix to be true*)
     spectatorsSeeSpectators: true
+    
+    # Use vanilla spectate mode (gamemode 3) instead of adventure mode. Same as no-clip mode tool, but mandatory.
+    useVanillaMode: false
 
 
 # What to do when the spectator mode is changed (enabled or disabled)?
