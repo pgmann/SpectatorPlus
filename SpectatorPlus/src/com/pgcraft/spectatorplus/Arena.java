@@ -33,6 +33,10 @@ public class Arena implements ConfigurationSerializable {
 
 	private Boolean enabled = true;
 	
+	//
+	private String tempWorldName="", tempLobbyWorldName="";
+	private Map<String, Object> tempSerialized;
+	
 	/**
 	 * Standard constructor.<br>
 	 * This constructor is <em>only</em> used to create a new arena.
@@ -51,35 +55,50 @@ public class Arena implements ConfigurationSerializable {
 	}
 	
 	/**
-	 * Constructs an object from the serialized version.
-	 * 
+	 * Constructs an object from the serialized version.<br>
+	 * Error handling:<ul>
+	 * <li>null world -> disable arena until fixed.</li>
+	 * <li>null lobby world -> use arena world.</li>
+	 * <li>can migrate old config if new values don't exist.</li>
+	 * </ul>
 	 * @param serialized The serialized version, returned by {@link #serialize()}.
 	 */
 	public Arena(Map<String,Object> serialized) {
-
+		
 		this.id = UUID.fromString((String) serialized.get("id"));
 		this.name = (String) serialized.get("name");
-
-		World world = Bukkit.getWorld((String) serialized.get("world"));
+		
+		tempWorldName = (String) serialized.get("world");
+		World world = Bukkit.getWorld(tempWorldName);
 
 		if (world == null) {
-			Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Please fix that in the setup.yml file. This arena will be disabled until this is fixed.");
-			world = Bukkit.getWorlds().get(0);
+			// Log to console, disable and return. Prevents loading arenas in a world where there isn't supposed to be an arena.
+			Bukkit.getLogger().severe("[SpectatorPlus] Arena "+name+" is meant to be in a world called '"+tempWorldName+"', but it couldn't be found. Disabling this arena.");
+//			world = Bukkit.getWorlds().get(0);
 			setEnabled(false);
+			// Keep the old configuration, to make fixing easier.
+			tempSerialized=serialized;
+			return;
+		} else {
+			// If it's been fixed, make sure to reset tempSerialized to allow the arena to be saved in future.
+			tempSerialized=null;
 		}
 
 		this.corner1 = ((Vector) serialized.get("corner1")).toLocation(world);
 		this.corner2 = ((Vector) serialized.get("corner2")).toLocation(world);
 
 		if (serialized.get("lobby.location") != null) {
-			World worldLobby = Bukkit.getWorld((String) serialized.get("lobby.world"));
+			tempLobbyWorldName = (String) serialized.get("lobby.world");
+			World worldLobby = Bukkit.getWorld(tempLobbyWorldName);
 
 			if (worldLobby == null) {
-				Bukkit.getLogger().severe("[SpectatorPlus] The world of the lobby of the arena " + name + " does not exists!! Using the default world instead.");
-				worldLobby = Bukkit.getWorlds().get(0);
-				setEnabled(false);
+				// Take an educated guess at where the lobby should be. In the arena's world is the best bet.
+				Bukkit.getLogger().severe("[SpectatorPlus] Arena "+name+"'s lobby is meant to be in a world called '"+tempLobbyWorldName+"', but it couldn't be found. Using the arena's world instead.");
+				worldLobby = world; // world cannot be null at this point or code would have exited.
+//				setEnabled(false);
 			}
-
+			
+			// Get the coordinates of the lobby in the decided world
 			this.lobby = ((Vector) serialized.get("lobby.location")).toLocation(worldLobby);
 		}
 
@@ -104,36 +123,42 @@ public class Arena implements ConfigurationSerializable {
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> serialized = new HashMap<String,Object>();
+		
+		if(tempSerialized != null) {
+			// This is if the world is null - keep the exact same config for this arena as was loaded to ease fixing.
+			serialized = tempSerialized;
+			Bukkit.getLogger().severe("[SpectatorPlus] Remember to fix arena "+name+"'s world! No world called "+tempWorldName+" exists!");
+			return serialized;
+		}
 
-		World world;
+		String worldName;
 		if(corner1.getWorld() != null) {
-			world = corner1.getWorld();
+			worldName = corner1.getWorld().getName();
 		} else {
-			world = Bukkit.getWorlds().get(0);
-
-			Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Using the default world instead and disabling this arena. You should fix that in the setup.yml file.");
+			// Just in case, to deal with worlds that have magically disappeared during runtime...
+			worldName = tempWorldName;
 			setEnabled(false);
+			Bukkit.getLogger().severe("[SpectatorPlus] Remember to fix arena "+name+"'s world!");
 		}
 
 		serialized.put("id", id.toString());
 		serialized.put("name", name);
-		serialized.put("world", world.getName());
+		serialized.put("world", worldName);
 		serialized.put("corner1", corner1.toVector());
 		serialized.put("corner2", corner2.toVector());
 		
 		if(lobby != null) {
-
-			if(lobby.getWorld() != null) {
-				world = lobby.getWorld();
+			// Deal with nonexistent lobby world, previously detected at load. Keep the old world name to make fixing easier.
+			if(lobby.getWorld() != null && lobby.getWorld().getName().equals(tempLobbyWorldName)) {
+				worldName = lobby.getWorld().getName();
 			} else {
-				world = Bukkit.getWorlds().get(0);
-
-				Bukkit.getLogger().severe("[SpectatorPlus] The world of the arena " + name + " does not exists!! Storing the default world instead and disabling this arena. You should fix that in the setup.yml file.");
-				setEnabled(false);
+				Bukkit.getLogger().severe("[SpectatorPlus] Remember to fix arena "+name+"'s lobby location! No world called "+tempLobbyWorldName+" exists!");
+				worldName = tempLobbyWorldName;
+//				setEnabled(false);
 			}
 
 			serialized.put("lobby.location", lobby.toVector());
-			serialized.put("lobby.world", world.getName());
+			serialized.put("lobby.world", worldName);
 		}
 		else {
 			serialized.put("lobby.location", null);

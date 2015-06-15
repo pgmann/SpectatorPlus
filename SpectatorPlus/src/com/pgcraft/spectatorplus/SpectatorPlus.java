@@ -1222,6 +1222,9 @@ public class SpectatorPlus extends JavaPlugin {
 				}
 			}
 		}
+		
+		// Update arenas.
+		arenasManager.reload();
 	}
 
 	/**

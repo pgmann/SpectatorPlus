@@ -627,7 +627,7 @@ public class SpectateCommand implements CommandExecutor {
 			}
 
 			if(args.length == 2) { // /spec arena add
-				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena add <arenaName>");
+				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena add <name>");
 			}
 			else { // /spec arena add <?>
 				p.getPlayerData((Player) sender).arenaName = args[2];
@@ -640,7 +640,7 @@ public class SpectateCommand implements CommandExecutor {
 		else if(!isEmptyCommand && subcommand.equalsIgnoreCase("remove")) { // spec arena remove ...
 
 			if(args.length == 2) { // /spec arena remove
-				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena remove <arenaName>");
+				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena remove <name>");
 			}
 			else { // /spec arena remove <?>
 				if(p.removeArena(args[2])) {
@@ -658,14 +658,17 @@ public class SpectateCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.GOLD + "          ~~ " + ChatColor.RED + "Arenas" + ChatColor.GOLD + " ~~          ");
 
 			for(Arena arena : p.arenasManager.getArenas()) {
-				String arenaDescription = ChatColor.RED + arena.getName();
-				if(arena.getLobby() != null) {
-					arenaDescription += ChatColor.GOLD + " - Lobby: " + arena.getLobby().getBlockX() + ";" + arena.getLobby().getBlockY() + ";" + arena.getLobby().getBlockZ();  
+				// Only print enabled arenas.
+				if (arena.isEnabled()) {
+					String arenaDescription = ChatColor.RED + arena.getName();
+					if(arena.getLobby() != null) {
+						arenaDescription += ChatColor.GOLD + " - Lobby: " + arena.getLobby().getBlockX() + ";" + arena.getLobby().getBlockY() + ";" + arena.getLobby().getBlockZ();  
+					}
+					else {
+						arenaDescription += ChatColor.GOLD + " - Lobby not configured";
+					}
+					sender.sendMessage(arenaDescription);
 				}
-				else {
-					arenaDescription += ChatColor.GOLD + " - Lobby not configured";
-				}
-				sender.sendMessage(arenaDescription);
 			}
 
 		}
@@ -677,6 +680,11 @@ public class SpectateCommand implements CommandExecutor {
 				return;
 			}
 
+			if(args.length < 3) {
+				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena lobby <name>");
+				return;
+			}
+			
 			Arena arena = p.arenasManager.getArena(args[2]);
 			if(arena != null) {
 				arena.setLobby(((Player) sender).getLocation());

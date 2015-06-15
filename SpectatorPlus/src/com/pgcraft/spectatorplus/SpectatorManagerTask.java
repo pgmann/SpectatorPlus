@@ -35,7 +35,12 @@ public class SpectatorManagerTask extends BukkitRunnable {
 					
 					Arena arena = p.arenasManager.getArena(p.getPlayerData(target).arena);
 					if (arena != null) { // ignore players not in an arena.
-						if (isValidPos(target, arena)) {
+						if(!arena.isEnabled() || !arena.isRegistered() || arena.getCorner1() == null || arena.getCorner2() == null) {
+							p.getPlayerData(target).arena=null;
+							target.sendMessage(SpectatorPlus.prefix+"The arena you were in was removed.");
+							p.spawnPlayer(target);
+							outOfBounds = false;
+						} else if (isValidPos(target, arena)) {
 							outOfBounds = false;
 						}
 					} else {
