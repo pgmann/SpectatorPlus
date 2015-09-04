@@ -211,6 +211,10 @@ public class ToggleManager {
 			case SPECTATORS_TABLIST_PREFIX:
 				p.scoreboard = (Boolean) value;
 				break;
+
+			case SKRIPT_INTEGRATION:
+				p.skriptInt = (Boolean) value;
+				break;
 				
 			case SPECTATORS_USE_VANILLA:
 				p.vanillaSpectate = (Boolean) value;

@@ -150,7 +150,7 @@ public class SpectateAPI {
 	 * </ul>
 	 * 
 	 * @param mode The mode.
-	 * @see SpectatorPlusMode
+	 * @see SpectatorMode
 	 * 
 	 * @since 2.0
 	 */
