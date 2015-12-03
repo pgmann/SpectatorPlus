@@ -13,9 +13,9 @@ You will need to have [Apache Commons Lang](http://commons.apache.org/proper/com
 
 ### ~ JavaDoc ~
 
-You can find [the API's JavaDoc here](http://depot.carrade.eu/html/bukkit/doc/spectatorplus/).
+You can find [the API's JavaDoc here](https://ci.pgmann.cf/job/SpectatorPlus/javadoc?com/pgcraft/spectatorplus/SpectateAPI.html).
 
 ### ~ Continuous Integration server ~
 
-The source code of this repository is automatically built and [is always available here](http://ci.pgmann.cf/job/SpectatorPlus/).
+The source code of this repository is automatically built and [is always available here](https://ci.pgmann.cf/job/SpectatorPlus/).
 Older development builds [can be obtained here](http://jenkins.carrade.eu/job/SpectatorPlus/) instead.
