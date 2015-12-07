@@ -220,11 +220,11 @@ public class ToggleManager {
 				p.vanillaSpectate = (Boolean) value;
 				GameMode gm = (p.vanillaSpectate)? GameMode.SPECTATOR : GameMode.ADVENTURE;
 				for (Player target : p.getServer().getOnlinePlayers()) {
-					if (p.getPlayerData(target) != null && p.getPlayerData(target).spectating) {
+					if (p.getPlayerData(target) != null && p.getPlayerData(target).isSpectating()) {
 						// Update each player to reflect the new gamemode.
-						p.getPlayerData(target).gamemodeChangeAllowed=true;
+						p.getPlayerData(target).setGamemodeChangeAllowed(true);
 						target.setGameMode(gm);
-						p.getPlayerData(target).gamemodeChangeAllowed=false;
+						p.getPlayerData(target).setGamemodeChangeAllowed(false);
 					}
 				}
 				p.updateSpectatorInventories();

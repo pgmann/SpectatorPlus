@@ -31,7 +31,7 @@ public class SpectateAPI {
 	 */
 	public boolean isSpectator(Player player) {
 		if(p.getPlayerData(player) != null) {
-			return p.getPlayerData(player).spectating;
+			return p.getPlayerData(player).isSpectating();
 		}
 		
 		return false;
@@ -115,7 +115,7 @@ public class SpectateAPI {
 	 * @since 2.0
 	 */
 	public boolean teleportSpectatorToPlayer(Player spectator, Player target) {
-		if (p.getPlayerData(spectator).spectating && !p.getPlayerData(spectator).spectating) {
+		if (p.getPlayerData(spectator).isSpectating() && !p.getPlayerData(spectator).isSpectating()) {
 			p.choosePlayer(spectator, target);
 			return true;
 		} else {

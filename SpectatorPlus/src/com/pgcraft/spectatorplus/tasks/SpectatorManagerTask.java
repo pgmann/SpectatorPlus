@@ -1,5 +1,7 @@
-package com.pgcraft.spectatorplus;
+package com.pgcraft.spectatorplus.tasks;
 
+import com.pgcraft.spectatorplus.SpectatorMode;
+import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,8 +12,6 @@ import org.bukkit.scheduler.BukkitRunnable;
  * Handle players trying to leave the arena in arena mode.<br>
  * Players outside the arena borders will have the move event cancelled;<br>
  * Players more than 5 blocks away from the global lobby will also have their move event cancelled.
- * 
- * @param event
  */
 public class SpectatorManagerTask extends BukkitRunnable {
 	SpectatorPlus p;
@@ -24,7 +24,7 @@ public class SpectatorManagerTask extends BukkitRunnable {
 	public void run() {
 		
 		for (Player target:p.getServer().getOnlinePlayers()) {
-			if (p.getPlayerData(target).spectating) {
+			if (p.getPlayerData(target).isSpectating()) {
 				// Spectators should always be able to fly.
 				// to help prevent glitches when enabling/disabling flight, only set allow flight when it's not already on.
 				if (!target.getAllowFlight()) target.setAllowFlight(true);
@@ -34,10 +34,10 @@ public class SpectatorManagerTask extends BukkitRunnable {
 				if (p.mode.equals(SpectatorMode.ARENA) && p.enforceArenaBoundary) {
 					boolean outOfBounds = true;
 					
-					Arena arena = p.arenasManager.getArena(p.getPlayerData(target).arena);
+					Arena arena = p.arenasManager.getArena(p.getPlayerData(target).getArena());
 					if (arena != null) { // ignore players not in an arena.
 						if(!arena.isEnabled() || !arena.isRegistered() || arena.getCorner1() == null || arena.getCorner2() == null) {
-							p.getPlayerData(target).arena=null;
+							p.getPlayerData(target).setArena(null);
 							target.sendMessage(SpectatorPlus.prefix+"The arena you were in was removed.");
 							p.spawnPlayer(target);
 							outOfBounds = false;

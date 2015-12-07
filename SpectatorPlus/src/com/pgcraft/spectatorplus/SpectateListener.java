@@ -1,5 +1,6 @@
 package com.pgcraft.spectatorplus;
 
+import com.pgcraft.spectatorplus.tasks.AfterRespawnTask;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -82,11 +83,11 @@ public class SpectateListener implements Listener {
 	protected void onPlayerJoin(PlayerJoinEvent e) {
 		
 		if(e.getPlayer().hasPermission("spectate.admin.hide.auto")) {
-			p.getPlayerData(e.getPlayer()).hideFromTp = true;
+			p.getPlayerData(e.getPlayer()).setHideFromTp(true);
 		}
 		
 		for (Player target : p.getServer().getOnlinePlayers()) {
-			if (p.getPlayerData(target).spectating) {
+			if (p.getPlayerData(target).isSpectating()) {
 				e.getPlayer().hidePlayer(target);
 			}
 		}
@@ -105,7 +106,7 @@ public class SpectateListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	protected void onChatSend(AsyncPlayerChatEvent e) {
 		if (p.specChat) {
-			if (p.getPlayerData(e.getPlayer()).spectating) {
+			if (p.getPlayerData(e.getPlayer()).isSpectating()) {
 				e.setCancelled(true);
 				p.sendSpectatorMessage(e.getPlayer(), e.getMessage(), false);
 			}
@@ -133,7 +134,7 @@ public class SpectateListener implements Listener {
 					if (playerL.getX() > blockL.getBlockX()-1 && playerL.getX() < blockL.getBlockX()+1) { //2d...
 						if (playerL.getZ() > blockL.getBlockZ()-1 && playerL.getZ() < blockL.getBlockZ()+1) { // 2d (x & z)
 							if (playerL.getY() > blockL.getBlockY()-2 && playerL.getY() < blockL.getBlockY()+1) { // 3d (y): for feet & head height
-								if (p.getPlayerData(target).spectating) allowed = true;
+								if (p.getPlayerData(target).isSpectating()) allowed = true;
 								else {
 									allowed = false;
 									break;
@@ -160,7 +161,7 @@ public class SpectateListener implements Listener {
 		Location blockL = e.getBlock().getLocation();
 
 		for (Player target : p.getServer().getOnlinePlayers()) {
-			if (p.getPlayerData(target).spectating && target.getWorld().equals(e.getBlock().getWorld())) { // Player spectating & in same world?
+			if (p.getPlayerData(target).isSpectating() && target.getWorld().equals(e.getBlock().getWorld())) { // Player spectating & in same world?
 				Location playerL = target.getLocation();
 
 				if (playerL.getX() > blockL.getBlockX()-1 && playerL.getX() < blockL.getBlockX()+1) { //2d...
@@ -190,17 +191,17 @@ public class SpectateListener implements Listener {
 		
 		// Manages spectators damaging players
 		if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
-			if ((!e.getDamager().hasMetadata("NPC") && p.getPlayerData(((Player) e.getDamager())).spectating) || (!e.getEntity().hasMetadata("NPC") && p.getPlayerData(((Player) e.getEntity())).spectating)) {
+			if ((!e.getDamager().hasMetadata("NPC") && p.getPlayerData(((Player) e.getDamager())).isSpectating()) || (!e.getEntity().hasMetadata("NPC") && p.getPlayerData(((Player) e.getEntity())).isSpectating())) {
 				e.setCancelled(true);
 			}
 		// Manage spectators damaging mobs
 		} else if (!(e.getEntity() instanceof Player) && e.getDamager() instanceof Player) {
-			if (!e.getDamager().hasMetadata("NPC") && p.getPlayerData(((Player) e.getDamager())).spectating == true) {
+			if (!e.getDamager().hasMetadata("NPC") && p.getPlayerData(((Player) e.getDamager())).isSpectating() == true) {
 				e.setCancelled(true);
 			}
 		// Manage mobs damaging spectators
 		} else if (e.getEntity() instanceof Player && !(e.getDamager() instanceof Player)) {
-			if (!e.getEntity().hasMetadata("NPC") && p.getPlayerData(((Player) e.getEntity())).spectating == true) {
+			if (!e.getEntity().hasMetadata("NPC") && p.getPlayerData(((Player) e.getEntity())).isSpectating() == true) {
 				e.setCancelled(true);
 			}
 		}
@@ -214,7 +215,7 @@ public class SpectateListener implements Listener {
 				&& !(e.getDamager() instanceof ThrownPotion) // splash potions are cancelled in PotionSplashEvent
 				&& e.getEntity() instanceof Player
 				&& !e.getEntity().hasMetadata("NPC") // Check for NPC's, as they are instances of Players sometimes...
-				&& p.getPlayerData(((Player) e.getEntity())).spectating) {
+				&& p.getPlayerData(((Player) e.getEntity())).isSpectating()) {
 			
 			e.setCancelled(true);
 			
@@ -259,7 +260,7 @@ public class SpectateListener implements Listener {
 		final ArrayList<UUID> spectatorsAffected = new ArrayList<UUID>();
 		
 		for(LivingEntity player : e.getAffectedEntities()) {
-			if(player instanceof Player && !player.hasMetadata("NPC") && p.getPlayerData(((Player) player)).spectating) {
+			if(player instanceof Player && !player.hasMetadata("NPC") && p.getPlayerData(((Player) player)).isSpectating()) {
 				spectatorsAffected.add(player.getUniqueId());
 			}
 		}
@@ -279,7 +280,7 @@ public class SpectateListener implements Listener {
 			Boolean teleportationNeeded = false;
 			
 			for(Entity entity : e.getEntity().getNearbyEntities(2, 2, 2)) {
-				if(entity instanceof Player && !entity.hasMetadata("NPC") && p.getPlayerData(((Player) entity)).spectating) {
+				if(entity instanceof Player && !entity.hasMetadata("NPC") && p.getPlayerData(((Player) entity)).isSpectating()) {
 					// The potion hits a spectator
 					teleportationNeeded = true;
 				}
@@ -382,9 +383,9 @@ public class SpectateListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	protected void onGamemodeChange(PlayerGameModeChangeEvent e) {
 		if (p.getPlayerData(e.getPlayer()) != null
-				&& p.getPlayerData(e.getPlayer()).spectating
+				&& p.getPlayerData(e.getPlayer()).isSpectating()
 				&& !e.getNewGameMode().equals(GameMode.ADVENTURE)
-				&& !p.getPlayerData(e.getPlayer()).gamemodeChangeAllowed) {
+				&& !p.getPlayerData(e.getPlayer()).isGamemodeChangeAllowed()) {
 			
 			e.setCancelled(true);
 			e.getPlayer().setAllowFlight(true);
@@ -400,7 +401,7 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onPlayerDropItem(PlayerDropItemEvent e) {
 		// On player drop item - Cancel if the player is a spectator
-		if (p.getPlayerData(e.getPlayer()).spectating) {
+		if (p.getPlayerData(e.getPlayer()).isSpectating()) {
 			e.setCancelled(true);
 		}
 	}
@@ -412,7 +413,7 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onPlayerPickupItem(PlayerPickupItemEvent e) {
-		if (p.getPlayerData(e.getPlayer()).spectating) {
+		if (p.getPlayerData(e.getPlayer()).isSpectating()) {
 			e.setCancelled(true);
 		}
 	}
@@ -426,7 +427,7 @@ public class SpectateListener implements Listener {
 	protected void onEntityTarget(EntityTargetEvent e) {
 		// On entity target - Stop mobs targeting spectators
 		// Check to make sure it isn't an NPC (Citizens NPC's will be detectable using 'entity.hasMetadata("NPC")')
-		if (e.getTarget() != null && e.getTarget() instanceof Player && !e.getTarget().hasMetadata("NPC") && p.getPlayerData(((Player) e.getTarget())).spectating) {
+		if (e.getTarget() != null && e.getTarget() instanceof Player && !e.getTarget().hasMetadata("NPC") && p.getPlayerData(((Player) e.getTarget())).isSpectating()) {
 			e.setCancelled(true);
 		}
 	}
@@ -441,7 +442,7 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onBlockDamage(BlockDamageEvent e) {
 		// On block damage - Cancels the block damage animation
-		if (p.getPlayerData(e.getPlayer()).spectating) {
+		if (p.getPlayerData(e.getPlayer()).isSpectating()) {
 			e.setCancelled(true);
 			
 			if(p.output) {
@@ -466,7 +467,7 @@ public class SpectateListener implements Listener {
 	protected void onEntityDamage(EntityDamageEvent e) {
 		// On entity damage - Stops users hitting players and mobs while spectating
 		// Check to make sure it isn't an NPC (Citizens NPC's will be detectable using 'entity.hasMetadata("NPC")')
-		if (e.getEntity() instanceof Player && !e.getEntity().hasMetadata("NPC") && p.getPlayerData((Player) e.getEntity()).spectating) {
+		if (e.getEntity() instanceof Player && !e.getEntity().hasMetadata("NPC") && p.getPlayerData((Player) e.getEntity()).isSpectating()) {
 			e.setCancelled(true);
 			e.getEntity().setFireTicks(0);
 		}
@@ -479,7 +480,7 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onFoodLevelChange(FoodLevelChangeEvent e) {
-		if (e.getEntity() instanceof Player && !e.getEntity().hasMetadata("NPC") && p.getPlayerData((Player) e.getEntity()).spectating) {
+		if (e.getEntity() instanceof Player && !e.getEntity().hasMetadata("NPC") && p.getPlayerData((Player) e.getEntity()).isSpectating()) {
 			e.setCancelled(true);
 			((Player) e.getEntity()).setFoodLevel(20);
 			((Player) e.getEntity()).setSaturation(20);
@@ -496,7 +497,7 @@ public class SpectateListener implements Listener {
 	@EventHandler
 	protected void onPlayerQuit(PlayerQuitEvent e) {
 		Player spectator = e.getPlayer();
-		if (p.getPlayerData(spectator).spectating) {
+		if (p.getPlayerData(spectator).isSpectating()) {
 			p.disableSpectate(spectator, p.console, true, true);
 		}
 	}
@@ -512,9 +513,9 @@ public class SpectateListener implements Listener {
 	@EventHandler(priority=EventPriority.HIGH)
 	protected void onPlayerInteract(PlayerInteractEvent e) {
 		// Right-click with teleporter
-		if (p.getPlayerData(e.getPlayer()).spectating && e.getMaterial() == p.compassItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (p.getPlayerData(e.getPlayer()).isSpectating() && e.getMaterial() == p.compassItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			if (p.mode == SpectatorMode.ARENA) {
-				UUID region = p.getPlayerData(e.getPlayer()).arena;
+				UUID region = p.getPlayerData(e.getPlayer()).getArena();
 				p.showGUI(e.getPlayer(), region);
 			} else {
 				p.showGUI(e.getPlayer(), null);
@@ -522,19 +523,19 @@ public class SpectateListener implements Listener {
 		}
 		
 		// Right-click with arena selector
-		if (p.getPlayerData(e.getPlayer()).spectating && e.getMaterial() == p.clockItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (p.getPlayerData(e.getPlayer()).isSpectating() && e.getMaterial() == p.clockItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			e.setCancelled(true);
 			p.showArenaGUI(e.getPlayer());
 		}
 		
 		// Right-click with spectators' tools
-		if (p.getPlayerData(e.getPlayer()).spectating && e.getMaterial() == p.spectatorsToolsItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (p.getPlayerData(e.getPlayer()).isSpectating() && e.getMaterial() == p.spectatorsToolsItem && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			e.setCancelled(true);
 			p.showSpectatorsOptionsGUI(e.getPlayer());
 		}
 		
 		// Cancel chest opening animation, doors, anything when the player right clicks.
-		if (p.getPlayerData(e.getPlayer()).spectating) {
+		if (p.getPlayerData(e.getPlayer()).isSpectating()) {
 			if(!p.skriptInt){
 				e.setCancelled(true);
 			}
@@ -684,8 +685,8 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onPlayerInteractEntity(PlayerInteractEntityEvent e) {		
-		if(p.getPlayerData(e.getPlayer()).spectating && e.getRightClicked() instanceof Player && !e.getRightClicked().hasMetadata("NPC")) {
-			if(e.getPlayer().getItemInHand() != null && e.getPlayer().getItemInHand().getType().equals(p.inspectorItem) && !p.getPlayerData((Player) e.getRightClicked()).spectating) {
+		if(p.getPlayerData(e.getPlayer()).isSpectating() && e.getRightClicked() instanceof Player && !e.getRightClicked().hasMetadata("NPC")) {
+			if(e.getPlayer().getItemInHand() != null && e.getPlayer().getItemInHand().getType().equals(p.inspectorItem) && !p.getPlayerData((Player) e.getRightClicked()).isSpectating()) {
 				p.showPlayerInventoryGUI(e.getPlayer(), (Player) e.getRightClicked());
 			}
 			
@@ -704,7 +705,7 @@ public class SpectateListener implements Listener {
 	@SuppressWarnings("unchecked")
 	@EventHandler
 	protected void onCommandPreprocess(PlayerCommandPreprocessEvent e) {
-		if(p.specChat && e.getMessage().startsWith("/me ") && p.getPlayerData(e.getPlayer()).spectating) {
+		if(p.specChat && e.getMessage().startsWith("/me ") && p.getPlayerData(e.getPlayer()).isSpectating()) {
 			p.sendSpectatorMessage(e.getPlayer(), e.getMessage().substring(4), true);
 			e.setCancelled(true);
 			return;
@@ -713,7 +714,7 @@ public class SpectateListener implements Listener {
 		if (p.blockCmds) {
 			if (e.getPlayer().hasPermission("spectate.admin") && p.adminBypass) {
 				// Do nothing
-			} else if (!(e.getMessage().startsWith("/spec ") || e.getMessage().equalsIgnoreCase("/spec") || e.getMessage().startsWith("/spectate ") || e.getMessage().equalsIgnoreCase("/spectate") || e.getMessage().startsWith("/me ") || e.getMessage().equalsIgnoreCase("/me")) && p.getPlayerData(e.getPlayer()).spectating) {
+			} else if (!(e.getMessage().startsWith("/spec ") || e.getMessage().equalsIgnoreCase("/spec") || e.getMessage().startsWith("/spectate ") || e.getMessage().equalsIgnoreCase("/spectate") || e.getMessage().startsWith("/me ") || e.getMessage().equalsIgnoreCase("/me")) && p.getPlayerData(e.getPlayer()).isSpectating()) {
 				// Command whitelist
 				try {
 					Iterator<String> iter = ((ArrayList<String>) p.toggles.get(Toggle.CHAT_BLOCKCOMMANDS_WHITELIST)).iterator();
@@ -756,7 +757,7 @@ public class SpectateListener implements Listener {
 		if(p.tpToDeathTool) {
 			Player killed = e.getEntity();
 			
-			p.getPlayerData(killed).deathLocation = killed.getLocation();
+			p.getPlayerData(killed).setDeathLocation(killed.getLocation());
 			
 			if(p.tpToDeathToolShowCause) {
 				String deathMessage = ChatColor.stripColor(e.getDeathMessage());
@@ -769,7 +770,7 @@ public class SpectateListener implements Listener {
 				                           .replace(noColorsDisplayName + " was", "You were")
 				                           .replace(noColorsDisplayName, "You");
 				
-				p.getPlayerData(killed).lastDeathMessage = ChatColor.stripColor(deathMessage);
+				p.getPlayerData(killed).setLastDeathMessage(ChatColor.stripColor(deathMessage));
 			}
 		}
 	}
@@ -781,7 +782,7 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	protected void onInventoryClick(InventoryClickEvent e) {
-		if (p.getPlayerData((Player) e.getWhoClicked()).spectating) {
+		if (p.getPlayerData((Player) e.getWhoClicked()).isSpectating()) {
 			
 			// Cancel the event to prevent the item from being taken
 			e.setCancelled(true);
@@ -793,7 +794,7 @@ public class SpectateListener implements Listener {
 				Player skullOwner = p.getServer().getPlayer(meta.getOwner());
 				e.getWhoClicked().closeInventory();
 				
-				if (skullOwner != null && skullOwner.isOnline() && !p.user.get(skullOwner.getName()).spectating) {
+				if (skullOwner != null && skullOwner.isOnline() && !p.user.get(skullOwner.getName()).isSpectating()) {
 					if(e.isLeftClick()) {
 						p.choosePlayer((Player) e.getWhoClicked(), skullOwner);
 					}
@@ -878,9 +879,9 @@ public class SpectateListener implements Listener {
 						}
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NOCLIP_NAME)) {
-						p.getPlayerData(spectator).gamemodeChangeAllowed = true;
+						p.getPlayerData(spectator).setGamemodeChangeAllowed(true);
 						spectator.setGameMode(GameMode.SPECTATOR);
-						p.getPlayerData(spectator).gamemodeChangeAllowed = false;
+						p.getPlayerData(spectator).setGamemodeChangeAllowed(false);
 						
 						p.updateSpectatorInventory(spectator);
 						
@@ -888,7 +889,7 @@ public class SpectateListener implements Listener {
 						spectator.sendMessage(ChatColor.GRAY + "Open your inventory to access controls or to quit the no-clip mode");
 					}
 					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_TP_TO_DEATH_POINT_NAME)) {
-						spectator.teleport(p.getPlayerData(spectator).deathLocation.setDirection(spectator.getLocation().getDirection()));
+						spectator.teleport(p.getPlayerData(spectator).getDeathLocation().setDirection(spectator.getLocation().getDirection()));
 					}
 					
 					spectator.closeInventory();
@@ -954,7 +955,7 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	public void onInventoryDrag(InventoryDragEvent e) {
-		if (p.getPlayerData((Player) e.getWhoClicked()).spectating) {
+		if (p.getPlayerData((Player) e.getWhoClicked()).isSpectating()) {
 			e.setCancelled(true);
 		}
 	}
@@ -968,16 +969,16 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onWorldChange(final PlayerChangedWorldEvent e) {
-		if (p.getPlayerData((Player) e.getPlayer()).spectating) {
-			p.getPlayerData((Player) e.getPlayer()).wasSpectatorBeforeWorldChanged = true;
+		if (p.getPlayerData((Player) e.getPlayer()).isSpectating()) {
+			p.getPlayerData((Player) e.getPlayer()).setWasSpectatorBeforeWorldChanged(true);
 			p.disableSpectate(e.getPlayer(), p.console, true, false, true);
 			new BukkitRunnable() {
 				@Override
 				public void run() {
 					// What you want to schedule goes here
-					if (p.getPlayerData((Player) e.getPlayer()).wasSpectatorBeforeWorldChanged) {
+					if (p.getPlayerData((Player) e.getPlayer()).isWasSpectatorBeforeWorldChanged()) {
 						p.enableSpectate(e.getPlayer(), p.console, true, true);
-						p.getPlayerData((Player) e.getPlayer()).wasSpectatorBeforeWorldChanged = false;
+						p.getPlayerData((Player) e.getPlayer()).setWasSpectatorBeforeWorldChanged(false);
 					}
 				}
 			}.runTaskLater(p, 1);
@@ -991,7 +992,7 @@ public class SpectateListener implements Listener {
 	 */
 	@EventHandler
 	public void onVehicleEnter(VehicleEnterEvent e) {
-		if (e.getEntered() instanceof Player && p.getPlayerData((Player) e.getEntered()).spectating) {
+		if (e.getEntered() instanceof Player && p.getPlayerData((Player) e.getEntered()).isSpectating()) {
 			e.setCancelled(true);
 		}
 	}

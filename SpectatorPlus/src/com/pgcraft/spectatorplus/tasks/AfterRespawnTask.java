@@ -1,5 +1,6 @@
-package com.pgcraft.spectatorplus;
+package com.pgcraft.spectatorplus.tasks;
 
+import com.pgcraft.spectatorplus.SpectatorPlus;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 

@@ -40,8 +40,8 @@ public class SpectateCompleter implements TabCompleter {
 				boolean on = args[0].equalsIgnoreCase("on") ? true : false;
 				
 				for(Player player : p.getServer().getOnlinePlayers()) {
-					if((p.getPlayerData(player).spectating && !on)
-							|| (!p.getPlayerData(player).spectating && on)) {
+					if((p.getPlayerData(player).isSpectating() && !on)
+							|| (!p.getPlayerData(player).isSpectating() && on)) {
 						suggestions.add(player.getName());
 					}
 				}

@@ -471,11 +471,11 @@ public class SpectateCommand implements CommandExecutor {
 	 */
 	private void doPlayer(CommandSender sender, Command command, String label, String[] args) {
 		if (sender instanceof Player) { // A player...
-			if (p.getPlayerData((Player) sender).spectating) { // ...who is spectating...
+			if (p.getPlayerData((Player) sender).isSpectating()) { // ...who is spectating...
 				if (args.length > 1) { // ... and specified a name...
 					Player target = p.getServer().getPlayer(args[1]);
 
-					if (target != null && !p.getPlayerData(target).spectating) { // ... of an online player
+					if (target != null && !p.getPlayerData(target).isSpectating()) { // ... of an online player
 						p.choosePlayer((Player) sender, p.getServer().getPlayer(args[1]));
 					}
 					else {
@@ -631,9 +631,9 @@ public class SpectateCommand implements CommandExecutor {
 				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena add <name>");
 			}
 			else { // /spec arena add <?>
-				p.getPlayerData((Player) sender).arenaName = args[2];
+				p.getPlayerData((Player) sender).setArenaName(args[2]);
 				sender.sendMessage(SpectatorPlus.prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - a corner of the arena");
-				p.getPlayerData((Player) sender).setup = 1;
+				p.getPlayerData((Player) sender).setSetup(1);
 			}
 
 		}
@@ -773,10 +773,10 @@ public class SpectateCommand implements CommandExecutor {
 			}
 			
 			// Toggle hide mode for them.
-			p.getPlayerData(target).hideFromTp = !p.user.get(target.getName()).hideFromTp;
+			p.getPlayerData(target).setHideFromTp(!p.user.get(target.getName()).isHideFromTp());
 			
 			// Notify the sender.
-			String state = (p.getPlayerData(target).hideFromTp) ? ChatColor.GREEN+"enabled" : ChatColor.DARK_RED+"disabled";
+			String state = (p.getPlayerData(target).isHideFromTp()) ? ChatColor.GREEN+"enabled" : ChatColor.DARK_RED+"disabled";
 			sender.sendMessage(SpectatorPlus.prefix + "Hide mode for " + ChatColor.RED + target.getName() + ChatColor.GOLD + " is now " + state);
 		}
 
@@ -800,7 +800,7 @@ public class SpectateCommand implements CommandExecutor {
 	 * @param args
 	 */
 	private void doB(CommandSender sender, Command command, String label, String[] args) {
-		if(sender instanceof Player && p.getPlayerData((Player) sender).spectating && ((Player) sender).getGameMode() == GameMode.SPECTATOR) {
+		if(sender instanceof Player && p.getPlayerData((Player) sender).isSpectating() && ((Player) sender).getGameMode() == GameMode.SPECTATOR) {
 			if(!p.vanillaSpectate) {
 				((Player) sender).setGameMode(GameMode.ADVENTURE);
 
