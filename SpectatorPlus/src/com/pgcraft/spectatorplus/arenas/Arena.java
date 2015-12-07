@@ -1,4 +1,4 @@
-package com.pgcraft.spectatorplus;
+package com.pgcraft.spectatorplus.arenas;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,5 +1,7 @@
 package com.pgcraft.spectatorplus;
 
+import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

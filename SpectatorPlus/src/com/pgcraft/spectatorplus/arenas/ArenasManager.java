@@ -1,10 +1,11 @@
-package com.pgcraft.spectatorplus;
+package com.pgcraft.spectatorplus.arenas;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.pgcraft.spectatorplus.SpectatorPlus;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -25,7 +26,7 @@ public class ArenasManager {
 	
 	private static final String STORAGE_KEY = "arenas";
 	
-	protected ArenasManager(SpectatorPlus p) {
+	public ArenasManager(SpectatorPlus p) {
 		this.p = p;
 		
 		// The Arena class is registered as a serializable one in the onLoad method of the main class.

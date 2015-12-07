@@ -1,5 +1,6 @@
 package com.pgcraft.spectatorplus;
 
+import com.pgcraft.spectatorplus.arenas.Arena;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
