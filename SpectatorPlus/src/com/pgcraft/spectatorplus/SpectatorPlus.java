@@ -1,15 +1,5 @@
 package com.pgcraft.spectatorplus;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-import java.text.DecimalFormat;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -40,67 +30,79 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
 @SuppressWarnings("deprecation")
-public class SpectatorPlus extends JavaPlugin {
+public class SpectatorPlus extends JavaPlugin
+{
+	private static SpectatorPlus instance;
 
-	protected HashMap <String, PlayerObject> user = new HashMap<String, PlayerObject>();
+	protected HashMap <String, PlayerObject> user = new HashMap<>();
 
-	protected final static String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
-	protected final static String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
+	public final static String basePrefix = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
+	public final static String prefix = ChatColor.GOLD + "[" + basePrefix + ChatColor.GOLD + "] ";
 
-	protected double version = 2.1; // Plugin version
+	public double version = 2.1; // Plugin version
 
-	protected ConsoleCommandSender console;
+	public ConsoleCommandSender console;
 
-	protected ConfigAccessor setup = null;
-	protected ConfigAccessor specs = null;
-	
-	protected ToggleManager toggles = null;
-	
-	protected SpectateCommand commands = null;
-	
-	protected ArenasManager arenasManager = null;
+	public ConfigAccessor setup = null;
+	public ConfigAccessor specs = null;
+
+	public ToggleManager toggles = null;
+
+	public SpectateCommand commands = null;
+
+	public ArenasManager arenasManager = null;
 	
 	private SpectateAPI api = null;
-	
-	protected DecimalFormat format;
+
+	public DecimalFormat format;
 
 	// Manage toggles
-	protected Boolean compass;
-	protected Material compassItem;
-	protected Boolean clock;
-	protected Material clockItem;
-	protected Boolean spectatorsTools;
-	protected Material spectatorsToolsItem;
-	protected Boolean inspector;
-	protected Material inspectorItem;
-	protected Boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, vanillaSpectate, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary, skriptInt;
-	
-	protected SpectatorMode mode = SpectatorMode.ANY;
-	
-	protected ScoreboardManager manager = null;
-	protected Scoreboard board = null;
-	protected Team team = null;
+	public Boolean compass;
+	public Material compassItem;
+	public Boolean clock;
+	public Material clockItem;
+	public Boolean spectatorsTools;
+	public Material spectatorsToolsItem;
+	public Boolean inspector;
+	public Material inspectorItem;
+	public Boolean tpToDeathTool, tpToDeathToolShowCause, divingSuitTool, nightVisionTool, noClipTool, speedTool, glowOnActiveTools, inspectFromTPMenu, playersHealthInTeleportationMenu, playersLocationInTeleportationMenu, specChat, scoreboard, vanillaSpectate, output, death, seeSpecs, blockCmds, adminBypass, newbieMode, teleportToSpawnOnSpecChangeWithoutLobby, useSpawnCommandToTeleport, enforceArenaBoundary, skriptInt;
+
+	public SpectatorMode mode = SpectatorMode.ANY;
+
+	public ScoreboardManager manager = null;
+	public Scoreboard board = null;
+	public Team team = null;
 	
 	// Constants for inventory title names
-	protected final static String TELEPORTER_ANY_TITLE = ChatColor.BLACK + "Teleporter";
-	protected final static String TELEPORTER_ARENA_TITLE = ChatColor.BLACK + "Arena "; // (Prefix only)
-	protected final static String ARENA_SELECTOR_TITLE = basePrefix;
-	protected final static String PLAYER_STATE_TITLE = ChatColor.RESET + "'s state"; // (Suffix only)
-	protected final static String SPEC_TOOLS_TITLE = ChatColor.BLACK + "Spectators' tools";
+	public final static String TELEPORTER_ANY_TITLE = ChatColor.BLACK + "Teleporter";
+	public final static String TELEPORTER_ARENA_TITLE = ChatColor.BLACK + "Arena "; // (Prefix only)
+	public final static String ARENA_SELECTOR_TITLE = basePrefix;
+	public final static String PLAYER_STATE_TITLE = ChatColor.RESET + "'s state"; // (Suffix only)
+	public final static String SPEC_TOOLS_TITLE = ChatColor.BLACK + "Spectators' tools";
 	
 	// Constants used for identification of the spectators' tools in the listener
-	protected final static String TOOL_NORMAL_SPEED_NAME = ChatColor.DARK_AQUA + "Normal speed";
-	protected final static String TOOL_SPEED_I_NAME   = ChatColor.AQUA + "Speed I";
-	protected final static String TOOL_SPEED_II_NAME  = ChatColor.AQUA + "Speed II";
-	protected final static String TOOL_SPEED_III_NAME = ChatColor.AQUA + "Speed III";
-	protected final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
-	protected final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
-	protected final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
-	protected final static String TOOL_DIVING_SUIT_NAME = ChatColor.BLUE + "Diving Suit";
-	protected final static String TOOL_NOCLIP_NAME = ChatColor.LIGHT_PURPLE + "No-clip mode";
-	protected final static String TOOL_NOCLIP_QUIT_NAME = ChatColor.DARK_GREEN + "Go back to the real "; //... spectator's name
-	protected final static String TOOL_TP_TO_DEATH_POINT_NAME = ChatColor.YELLOW + "Go to your death point";
+	public final static String TOOL_NORMAL_SPEED_NAME = ChatColor.DARK_AQUA + "Normal speed";
+	public final static String TOOL_SPEED_I_NAME   = ChatColor.AQUA + "Speed I";
+	public final static String TOOL_SPEED_II_NAME  = ChatColor.AQUA + "Speed II";
+	public final static String TOOL_SPEED_III_NAME = ChatColor.AQUA + "Speed III";
+	public final static String TOOL_SPEED_IV_NAME  = ChatColor.AQUA + "Speed IV";
+	public final static String TOOL_NIGHT_VISION_INACTIVE_NAME = ChatColor.GOLD + "Enable night vision";
+	public final static String TOOL_NIGHT_VISION_ACTIVE_NAME = ChatColor.DARK_PURPLE + "Disable night vision";
+	public final static String TOOL_DIVING_SUIT_NAME = ChatColor.BLUE + "Diving Suit";
+	public final static String TOOL_NOCLIP_NAME = ChatColor.LIGHT_PURPLE + "No-clip mode";
+	public final static String TOOL_NOCLIP_QUIT_NAME = ChatColor.DARK_GREEN + "Go back to the real "; //... spectator's name
+	public final static String TOOL_TP_TO_DEATH_POINT_NAME = ChatColor.YELLOW + "Go to your death point";
 
 	/**
 	 * This method is not meant for public use.
@@ -142,7 +144,7 @@ public class SpectatorPlus extends JavaPlugin {
 		// Re-enable spectate mode if necessary
 		for(Player player : getServer().getOnlinePlayers()) {
 			if (specs.getConfig().contains(player.getName())) {
-				enableSpectate(player, (CommandSender) player, true);
+				enableSpectate(player, player, true);
 			}
 		}
 
@@ -1650,17 +1652,19 @@ public class SpectatorPlus extends JavaPlugin {
 	}
 	
 	/**
-	 * Get the PlayerObject (data store) for the player.
+	 * Get the PlayerObject (data store) for the player. It is created on-the-fly if needed.
 	 * 
 	 * @param target The player to get the PlayerObject of.
 	 * 
 	 * @since 2.0
 	 */	
-	protected PlayerObject getPlayerData(Player target) {
+	protected PlayerObject getPlayerData(Player target)
+	{
 		PlayerObject data = user.get(target.getName());
 		
-		// Just in case
-		if(data == null) {
+		// Created on-the-fly if needed.
+		if(data == null)
+		{
 			data = new PlayerObject();
 			user.put(target.getName(), data);
 		}

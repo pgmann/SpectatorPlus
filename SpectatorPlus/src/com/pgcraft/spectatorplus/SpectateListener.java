@@ -1,25 +1,64 @@
 package com.pgcraft.spectatorplus;
 
-import org.apache.commons.lang3.text.*;
-import org.bukkit.*;
-import org.bukkit.command.*;
-import org.bukkit.enchantments.*;
-import org.bukkit.entity.*;
-import org.bukkit.event.*;
-import org.bukkit.event.block.*;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.*;
-import org.bukkit.event.player.PlayerTeleportEvent.*;
-import org.bukkit.event.vehicle.*;
-import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.*;
-import org.bukkit.material.*;
-import org.bukkit.potion.*;
-import org.bukkit.scheduler.*;
+import org.apache.commons.lang3.text.WordUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.ThrownPotion;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockCanBuildEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.material.Gate;
+import org.bukkit.material.TrapDoor;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.UUID;
 
 @SuppressWarnings("deprecation")
 public class SpectateListener implements Listener {
@@ -46,10 +85,6 @@ public class SpectateListener implements Listener {
 			p.getPlayerData(e.getPlayer()).hideFromTp = true;
 		}
 		
-		if(!p.user.containsKey(e.getPlayer().getName())) {
-			p.user.put(e.getPlayer().getName(), new PlayerObject());
-		}
-		
 		for (Player target : p.getServer().getOnlinePlayers()) {
 			if (p.getPlayerData(target).spectating) {
 				e.getPlayer().hidePlayer(target);
@@ -57,7 +92,7 @@ public class SpectateListener implements Listener {
 		}
 		
 		if (p.specs.getConfig().contains(e.getPlayer().getName())) {
-			p.enableSpectate(e.getPlayer(), (CommandSender) e.getPlayer());
+			p.enableSpectate(e.getPlayer(), e.getPlayer());
 		}
 	}
 	
