@@ -33,7 +33,11 @@ package com.pgcraft.spectatorplus;
 
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
+import com.pgcraft.spectatorplus.spectators.Spectator;
+import com.pgcraft.spectatorplus.spectators.SpectatorsManager;
 import fr.zcraft.zlib.core.ZPlugin;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 
@@ -48,10 +52,15 @@ public class SpectatorPlus extends ZPlugin
 
 	private static SpectatorPlus instance;
 
+	public final static String BASE_PREFIX = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
+	public final static String PREFIX = ChatColor.GOLD + "[" + BASE_PREFIX + ChatColor.GOLD + "] ";
+
 	private SpectateAPI api;
+	private SpectatorsManager spectatorsManager;
 	private ArenasManager arenasManager;
 
 	private Map<UUID, Spectator> spectators = new HashMap<>();
+
 
 	@Override
 	public void onLoad()
@@ -69,10 +78,15 @@ public class SpectatorPlus extends ZPlugin
 	public void onEnable()
 	{
 		// Loading managers
+		spectatorsManager = new SpectatorsManager(this);
 		arenasManager = new ArenasManager(this);
+
 		api = new SpectateAPI(this);
 	}
 
+
+
+	/* **  Data methods  ** */
 
 	/**
 	 * Returns the object representing a player inside SpectatorPlus.
@@ -109,9 +123,50 @@ public class SpectatorPlus extends ZPlugin
 	}
 
 
+
+	/* **  Notifications methods  ** */
+
+	/**
+	 * Sends a message to the payer if the messages are enabled in the config.
+	 *
+	 * @param message The message to be sent. It will be prefixed by the Spectator Plus prefix.
+	 * @param force {@code true} to send the message even if messages are not enabled.
+	 */
+	public void sendMessage(CommandSender receiver, String message, boolean force)
+	{
+		if (receiver != null && (!(receiver instanceof Player) || /* FIXME output enabled */true || force))
+		{
+			receiver.sendMessage(SpectatorPlus.PREFIX + message);
+		}
+	}
+
+	/**
+	 * Sends a message to the payer if the messages are enabled in the config.
+	 *
+	 * @param message The message to be sent. It will be prefixed by the Spectator Plus prefix.
+	 */
+	public void sendMessage(CommandSender receiver, String message)
+	{
+		sendMessage(receiver, message, false);
+	}
+
+
+
+	/* **  Accessors  ** */
+
+	public SpectatorsManager getSpectatorsManager()
+	{
+		return spectatorsManager;
+	}
+
 	public ArenasManager getArenasManager()
 	{
 		return arenasManager;
+	}
+
+	public SpectateAPI getAPI()
+	{
+		return api;
 	}
 
 	public static SpectatorPlus get()

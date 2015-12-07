@@ -1,6 +1,7 @@
 package com.pgcraft.spectatorplus;
 
 import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

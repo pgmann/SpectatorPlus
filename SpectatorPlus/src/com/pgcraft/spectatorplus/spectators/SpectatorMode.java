@@ -1,4 +1,4 @@
-package com.pgcraft.spectatorplus;
+package com.pgcraft.spectatorplus.spectators;
 
 /**
  * Represents the current teleportation mode of Spectator Plus.

@@ -1,5 +1,6 @@
 package com.pgcraft.spectatorplus;
 
+import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import com.pgcraft.spectatorplus.tasks.AfterRespawnTask;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
@@ -976,7 +977,7 @@ public class SpectateListener implements Listener {
 				@Override
 				public void run() {
 					// What you want to schedule goes here
-					if (p.getPlayerData((Player) e.getPlayer()).isWasSpectatorBeforeWorldChanged()) {
+					if (p.getPlayerData((Player) e.getPlayer()).wasSpectatorBeforeWorldChanged()) {
 						p.enableSpectate(e.getPlayer(), p.console, true, true);
 						p.getPlayerData((Player) e.getPlayer()).setWasSpectatorBeforeWorldChanged(false);
 					}

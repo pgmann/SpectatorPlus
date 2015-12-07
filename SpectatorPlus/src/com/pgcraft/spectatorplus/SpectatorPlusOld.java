@@ -2,6 +2,8 @@ package com.pgcraft.spectatorplus;
 
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
+import com.pgcraft.spectatorplus.spectators.Spectator;
+import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import com.pgcraft.spectatorplus.tasks.SpectatorManagerTask;
 import fr.zcraft.zlib.core.ZPlugin;
 import org.bukkit.Bukkit;

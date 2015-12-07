@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

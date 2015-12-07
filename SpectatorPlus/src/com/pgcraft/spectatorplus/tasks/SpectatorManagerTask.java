@@ -1,6 +1,6 @@
 package com.pgcraft.spectatorplus.tasks;
 
-import com.pgcraft.spectatorplus.SpectatorMode;
+import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import com.pgcraft.spectatorplus.SpectatorPlusOld;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import org.bukkit.Location;
