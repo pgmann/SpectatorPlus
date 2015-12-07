@@ -45,6 +45,32 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<artifactSet>
+						<includes>
+							<include>fr.zcraft:zlib</include>
+						</includes>
+					</artifactSet>
+					<relocations>
+						<relocation>
+							<pattern>fr.zcraft.zlib</pattern>
+							<shadedPattern>com.pgcraft.spectatorplus</shadedPattern>
+						</relocation>
+					</relocations>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -57,18 +83,27 @@
 			<id>carrade-repo</id>
 			<url>http://depot.carrade.eu/maven2/</url>
 		</repository>
+		<repository>
+			<id>zDevelopers</id>
+			<url>http://maven.carrade.eu/artifactory/snapshots</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.8-R0.1-20141212.193312-29</version>
+			<version>1.8.3-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.zcraft</groupId>
+			<artifactId>zlib</artifactId>
+			<version>0.99-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

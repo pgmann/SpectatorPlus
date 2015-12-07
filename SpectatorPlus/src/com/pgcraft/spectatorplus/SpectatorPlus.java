@@ -3,6 +3,7 @@ package com.pgcraft.spectatorplus;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import com.pgcraft.spectatorplus.tasks.SpectatorManagerTask;
+import fr.zcraft.zlib.core.ZPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -22,7 +23,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("deprecation")
-public class SpectatorPlus extends JavaPlugin
+public class SpectatorPlus extends ZPlugin
 {
 	private static SpectatorPlus instance;
 
@@ -111,7 +111,10 @@ public class SpectatorPlus extends JavaPlugin
 	 * This method is not meant for public use.
 	 */
 	@Override
-	public void onLoad() {
+	public void onLoad()
+	{
+		super.onLoad();
+
 		// Registers the Arena class as a serializable one.
 		ConfigurationSerialization.registerClass(Arena.class);
 	}
@@ -120,7 +123,8 @@ public class SpectatorPlus extends JavaPlugin
 	 * This method is not meant for public use.
 	 */
 	@Override
-	public void onEnable() {
+	public void onEnable()
+	{
 		setup = new ConfigAccessor(this, "setup");
 		toggles = new ToggleManager(this, new ConfigAccessor(this, "toggles"));
 		specs = new ConfigAccessor(this, "spectators");

@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class SpectatorManagerTask extends BukkitRunnable {
 	SpectatorPlus p;
 	
-	protected SpectatorManagerTask(SpectatorPlus p) {
+	public SpectatorManagerTask(SpectatorPlus p) {
 		this.p = p;
 	}
 	
