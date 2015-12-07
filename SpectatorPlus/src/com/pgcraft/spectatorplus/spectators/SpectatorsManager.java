@@ -33,6 +33,12 @@ package com.pgcraft.spectatorplus.spectators;
 
 import com.pgcraft.spectatorplus.ConfigAccessor;
 import com.pgcraft.spectatorplus.SpectatorPlus;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 
 public class SpectatorsManager
@@ -41,15 +47,97 @@ public class SpectatorsManager
 
 	private ConfigAccessor savedSpectatingPlayers;
 
+	private Scoreboard spectatorsScoreboard;
+	private Team spectatorsTeam;
+
+	private static final String SPECTATORS_TEAM_NAME = "spectators";
+	private static final String SPECTATORS_HEALTH_OBJECTIVE_NAME = "health";
+	private static final String SPECTATORS_TEAM_PREFIX = ChatColor.GRAY + "Spectator " + ChatColor.DARK_GRAY + " ▏ ";
+
+
 	public SpectatorsManager(SpectatorPlus plugin)
 	{
 		p = plugin;
 
 		savedSpectatingPlayers = new ConfigAccessor(p, "specs");
+		rebuildScoreboard();
 	}
 
 	public ConfigAccessor getSavedSpectatingPlayers()
 	{
 		return savedSpectatingPlayers;
+	}
+
+
+
+	/* **  Spectators scoreboard  ** */
+
+	/**
+	 * Rebuilds the scoreboard if enabled; removes it else.
+	 */
+	public void rebuildScoreboard()
+	{
+		if (/* FIXME scoreboard enabled */false)
+		{
+			spectatorsScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+
+			spectatorsScoreboard.registerNewObjective(SPECTATORS_HEALTH_OBJECTIVE_NAME, "health")
+					.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+
+			spectatorsTeam = spectatorsScoreboard.registerNewTeam(SPECTATORS_TEAM_NAME);
+			spectatorsTeam.setPrefix(SPECTATORS_TEAM_PREFIX);
+			spectatorsTeam.setSuffix(ChatColor.RESET.toString());
+			spectatorsTeam.setCanSeeFriendlyInvisibles(true);
+
+			for (Player spectator : Bukkit.getOnlinePlayers())
+			{
+				if (SpectatorPlus.get().getPlayerData(spectator).isSpectating())
+				{
+					spectator.setScoreboard(spectatorsScoreboard);
+					spectatorsTeam.addPlayer(spectator);
+				}
+			}
+		}
+		else if (spectatorsScoreboard != null)
+		{
+			spectatorsTeam.unregister();
+
+			spectatorsTeam = null;
+			spectatorsScoreboard = null;
+
+			for (Player spectator : Bukkit.getOnlinePlayers())
+			{
+				SpectatorPlus.get().getPlayerData(spectator).resetScoreboard();
+			}
+		}
+	}
+
+	/**
+	 * Sets the scoreboard to be used by the spectators.
+	 */
+	public void setSpectatorsScoreboard(Spectator spectator)
+	{
+		if (spectatorsScoreboard == null) return;
+
+		Player player = spectator.getPlayer();
+		if (player == null) return;
+
+		if (spectator.isSpectating())
+			player.setScoreboard(spectatorsScoreboard);
+		else
+			spectator.resetScoreboard();
+	}
+
+	public void setSpectatingInScoreboard(Spectator spectator)
+	{
+		if (spectatorsTeam == null) return;
+
+		Player player = spectator.getPlayer();
+		if (player == null) return;
+
+		if (spectator.isSpectating())
+			spectatorsTeam.addPlayer(player);
+		else
+			spectatorsTeam.removePlayer(player);
 	}
 }

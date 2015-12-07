@@ -25,19 +25,19 @@ public class Spectator
 	private boolean gamemodeChangeAllowed = false;
     private boolean hideFromTp = false;
     private boolean wasSpectatorBeforeWorldChanged = false;
-	
-	private UUID arena;
+
+	private UUID arena = null;
 
 
-	private ItemStack[] oldInventoryContent;
-	private ItemStack[] oldArmourContent;
-	private Collection<PotionEffect> oldEffects;
+	private ItemStack[] oldInventoryContent = null;
+	private ItemStack[] oldArmourContent = null;
+	private Collection<PotionEffect> oldEffects = null;
 
-	private Scoreboard oldScoreboard;
+	private Scoreboard oldScoreboard = null;
 
-	private GameMode oldGameMode;
-	private Boolean oldFlyMode;
-	private Float oldFlySpeed;
+	private GameMode oldGameMode = null;
+	private Boolean oldFlyMode = null;
+	private Float oldFlySpeed = null;
 
 
 	private String lastDeathMessage = null;
@@ -45,10 +45,10 @@ public class Spectator
 	
 	private int setup = 0;
 	private String arenaName = null;
-	private Location pos1;
-	private Location pos2;
-	
-	
+	private Location pos1 = null;
+	private Location pos2 = null;
+
+
 	public Spectator(UUID id)
     {
         playerID = id;
@@ -198,7 +198,8 @@ public class Spectator
 	    // We set the SpectatorPlus' scoreboard (if needed)
 	    if (/* FIXME scoreboard enabled */false)
 	    {
-		    // TODO set the SP scoreboard and add to the team
+		    SpectatorPlus.get().getSpectatorsManager().setSpectatorsScoreboard(this);
+		    SpectatorPlus.get().getSpectatorsManager().setSpectatingInScoreboard(this);
 	    }
 
 	    // We teleports the player to the spectating lobby, if needed
@@ -282,9 +283,8 @@ public class Spectator
 		// The scoreboard is reset
 		if (/* FIXME scoreboard enabled */false)
 		{
-			player.setScoreboard(oldScoreboard);
-
-			// TODO remove from team, etc.
+			SpectatorPlus.get().getSpectatorsManager().setSpectatorsScoreboard(this);
+			SpectatorPlus.get().getSpectatorsManager().setSpectatingInScoreboard(this);
 		}
 
 		// The player is teleported back to the spawn if needed
@@ -332,6 +332,18 @@ public class Spectator
 	{
 		SpectatorPlus.get().getSpectatorsManager().getSavedSpectatingPlayers().getConfig().set(playerID.toString(), spectating ? true : null);
 		SpectatorPlus.get().getSpectatorsManager().getSavedSpectatingPlayers().saveConfig();
+	}
+
+	/**
+	 * Resets the player's scoreboard to the one
+	 */
+	public void resetScoreboard()
+	{
+		if (oldScoreboard != null)
+		{
+			Player player = getPlayer();
+			if (player != null) player.setScoreboard(oldScoreboard);
+		}
 	}
 
 
