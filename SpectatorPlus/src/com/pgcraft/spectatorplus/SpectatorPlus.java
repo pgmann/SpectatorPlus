@@ -32,15 +32,26 @@
 package com.pgcraft.spectatorplus;
 
 import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import fr.zcraft.zlib.core.ZPlugin;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 
 public class SpectatorPlus extends ZPlugin
 {
+	public final static double VERSION = 3.0;
+
 	private static SpectatorPlus instance;
 
 	private SpectateAPI api;
+	private ArenasManager arenasManager;
+
+	private Map<UUID, Spectator> spectators = new HashMap<>();
 
 	@Override
 	public void onLoad()
@@ -57,7 +68,50 @@ public class SpectatorPlus extends ZPlugin
 	@Override
 	public void onEnable()
 	{
+		// Loading managers
+		arenasManager = new ArenasManager(this);
+		api = new SpectateAPI(this);
+	}
 
+
+	/**
+	 * Returns the object representing a player inside SpectatorPlus.
+	 *
+	 * @param id The player's UUID.
+	 *
+	 * @return The object. It is created on-the-fly if not already instanced, so this never returns
+	 * {@code null}.
+	 */
+	public Spectator getPlayerData(UUID id)
+	{
+		Spectator spectator = spectators.get(id);
+
+		if (spectator == null)
+		{
+			spectator = new Spectator(id);
+			spectators.put(id, spectator);
+		}
+
+		return spectator;
+	}
+
+	/**
+	 * Returns the object representing a player inside SpectatorPlus.
+	 *
+	 * @param player The player.
+	 *
+	 * @return The object. It is created on-the-fly if not already instanced, so this never returns
+	 * {@code null}.
+	 */
+	public Spectator getPlayerData(Player player)
+	{
+		return getPlayerData(player.getUniqueId());
+	}
+
+
+	public ArenasManager getArenasManager()
+	{
+		return arenasManager;
 	}
 
 	public static SpectatorPlus get()

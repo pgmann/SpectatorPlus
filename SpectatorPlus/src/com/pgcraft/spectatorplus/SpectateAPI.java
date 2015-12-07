@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * This is the API of SpectatorPlus.
+ * This is the API of SpectatorPlusOld.
  * <p>
  * Use the methods of this class to manage spectators, arenas and everything else.
  */
@@ -15,7 +15,7 @@ public class SpectateAPI {
 	private SpectatorPlus p;
 	private static SpectateAPI INSTANCE;
 	
-	protected SpectateAPI(SpectatorPlus p) {
+	public SpectateAPI(SpectatorPlus p) {
 		this.p = p;
 		INSTANCE=this;
 	}
@@ -141,7 +141,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Sets the current SpectatorPlus' mode.
+	 * Sets the current SpectatorPlusOld' mode.
 	 * <p>
 	 * <ul>
 	 *   <li>{@code ANY}: the spectators can teleports themselves to any player in the server.</li>
@@ -381,7 +381,7 @@ public class SpectateAPI {
 	}
 	
 	/**
-	 * Enables (or disables) SpectatorPlus plugin messages sent to spectators.
+	 * Enables (or disables) SpectatorPlusOld plugin messages sent to spectators.
 	 * 
 	 * @param value Enabled if true.
 	 * @param temp If true this change will not be saved in the config file.

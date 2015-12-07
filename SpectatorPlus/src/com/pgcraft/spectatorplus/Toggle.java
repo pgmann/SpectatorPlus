@@ -23,8 +23,8 @@ public enum Toggle {
 	 *  - Add the toggle to toggles.yml
 	 *  - Add the toggle here in Toggle.java
 	 *  - Add it to the ToggleManager's set(Toggle, Object, Boolean) method.
-	 *  - Declare related variable in SpectatorPlus.java
-	 *  - Add the declared variable to reloadConfig(Boolean), also in SpectatorPlus.java
+	 *  - Declare related variable in SpectatorPlusOld.java
+	 *  - Add the declared variable to reloadConfig(Boolean), also in SpectatorPlusOld.java
 	 */
 	
 	// Tools-related toggles

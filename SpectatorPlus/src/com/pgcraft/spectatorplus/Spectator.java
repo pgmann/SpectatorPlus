@@ -1,56 +1,44 @@
 package com.pgcraft.spectatorplus;
 
-import java.util.Collection;
-import java.util.UUID;
-
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Scoreboard;
 
-public class PlayerObject {	
-	private boolean spectating;
-	
-	private boolean teleporting;
-	
+import java.util.Collection;
+import java.util.UUID;
+
+public class Spectator
+{
+    private UUID playerID;
+
+	private boolean spectating = false;
+	private boolean teleporting = false;
 	private boolean gamemodeChangeAllowed = false;
+    private boolean hideFromTp = false;
+    private boolean wasSpectatorBeforeWorldChanged = false;
 	
 	private UUID arena;
 	
 	private ItemStack[] inventory;
-	
 	private ItemStack[] armour;
-	
 	private Collection<PotionEffect> effects;
-	
 	private GameMode oldGameMode;
-	
 	private String lastDeathMessage = null;
-	
 	private Location deathLocation = null;
 	
-	private int setup;
-	
-	private String arenaName;
-	
+	private int setup = 0;
+	private String arenaName = null;
 	private Location pos1;
-	
 	private Location pos2;
 	
 	private Scoreboard oldScoreboard;
 	
-	private boolean hideFromTp;
 	
-	private boolean wasSpectatorBeforeWorldChanged;
-	
-	
-	protected PlayerObject() {
-		setSpectating(false);
-		setArenaName(null);
-		setTeleporting(false);
-		setSetup(0);
-		setHideFromTp(false);
+	protected Spectator(UUID id)
+    {
+        playerID = id;
 	}
 
     /**

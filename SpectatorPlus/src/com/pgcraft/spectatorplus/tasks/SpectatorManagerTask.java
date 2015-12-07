@@ -1,7 +1,7 @@
 package com.pgcraft.spectatorplus.tasks;
 
 import com.pgcraft.spectatorplus.SpectatorMode;
-import com.pgcraft.spectatorplus.SpectatorPlus;
+import com.pgcraft.spectatorplus.SpectatorPlusOld;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,9 +14,9 @@ import org.bukkit.scheduler.BukkitRunnable;
  * Players more than 5 blocks away from the global lobby will also have their move event cancelled.
  */
 public class SpectatorManagerTask extends BukkitRunnable {
-	SpectatorPlus p;
+	SpectatorPlusOld p;
 	
-	public SpectatorManagerTask(SpectatorPlus p) {
+	public SpectatorManagerTask(SpectatorPlusOld p) {
 		this.p = p;
 	}
 	
@@ -38,7 +38,7 @@ public class SpectatorManagerTask extends BukkitRunnable {
 					if (arena != null) { // ignore players not in an arena.
 						if(!arena.isEnabled() || !arena.isRegistered() || arena.getCorner1() == null || arena.getCorner2() == null) {
 							p.getPlayerData(target).setArena(null);
-							target.sendMessage(SpectatorPlus.prefix+"The arena you were in was removed.");
+							target.sendMessage(SpectatorPlusOld.prefix+"The arena you were in was removed.");
 							p.spawnPlayer(target);
 							outOfBounds = false;
 						} else if (isValidPos(target, arena)) {
@@ -49,7 +49,7 @@ public class SpectatorManagerTask extends BukkitRunnable {
 					}
 					
 					if (outOfBounds) {
-						if (p.output) target.sendMessage(SpectatorPlus.prefix + "Stay inside the arena!"); 
+						if (p.output) target.sendMessage(SpectatorPlusOld.prefix + "Stay inside the arena!");
 						target.teleport(getValidPos(target.getLocation(), arena));
 					}
 				}

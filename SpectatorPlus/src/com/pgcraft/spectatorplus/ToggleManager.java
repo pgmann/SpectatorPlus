@@ -12,14 +12,14 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 
 /**
- * This class manages the SpectatorPlus' toggles.
+ * This class manages the SpectatorPlusOld' toggles.
  * 
  * @author Amaury Carrade
  * @since 2.1
  */
 public class ToggleManager {
 	
-	private SpectatorPlus p = null;
+	private SpectatorPlusOld p = null;
 	private ConfigAccessor toggles = null;
 	
 	/**
@@ -28,7 +28,7 @@ public class ToggleManager {
 	 * @param plugin The main class of the plugin
 	 * @param toggles The toggles.
 	 */
-	public ToggleManager(SpectatorPlus plugin, ConfigAccessor toggles) {
+	public ToggleManager(SpectatorPlusOld plugin, ConfigAccessor toggles) {
 		p = plugin;
 		this.toggles = toggles;
 		

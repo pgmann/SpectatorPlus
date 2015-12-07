@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
 @SuppressWarnings({"unused","deprecation"})
 public class SpectateCommand implements CommandExecutor {
 
-	private SpectatorPlus p = null;
+	private SpectatorPlusOld p = null;
 	private HashMap<String, String> commands = new HashMap<String, String>();
 
 //ender.sendMessage(ChatColor.RED + "/spec <on/off> [player]" + ChatColor.GOLD + ": Enables/disables spectator mode [for a certain player]");
@@ -38,7 +38,7 @@ public class SpectateCommand implements CommandExecutor {
 //	sender.sendMessage(ChatColor.RED + "/spec reload" + ChatColor.GOLD + ": Reloads configuration");
 //	
 //	sender.sendMessage(ChatColor.RED + "/spec hide [player]" + ChatColor.GOLD + ": Toggles whether you are shown in the spectator GUI");
-	public SpectateCommand(SpectatorPlus p) {
+	public SpectateCommand(SpectatorPlusOld p) {
 		this.p = p;
 
 		commands.put("on","&7/&coff &7[&dtarget&7]#Enable or disable spectate mode [for target]");
@@ -82,7 +82,7 @@ public class SpectateCommand implements CommandExecutor {
 
 		// First: subcommand existence.
 		if(!this.commands.containsKey(subcommandName)) {
-			sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
+			sender.sendMessage(SpectatorPlusOld.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
 			return true;
 		}
 
@@ -105,11 +105,11 @@ public class SpectateCommand implements CommandExecutor {
 
 		} catch (NoSuchMethodException e) {
 			// Unknown method => unknown subcommand.
-			sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
+			sender.sendMessage(SpectatorPlusOld.prefix+ChatColor.DARK_RED+"Invalid command. Use "+ChatColor.RED+"/spec"+ChatColor.DARK_RED+" for a list of commands.");
 			return true;
 
 		} catch(SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			sender.sendMessage(SpectatorPlus.prefix + ChatColor.DARK_RED + "An error occured, see console for details. This is probably a bug, please report it!");
+			sender.sendMessage(SpectatorPlusOld.prefix + ChatColor.DARK_RED + "An error occured, see console for details. This is probably a bug, please report it!");
 			e.printStackTrace();
 			return true; // An error message has been printed, so command was technically handled.
 		}
@@ -311,7 +311,7 @@ public class SpectateCommand implements CommandExecutor {
 			break;
 		}
 
-		sender.sendMessage(SpectatorPlus.prefix + ChatColor.DARK_RED + message);
+		sender.sendMessage(SpectatorPlusOld.prefix + ChatColor.DARK_RED + message);
 	}
 
 
@@ -331,7 +331,7 @@ public class SpectateCommand implements CommandExecutor {
 				p.enableSpectate((Player) sender, sender);
 			}
 			else {
-				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec on <player>");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Usage: "+ChatColor.RED+"/spec on <player>");
 			}
 		}
 
@@ -341,7 +341,7 @@ public class SpectateCommand implements CommandExecutor {
 				p.enableSpectate(player, sender);
 			}
 			else {
-				sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
+				sender.sendMessage(SpectatorPlusOld.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
 			}
 		}
 	}
@@ -361,7 +361,7 @@ public class SpectateCommand implements CommandExecutor {
 				p.disableSpectate((Player) sender, sender);
 			}
 			else {
-				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec off <player>");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Usage: "+ChatColor.RED+"/spec off <player>");
 			}
 		}
 
@@ -371,7 +371,7 @@ public class SpectateCommand implements CommandExecutor {
 				p.disableSpectate(player, sender);
 			}
 			else {
-				sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
+				sender.sendMessage(SpectatorPlusOld.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
 			}
 		}
 	}
@@ -388,7 +388,7 @@ public class SpectateCommand implements CommandExecutor {
 	private void doReload(CommandSender sender, Command command, String label, String[] args) {
 		p.reloadConfig(true);
 
-		sender.sendMessage(SpectatorPlus.prefix + "Config reloaded!");
+		sender.sendMessage(SpectatorPlusOld.prefix + "Config reloaded!");
 	}
 
 	/**
@@ -404,13 +404,13 @@ public class SpectateCommand implements CommandExecutor {
 		if(args.length == 2) { // /spec config <key>
 			Toggle toggle = Toggle.fromPath(args[1]);
 			if(toggle != null) {
-				sender.sendMessage(SpectatorPlus.prefix + "About the toggle " + ChatColor.RED + args[1]);
+				sender.sendMessage(SpectatorPlusOld.prefix + "About the toggle " + ChatColor.RED + args[1]);
 				sender.sendMessage(ChatColor.AQUA + toggle.getDescription());
 				sender.sendMessage(ChatColor.GOLD + "Value: " + ChatColor.RED + p.toggles.get(toggle).toString());
 				sender.sendMessage(ChatColor.GOLD + "Default value: " + toggle.getDefaultValue().toString());
 			}
 			else {
-				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" doesn't exist!");
+				sender.sendMessage(SpectatorPlusOld.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" doesn't exist!");
 			}
 		} else if(args.length >= 3) { // /spec config <key> <value> [temp]
 			Toggle entry = Toggle.fromPath(args[1]);
@@ -444,17 +444,17 @@ public class SpectateCommand implements CommandExecutor {
 				}
 				
 				else {
-					sender.sendMessage(SpectatorPlus.prefix + ChatColor.DARK_RED + "You cannot edit the value of "+ChatColor.RED + entry.getPath() + ChatColor.DARK_RED+" (type " + ChatColor.RED + entry.getDataType().getSimpleName() + ChatColor.DARK_RED + ") from the game currently.");
+					sender.sendMessage(SpectatorPlusOld.prefix + ChatColor.DARK_RED + "You cannot edit the value of "+ChatColor.RED + entry.getPath() + ChatColor.DARK_RED+" (type " + ChatColor.RED + entry.getDataType().getSimpleName() + ChatColor.DARK_RED + ") from the game currently.");
 					return;
 				}
 				
-				sender.sendMessage(SpectatorPlus.prefix+"Set "+ChatColor.RED+entry.getPath()+ChatColor.GOLD+" to "+ChatColor.RED+displayValue+ChatColor.GOLD+displayTemp);
+				sender.sendMessage(SpectatorPlusOld.prefix+"Set "+ChatColor.RED+entry.getPath()+ChatColor.GOLD+" to "+ChatColor.RED+displayValue+ChatColor.GOLD+displayTemp);
 			
 			} else {
-				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" doesn't exist!");
+				sender.sendMessage(SpectatorPlusOld.prefix+ChatColor.DARK_RED+"Toggle "+ChatColor.RED+args[1]+ChatColor.DARK_RED+" doesn't exist!");
 			}
 		} else {
-			sender.sendMessage(SpectatorPlus.prefix+"Usage: "+ChatColor.RED+"/spec config <toggle> [value] [temp]");
+			sender.sendMessage(SpectatorPlusOld.prefix+"Usage: "+ChatColor.RED+"/spec config <toggle> [value] [temp]");
 		}
 	}
 
@@ -479,17 +479,17 @@ public class SpectateCommand implements CommandExecutor {
 						p.choosePlayer((Player) sender, p.getServer().getPlayer(args[1]));
 					}
 					else {
-						sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online or is spectating!");
+						sender.sendMessage(SpectatorPlusOld.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online or is spectating!");
 					}
 
 				} else {
-					sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec p <player>");
+					sender.sendMessage(SpectatorPlusOld.prefix + "Usage: "+ChatColor.RED+"/spec p <player>");
 				}
 			} else {
-				sender.sendMessage(SpectatorPlus.prefix + "You aren't spectating!");
+				sender.sendMessage(SpectatorPlusOld.prefix + "You aren't spectating!");
 			}
 		} else {
-			sender.sendMessage(SpectatorPlus.prefix + "Cannot be executed from the console!");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Cannot be executed from the console!");
 		}
 	}
 
@@ -524,7 +524,7 @@ public class SpectateCommand implements CommandExecutor {
 		String subcommand = null;
 
 		if(!(sender instanceof Player)) {
-			sender.sendMessage(SpectatorPlus.prefix + "Cannot be executed from the console!");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Cannot be executed from the console!");
 			return;
 		}
 
@@ -545,7 +545,7 @@ public class SpectateCommand implements CommandExecutor {
 			p.setup.getConfig().set("active", true);
 			p.setup.saveConfig();
 
-			sender.sendMessage(SpectatorPlus.prefix + "Global spectator lobby location set!");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Global spectator lobby location set!");
 		}
 
 		// /spec lobby del|delete
@@ -557,11 +557,11 @@ public class SpectateCommand implements CommandExecutor {
 			p.setup.getConfig().set("active", false);
 			p.setup.saveConfig();
 
-			sender.sendMessage(SpectatorPlus.prefix + "Global spectator lobby location removed! Using "+ChatColor.WHITE+"/spawn"+ChatColor.GOLD+" instead.");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Global spectator lobby location removed! Using "+ChatColor.WHITE+"/spawn"+ChatColor.GOLD+" instead.");
 		}
 
 		else {
-			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec lobby <set/del[ete]>");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Usage: " + ChatColor.RED + "/spec lobby <set/del[ete]>");
 		}
 	}
 
@@ -580,7 +580,7 @@ public class SpectateCommand implements CommandExecutor {
 	private void doMode(CommandSender sender, Command command, String label, String[] args) {
 
 		if(args.length == 1) { // /spec mode
-			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec mode <world/arena/any>");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Usage: " + ChatColor.RED + "/spec mode <world/arena/any>");
 		}
 
 		else { // /spec mode <?>
@@ -589,13 +589,13 @@ public class SpectateCommand implements CommandExecutor {
 			try {
 			p.setSpectatorMode(SpectatorMode.fromString(mode));
 
-			sender.sendMessage(SpectatorPlus.prefix + "Mode set to " + ChatColor.RED + mode.toLowerCase());
+			sender.sendMessage(SpectatorPlusOld.prefix + "Mode set to " + ChatColor.RED + mode.toLowerCase());
 			if(p.mode == SpectatorMode.ARENA) {
-				sender.sendMessage(SpectatorPlus.prefix + "Only players in arena regions can be teleported to by spectators.");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Only players in arena regions can be teleported to by spectators.");
 			}
 			
 			} catch (IllegalArgumentException e) {
-				sender.sendMessage(SpectatorPlus.prefix + "The mode can be \"world\", \"arena\" or \"any\".");
+				sender.sendMessage(SpectatorPlusOld.prefix + "The mode can be \"world\", \"arena\" or \"any\".");
 			}
 		}
 	}
@@ -623,16 +623,16 @@ public class SpectateCommand implements CommandExecutor {
 		if(!isEmptyCommand && subcommand.equalsIgnoreCase("add")) { // /spec arena add ...
 
 			if(!(sender instanceof Player)) {
-				sender.sendMessage(SpectatorPlus.prefix + "Cannot be executed from the console!");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Cannot be executed from the console!");
 				return;
 			}
 
 			if(args.length == 2) { // /spec arena add
-				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena add <name>");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Usage: "+ChatColor.RED+"/spec arena add <name>");
 			}
 			else { // /spec arena add <?>
 				p.getPlayerData((Player) sender).setArenaName(args[2]);
-				sender.sendMessage(SpectatorPlus.prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - a corner of the arena");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Punch point " + ChatColor.RED + "#1" + ChatColor.GOLD + " - a corner of the arena");
 				p.getPlayerData((Player) sender).setSetup(1);
 			}
 
@@ -641,14 +641,14 @@ public class SpectateCommand implements CommandExecutor {
 		else if(!isEmptyCommand && subcommand.equalsIgnoreCase("remove")) { // spec arena remove ...
 
 			if(args.length == 2) { // /spec arena remove
-				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena remove <name>");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Usage: "+ChatColor.RED+"/spec arena remove <name>");
 			}
 			else { // /spec arena remove <?>
 				if(p.removeArena(args[2])) {
-					sender.sendMessage(SpectatorPlus.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " removed.");
+					sender.sendMessage(SpectatorPlusOld.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " removed.");
 				}
 				else {
-					sender.sendMessage(SpectatorPlus.prefix + "The arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " does not exist!");
+					sender.sendMessage(SpectatorPlusOld.prefix + "The arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " does not exist!");
 				}
 			}
 
@@ -677,12 +677,12 @@ public class SpectateCommand implements CommandExecutor {
 		else if(!isEmptyCommand && subcommand.equalsIgnoreCase("lobby")) { // /spec arena lobby
 
 			if(!(sender instanceof Player)) {
-				sender.sendMessage(SpectatorPlus.prefix + "Cannot be executed from the console!");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Cannot be executed from the console!");
 				return;
 			}
 
 			if(args.length < 3) {
-				sender.sendMessage(SpectatorPlus.prefix + "Usage: "+ChatColor.RED+"/spec arena lobby <name>");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Usage: "+ChatColor.RED+"/spec arena lobby <name>");
 				return;
 			}
 			
@@ -691,10 +691,10 @@ public class SpectateCommand implements CommandExecutor {
 				arena.setLobby(((Player) sender).getLocation());
 				p.arenasManager.save();
 
-				sender.sendMessage(SpectatorPlus.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + "'s lobby location set to your location");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + "'s lobby location set to your location");
 			}
 			else {
-				sender.sendMessage(SpectatorPlus.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " doesn't exist!");
+				sender.sendMessage(SpectatorPlusOld.prefix + "Arena " + ChatColor.RED + args[2] + ChatColor.GOLD + " doesn't exist!");
 			}
 
 		}
@@ -703,7 +703,7 @@ public class SpectateCommand implements CommandExecutor {
 
 			p.arenasManager.reset();
 
-			sender.sendMessage(SpectatorPlus.prefix + "All arenas removed.");
+			sender.sendMessage(SpectatorPlusOld.prefix + "All arenas removed.");
 
 		}
 
@@ -711,7 +711,7 @@ public class SpectateCommand implements CommandExecutor {
 			String playerOnly = "";
 			if(!(sender instanceof Player)) playerOnly = ChatColor.DARK_RED+""+ChatColor.STRIKETHROUGH;
 
-			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec arena <" + playerOnly +"add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Usage: " + ChatColor.RED + "/spec arena <" + playerOnly +"add <name>/lobby <name>" + ChatColor.RED + "/remove <name>/reset/list>");
 		}
 	}
 
@@ -728,7 +728,7 @@ public class SpectateCommand implements CommandExecutor {
 	private void doSay(CommandSender sender, Command command, String label, String[] args) {
 
 		if(args.length == 1) {
-			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec say <message>");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Usage: " + ChatColor.RED + "/spec say <message>");
 		}
 
 		else {
@@ -754,7 +754,7 @@ public class SpectateCommand implements CommandExecutor {
 	private void doHide(CommandSender sender, Command command, String label, String[] args) {
 
 		if(args.length == 0) {
-			sender.sendMessage(SpectatorPlus.prefix + "Usage: " + ChatColor.RED + "/spec hide [player]");
+			sender.sendMessage(SpectatorPlusOld.prefix + "Usage: " + ChatColor.RED + "/spec hide [player]");
 		} else {
 			// Set the target...
 			Player target;
@@ -762,13 +762,13 @@ public class SpectateCommand implements CommandExecutor {
 				if(sender instanceof Player)
 					target = (Player) sender;
 				else {
-					sender.sendMessage(SpectatorPlus.prefix + "Please specify a player: " + ChatColor.RED + "/spec hide <player>");
+					sender.sendMessage(SpectatorPlusOld.prefix + "Please specify a player: " + ChatColor.RED + "/spec hide <player>");
 					return;
 				}
 			} else if (p.getServer().getPlayer(args[1]) != null) {
 				target = p.getServer().getPlayer(args[1]);
 			} else {
-				sender.sendMessage(SpectatorPlus.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
+				sender.sendMessage(SpectatorPlusOld.prefix + ChatColor.RED + args[1] + ChatColor.GOLD + " isn't online!");
 				return;
 			}
 			
@@ -777,7 +777,7 @@ public class SpectateCommand implements CommandExecutor {
 			
 			// Notify the sender.
 			String state = (p.getPlayerData(target).isHideFromTp()) ? ChatColor.GREEN+"enabled" : ChatColor.DARK_RED+"disabled";
-			sender.sendMessage(SpectatorPlus.prefix + "Hide mode for " + ChatColor.RED + target.getName() + ChatColor.GOLD + " is now " + state);
+			sender.sendMessage(SpectatorPlusOld.prefix + "Hide mode for " + ChatColor.RED + target.getName() + ChatColor.GOLD + " is now " + state);
 		}
 
 	}
@@ -809,7 +809,7 @@ public class SpectateCommand implements CommandExecutor {
 
 				p.updateSpectatorInventory((Player) sender);
 			} else {
-				sender.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Exiting no-clip mode is disabled.");
+				sender.sendMessage(SpectatorPlusOld.prefix+ChatColor.DARK_RED+"Exiting no-clip mode is disabled.");
 			}
 		}
 	}

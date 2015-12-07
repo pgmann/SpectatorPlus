@@ -11,7 +11,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.util.Vector;
 
 /**
- * Represents an Arena in SpectatorPlus.
+ * Represents an Arena in SpectatorPlusOld.
  * <p>
  * An arena is a 3D space, represented by two opposed corners; the spectators inside an arena
  * can teleport themselves only to the players inside this arena.

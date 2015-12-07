@@ -16,10 +16,10 @@ import java.util.List;
 
 public class SpectateCompleter implements TabCompleter {
 	
-	private SpectatorPlus p = null;
+	private SpectatorPlusOld p = null;
 	
 	
-	public SpectateCompleter(SpectatorPlus p) {
+	public SpectateCompleter(SpectatorPlusOld p) {
 		this.p = p;
 	}
 

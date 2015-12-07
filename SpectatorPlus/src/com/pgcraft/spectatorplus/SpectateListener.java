@@ -64,9 +64,9 @@ import java.util.UUID;
 @SuppressWarnings("deprecation")
 public class SpectateListener implements Listener {
 	
-	private SpectatorPlus p; // Pointer to main class (see SpectatorPlus.java)
+	private SpectatorPlusOld p; // Pointer to main class (see SpectatorPlusOld.java)
 
-	protected SpectateListener(SpectatorPlus p) {
+	protected SpectateListener(SpectatorPlusOld p) {
 		this.p = p;
 	}
 	
@@ -168,7 +168,7 @@ public class SpectateListener implements Listener {
 					if (playerL.getZ() > blockL.getBlockZ()-1 && playerL.getZ() < blockL.getBlockZ()+1) { // 2d (x & z)
 						if (playerL.getY() > blockL.getBlockY()-2 && playerL.getY() < blockL.getBlockY()+1) { // 3d (y): for feet & head height
 							target.teleport(e.getPlayer(), TeleportCause.PLUGIN);
-							target.sendMessage(SpectatorPlus.prefix + "You were teleported away from a placed block.");
+							target.sendMessage(SpectatorPlusOld.prefix + "You were teleported away from a placed block.");
 						}
 					}
 				}
@@ -446,7 +446,7 @@ public class SpectateListener implements Listener {
 			e.setCancelled(true);
 			
 			if(p.output) {
-				e.getPlayer().sendMessage(SpectatorPlus.prefix + "You cannot break blocks while in spectate mode!");
+				e.getPlayer().sendMessage(SpectatorPlusOld.prefix + "You cannot break blocks while in spectate mode!");
 			}
 		}
 		
@@ -726,13 +726,13 @@ public class SpectateListener implements Listener {
 						}
 					}
 					if (!allowed) {
-						e.getPlayer().sendMessage(SpectatorPlus.prefix+"Command blocked!");
+						e.getPlayer().sendMessage(SpectatorPlusOld.prefix+"Command blocked!");
 						e.setCancelled(true);
 					}
 				} catch (ClassCastException err) { // caused by casting to ArrayList<String> error
-					p.console.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"The command whitelist section isn't formatted correctly, ignoring it!");
+					p.console.sendMessage(SpectatorPlusOld.prefix+ChatColor.DARK_RED+"The command whitelist section isn't formatted correctly, ignoring it!");
 					// cancel the command.
-					e.getPlayer().sendMessage(SpectatorPlus.prefix+"Command blocked!");
+					e.getPlayer().sendMessage(SpectatorPlusOld.prefix+"Command blocked!");
 					e.setCancelled(true);
 				}
 			}
@@ -788,7 +788,7 @@ public class SpectateListener implements Listener {
 			e.setCancelled(true);
 			
 			// Teleportation GUI
-			if ((e.getInventory().getTitle().equals(SpectatorPlus.TELEPORTER_ANY_TITLE) || e.getInventory().getTitle().startsWith(SpectatorPlus.TELEPORTER_ARENA_TITLE)) && e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.SKULL_ITEM && e.getCurrentItem().getDurability() == 3) {
+			if ((e.getInventory().getTitle().equals(SpectatorPlusOld.TELEPORTER_ANY_TITLE) || e.getInventory().getTitle().startsWith(SpectatorPlusOld.TELEPORTER_ARENA_TITLE)) && e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.SKULL_ITEM && e.getCurrentItem().getDurability() == 3) {
 				ItemStack playerhead = e.getCurrentItem();
 				SkullMeta meta = (SkullMeta)playerhead.getItemMeta();
 				Player skullOwner = p.getServer().getPlayer(meta.getOwner());
@@ -806,17 +806,17 @@ public class SpectateListener implements Listener {
 				else {
 					if (skullOwner == null) {
 						OfflinePlayer offlineSkullOwner = p.getServer().getOfflinePlayer(meta.getOwner());
-						((Player) e.getWhoClicked()).sendMessage(SpectatorPlus.prefix + ChatColor.RED + offlineSkullOwner.getName() + ChatColor.GOLD + " is offline!");
+						((Player) e.getWhoClicked()).sendMessage(SpectatorPlusOld.prefix + ChatColor.RED + offlineSkullOwner.getName() + ChatColor.GOLD + " is offline!");
 					}
 					else if (skullOwner.getAllowFlight() == true) {
-						((Player) e.getWhoClicked()).sendMessage(SpectatorPlus.prefix + ChatColor.RED + skullOwner.getName() + ChatColor.GOLD + " is currently spectating!");
+						((Player) e.getWhoClicked()).sendMessage(SpectatorPlusOld.prefix + ChatColor.RED + skullOwner.getName() + ChatColor.GOLD + " is currently spectating!");
 					}
 				}
 				return;
 			}
 			
 			// Manage showArenaGUI method selection
-			else if (e.getInventory().getTitle().equals(SpectatorPlus.ARENA_SELECTOR_TITLE) && e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.BOOK) {
+			else if (e.getInventory().getTitle().equals(SpectatorPlusOld.ARENA_SELECTOR_TITLE) && e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.BOOK) {
 				ItemStack arenaBook = e.getCurrentItem();
 				ItemMeta meta = (ItemMeta)arenaBook.getItemMeta();
 				String chosenArena = meta.getDisplayName();
@@ -831,34 +831,34 @@ public class SpectateListener implements Listener {
 			}
 			
 			// Manage spectators' tools
-			else if(e.getInventory().getTitle().equals(SpectatorPlus.SPEC_TOOLS_TITLE) && e.getCurrentItem() != null) {
+			else if(e.getInventory().getTitle().equals(SpectatorPlusOld.SPEC_TOOLS_TITLE) && e.getCurrentItem() != null) {
 				ItemStack toolSelected = e.getCurrentItem();
 				Player spectator = (Player) e.getWhoClicked();
 				try {
 					// The fly speed values are experimental; the difference between the fly speed and the run speed
 					// matches approximately the vanilla difference.
-					if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NORMAL_SPEED_NAME)) {
+					if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_NORMAL_SPEED_NAME)) {
 						spectator.removePotionEffect(PotionEffectType.SPEED);
 						spectator.setFlySpeed(0.10f); // default fly speed
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_I_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_SPEED_I_NAME)) {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), true);
 						spectator.setFlySpeed(0.13f);
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_II_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_SPEED_II_NAME)) {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
 						spectator.setFlySpeed(0.16f);
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_III_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_SPEED_III_NAME)) {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
 						spectator.setFlySpeed(0.19f);
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_SPEED_IV_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_SPEED_IV_NAME)) {
 						spectator.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
 						spectator.setFlySpeed(0.22f);
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_ACTIVE_NAME)
-							|| toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_INACTIVE_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_NIGHT_VISION_ACTIVE_NAME)
+							|| toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_NIGHT_VISION_INACTIVE_NAME)) {
 						if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
 							spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
 							spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
@@ -868,7 +868,7 @@ public class SpectateListener implements Listener {
 							spectator.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
 						}
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_DIVING_SUIT_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_DIVING_SUIT_NAME)) {
 						if(spectator.getInventory().getBoots() != null && spectator.getInventory().getBoots().getType() == Material.DIAMOND_BOOTS) {
 							spectator.getInventory().setBoots(null);
 						}
@@ -878,7 +878,7 @@ public class SpectateListener implements Listener {
 							spectator.getInventory().setBoots(boots);
 						}
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NOCLIP_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_NOCLIP_NAME)) {
 						p.getPlayerData(spectator).setGamemodeChangeAllowed(true);
 						spectator.setGameMode(GameMode.SPECTATOR);
 						p.getPlayerData(spectator).setGamemodeChangeAllowed(false);
@@ -888,7 +888,7 @@ public class SpectateListener implements Listener {
 						spectator.sendMessage(ChatColor.GREEN + "No-clip mode enabled");
 						spectator.sendMessage(ChatColor.GRAY + "Open your inventory to access controls or to quit the no-clip mode");
 					}
-					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_TP_TO_DEATH_POINT_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_TP_TO_DEATH_POINT_NAME)) {
 						spectator.teleport(p.getPlayerData(spectator).getDeathLocation().setDirection(spectator.getLocation().getDirection()));
 					}
 					
@@ -908,8 +908,8 @@ public class SpectateListener implements Listener {
 				Player spectator = (Player) e.getWhoClicked();
 				
 				try {
-					if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_ACTIVE_NAME)
-							|| toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlus.TOOL_NIGHT_VISION_INACTIVE_NAME)) {
+					if(toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_NIGHT_VISION_ACTIVE_NAME)
+							|| toolSelected.getItemMeta().getDisplayName().equalsIgnoreCase(SpectatorPlusOld.TOOL_NIGHT_VISION_INACTIVE_NAME)) {
 						if(spectator.hasPotionEffect(PotionEffectType.NIGHT_VISION)) {
 							spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
 							spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
@@ -923,7 +923,7 @@ public class SpectateListener implements Listener {
 						p.updateSpectatorInventory(spectator);
 					}
 					
-					else if(toolSelected.getItemMeta().getDisplayName().startsWith(SpectatorPlus.TOOL_NOCLIP_QUIT_NAME)) {
+					else if(toolSelected.getItemMeta().getDisplayName().startsWith(SpectatorPlusOld.TOOL_NOCLIP_QUIT_NAME)) {
 						// Take care of the vanilla spectate mode - spectators should always be in SPECTATOR gamemode then.
 						// (this item is removed from the GUI in this case, so technically this should never be needed)
 						if(!p.vanillaSpectate) {
@@ -935,7 +935,7 @@ public class SpectateListener implements Listener {
 							spectator.closeInventory();
 							p.updateSpectatorInventory(spectator);
 						} else {
-							spectator.sendMessage(SpectatorPlus.prefix+ChatColor.DARK_RED+"Exiting no-clip mode is disabled.");
+							spectator.sendMessage(SpectatorPlusOld.prefix+ChatColor.DARK_RED+"Exiting no-clip mode is disabled.");
 						}
 					}
 				} catch(NullPointerException ex) {
