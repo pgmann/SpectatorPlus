@@ -35,6 +35,7 @@ import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.spectators.SpectatorsManager;
+import fr.zcraft.zlib.components.configuration.Configuration;
 import fr.zcraft.zlib.core.ZPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -77,6 +78,9 @@ public class SpectatorPlus extends ZPlugin
 	@Override
 	public void onEnable()
 	{
+		// Loading config
+		Configuration.init(Toggles.class);
+
 		// Loading managers
 		spectatorsManager = new SpectatorsManager(this);
 		arenasManager = new ArenasManager(this);
@@ -134,7 +138,7 @@ public class SpectatorPlus extends ZPlugin
 	 */
 	public void sendMessage(CommandSender receiver, String message, boolean force)
 	{
-		if (receiver != null && (!(receiver instanceof Player) || /* FIXME output enabled */true || force))
+		if (receiver != null && (!(receiver instanceof Player) || Toggles.OUTPUT_MESSAGES.get() || force))
 		{
 			receiver.sendMessage(SpectatorPlus.PREFIX + message);
 		}

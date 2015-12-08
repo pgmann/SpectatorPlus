@@ -1,6 +1,7 @@
 package com.pgcraft.spectatorplus.spectators;
 
 import com.pgcraft.spectatorplus.SpectatorPlus;
+import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.utils.SPUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -178,7 +179,7 @@ public class Spectator
 	    // TODO fill spectating inventory
 
 	    // We disable all interactions if possible
-	    player.setGameMode(/* FIXME vanillaSpectate */true ? GameMode.ADVENTURE : GameMode.SPECTATOR);
+	    player.setGameMode(Toggles.VANILLA_SPECTATOR_MODE.get() ? GameMode.ADVENTURE : GameMode.SPECTATOR);
 	    SPUtils.setCollidesWithEntities(player, false);
 
 	    // We hide this player if seeSpecs mode is off and the target isn't spectating
@@ -186,7 +187,7 @@ public class Spectator
 	    {
 			if (!other.equals(player))
 			{
-				if (/* FIXME seeSpecs */false && SpectatorPlus.get().getPlayerData(other).isSpectating())
+				if (Toggles.SPECTATORS_SEE_OTHERS.get() && SpectatorPlus.get().getPlayerData(other).isSpectating())
 				{
 					player.showPlayer(other);
 				}
@@ -198,7 +199,7 @@ public class Spectator
 	    }
 
 	    // We set the SpectatorPlus' scoreboard (if needed)
-	    if (/* FIXME scoreboard enabled */false)
+	    if (Toggles.SPECTATORS_TABLIST_PREFIX.get())
 	    {
 		    SpectatorPlus.get().getSpectatorsManager().setSpectatorsScoreboard(this);
 		    SpectatorPlus.get().getSpectatorsManager().setSpectatingInScoreboard(this);
@@ -283,7 +284,7 @@ public class Spectator
 		}
 
 		// The scoreboard is reset
-		if (/* FIXME scoreboard enabled */false)
+		if (Toggles.SPECTATORS_TABLIST_PREFIX.get())
 		{
 			SpectatorPlus.get().getSpectatorsManager().setSpectatorsScoreboard(this);
 			SpectatorPlus.get().getSpectatorsManager().setSpectatingInScoreboard(this);

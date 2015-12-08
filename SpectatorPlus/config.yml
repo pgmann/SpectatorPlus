@@ -1,5 +1,5 @@
 # Config version (do not alter)
-version: 2.1
+version: 3.0
 
 # All the tools available in the spectators' hotbar
 tools:
@@ -29,7 +29,7 @@ tools:
         
         glowEffectIfActive: true
         
-        # What spectators can get from the spectators' tools?
+        #ï¿½What spectators can get from the spectators' tools?
         speed: true         # They can get speed
         nightVision: true   # They can get night-vision and water breathing
         divingSuit: true    # They can get some Depth-Strider-III boots
@@ -37,7 +37,7 @@ tools:
         
         tpToDeath:
             enabled: true
-            # Display the cause of the death in the tooltip? (Example: « You starved to death ».)
+            # Display the cause of the death in the tooltip? (Example: ï¿½ You starved to death ï¿½.)
             displayCause: true
     
     inspector:

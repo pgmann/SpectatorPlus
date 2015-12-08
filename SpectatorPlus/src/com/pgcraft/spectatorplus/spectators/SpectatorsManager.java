@@ -33,6 +33,7 @@ package com.pgcraft.spectatorplus.spectators;
 
 import com.pgcraft.spectatorplus.ConfigAccessor;
 import com.pgcraft.spectatorplus.SpectatorPlus;
+import com.pgcraft.spectatorplus.Toggles;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -111,9 +112,9 @@ public class SpectatorsManager
 			return true;
 		}
 
-		else if (/* FIXME teleportToSpawnOnSpecChangeWithoutLobby */false)
+		else if (Toggles.ONSPECMODECHANGED_TELEPORTATION_TOSPAWN.get())
 		{
-			if (/* FIXME useSpawnCommandToTeleport */true && Bukkit.getServer().getPluginCommand("spawn") != null)
+			if (Toggles.ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD.get() && Bukkit.getServer().getPluginCommand("spawn") != null)
 			{
 				return player.performCommand("spawn");
 			}
@@ -135,7 +136,7 @@ public class SpectatorsManager
 	 */
 	public void rebuildScoreboard()
 	{
-		if (/* FIXME scoreboard enabled */false)
+		if (Toggles.SPECTATORS_TABLIST_PREFIX.get())
 		{
 			spectatorsScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
@@ -145,7 +146,10 @@ public class SpectatorsManager
 			spectatorsTeam = spectatorsScoreboard.registerNewTeam(SPECTATORS_TEAM_NAME);
 			spectatorsTeam.setPrefix(SPECTATORS_TEAM_PREFIX);
 			spectatorsTeam.setSuffix(ChatColor.RESET.toString());
-			spectatorsTeam.setCanSeeFriendlyInvisibles(true);
+
+			if (Toggles.SPECTATORS_SEE_OTHERS.get())
+				spectatorsTeam.setCanSeeFriendlyInvisibles(true);
+
 
 			for (Player spectator : Bukkit.getOnlinePlayers())
 			{
