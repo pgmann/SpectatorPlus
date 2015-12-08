@@ -18,7 +18,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -201,49 +200,6 @@ public class SpectatorPlusOld extends ZPlugin
 	//     METHODS
 	// ---------------
 
-	/**
-	 * Teleports the player to the global lobby location.
-	 * 
-	 * @param player
-	 * @return true if the player was  teleported, false else.
-	 */
-	public boolean spawnPlayer(Player player) {
-		player.setFireTicks(0);
-		if (setup.getConfig().getBoolean("active")) {
-			Location where = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos"), setup.getConfig().getDouble("zPos"));
-			Location aboveWhere = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos") + 1, setup.getConfig().getDouble("zPos"));
-			Location belowWhere = new Location(getServer().getWorld(setup.getConfig().getString("world")), setup.getConfig().getDouble("xPos"), setup.getConfig().getDouble("yPos") - 1, setup.getConfig().getDouble("zPos"));
-			if (where.getBlock().getType() != Material.AIR || aboveWhere.getBlock().getType() != Material.AIR || (belowWhere.getBlock().getType() == Material.AIR || belowWhere.getBlock().getType() == Material.LAVA || belowWhere.getBlock().getType() == Material.WATER)) {
-				while (where.getBlock().getType() != Material.AIR || aboveWhere.getBlock().getType() != Material.AIR || (belowWhere.getBlock().getType() == Material.AIR || belowWhere.getBlock().getType() == Material.LAVA || belowWhere.getBlock().getType() == Material.WATER)) {
-					where.setY(where.getY()+1);
-					aboveWhere.setY(aboveWhere.getY()+1);
-					belowWhere.setY(belowWhere.getY()+1);
-					if (where.getY() > getServer().getWorld(setup.getConfig().getString("world")).getHighestBlockYAt(where)) {
-						where.setY(where.getY()-2);
-						aboveWhere.setY(aboveWhere.getY()-2);
-						belowWhere.setY(belowWhere.getY()-2);
-					}
-				}
-			}
-			getPlayerData(player).setTeleporting(true);
-			player.teleport(where);
-			getPlayerData(player).setTeleporting(false);
-			return true;
-		} else {
-			if(teleportToSpawnOnSpecChangeWithoutLobby) {
-				if(useSpawnCommandToTeleport) {
-					if(getServer().getPluginCommand("spawn") != null) {
-						return player.performCommand("spawn");
-					}
-					return false;
-				}
-				else {
-					return player.teleport(player.getWorld().getSpawnLocation(), TeleportCause.PLUGIN);
-				}
-			}
-			return false;
-		}
-	}
 
 
 	/**
@@ -866,249 +822,6 @@ public class SpectatorPlusOld extends ZPlugin
 	}
 
 	/**
-	 * Checks for problems and enables spectator mode for spectator, on behalf of sender.
-	 * 
-	 * @param spectator The player that will be a spectator.
-	 * @param sender The sender of the /spec on [player] command.
-	 */
-	public void enableSpectate(Player spectator, CommandSender sender) {
-		enableSpectate(spectator, sender, false);
-	}
-	
-	/**
-	 * Checks for problems and enables spectator mode for spectator, on behalf of sender.
-	 * 
-	 * @param spectator The player that will be a spectator.
-	 * @param sender The sender of the /spec on [player] command.
-	 * @param silent Will not output any messages - useful when using the API or command blocks.
-	 * 
-	 * @since 2.0
-	 */
-	protected void enableSpectate(Player spectator, CommandSender sender, boolean silent) {
-		enableSpectate(spectator, sender, silent, false);
-	}
-	
-	/**
-	 * Checks for problems and enables spectator mode for spectator, on behalf of sender.
-	 * 
-	 * @param spectator The player that will be a spectator.
-	 * @param sender The sender of the /spec on [player] command.
-	 * @param silent Will not output any messages - useful when using the API or command blocks.
-	 * @param worldChange Was the enable spectate caused by a world change?
-	 * 
-	 * @since 2.0
-	 */
-	protected void enableSpectate(Player spectator, CommandSender sender, boolean silent, boolean worldChange) {
-		if (user.get(spectator.getName()).isSpectating()) {
-			if (!silent) {
-				// Spectator mode was already on
-				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
-					spectator.sendMessage(prefix + "You are already spectating!");
-				}
-				else {
-					sender.sendMessage(prefix + ChatColor.RED + spectator.getDisplayName() + ChatColor.GOLD + " is already spectating!");
-				}
-			}
-		}
-
-		else {
-			// Hide them from everyone
-			for (Player target : getServer().getOnlinePlayers()) {
-				if(seeSpecs && getPlayerData(target).isSpectating()) {
-					spectator.showPlayer(target);
-				}
-				else {
-					target.hidePlayer(spectator); // Hide the spectator from non-specs: if seeSpecs mode is off and the target isn't spectating
-				}
-			}
-
-			// Gamemode, 'ghost' and inventory
-			getPlayerData(spectator).setOldGameMode(spectator.getGameMode());
-			GameMode gm = (vanillaSpectate)? GameMode.SPECTATOR : GameMode.ADVENTURE;
-			spectator.setGameMode(gm);
-			
-			savePlayerInv(spectator);
-			getPlayerData(spectator).setEffects(spectator.getActivePotionEffects());
-			for (PotionEffect pe : spectator.getActivePotionEffects()) {
-				spectator.removePotionEffect(pe.getType());
-			}
-			
-			spectator.setAllowFlight(true);
-			spectator.setFoodLevel(20);
-			spectator.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
-
-			// Disable interaction
-			getPlayerData(spectator).setSpectating(true);
-			setCollidesWithEntities(spectator, false);
-
-			updateSpectatorInventory(spectator);
-
-			// Set the prefix in the tab list if the toggle is on
-			if (scoreboard) {
-				if (spectator.getScoreboard() != null) getPlayerData(spectator).setOldScoreboard(spectator.getScoreboard()); else user.get(spectator.getName()).setOldScoreboard(getServer().getScoreboardManager().getMainScoreboard());
-				spectator.setScoreboard(board);
-				team.addPlayer(spectator);
-			}
-
-			// Teleport them to the global lobby (not if world change)
-			if (!worldChange) spawnPlayer(spectator);
-
-			// Manage messages if spectator mode was enabled
-			if (!silent) {
-				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
-					if(output) {
-						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled");
-					}
-				} 
-				else if (sender instanceof Player && !spectator.getName().equals(sender.getName())) {
-					if(output) {
-						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.RED + ((Player) sender).getDisplayName());
-					}
-					sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
-				} 
-				else {
-					if(output) {
-						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");
-					}
-					sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "enabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
-				}
-			}
-
-			specs.getConfig().set(spectator.getName(), true);
-			specs.saveConfig();
-			
-			
-		}
-	}
-	
-	/**
-	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
-	 * Convenience method for {@link #disableSpectate(Player spectator, CommandSender sender, boolean silent)}
-	 * 
-	 * @param spectator The spectator that will be a normal player.
-	 * @param sender The sender of the /spec off [player] command.
-	 */
-	protected void disableSpectate(Player spectator, CommandSender sender) {
-		disableSpectate(spectator, sender, false);
-	}
-	
-	/**
-	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
-	 * Convenience method for {@link #disableSpectate(Player spectator, CommandSender sender, boolean silent, boolean temp)}
-	 * 
-	 * @param spectator The spectator that will be a normal player.
-	 * @param sender The sender of the /spec off [player] command.
-	 * @param silent Will not output any messages - useful when using the API or command blocks.
-	 * 
-	 * @since 2.0
-	 */
-	protected void disableSpectate(Player spectator, CommandSender sender, boolean silent) {
-		disableSpectate(spectator, sender, silent, false);
-	}
-	
-	/**
-	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
-	 * 
-	 * @param spectator The spectator that will be a normal player.
-	 * @param sender The sender of the /spec off [player] command.
-	 * @param silent Will not output any messages - useful when using the API or command blocks.
-	 * @param temp If true, the next time the player re-logs, spectator mode will be re-enabled.
-	 * 
-	 * @since 2.0
-	 */
-	protected void disableSpectate(Player spectator, CommandSender sender, boolean silent, boolean temp) {
-		disableSpectate(spectator, sender, silent, temp, false);
-	}
-	
-	/**
-	 * Checks for problems and disables spectator mode for spectator, on behalf of sender.
-	 * 
-	 * @param spectator The spectator that will be a normal player.
-	 * @param sender The sender of the /spec off [player] command.
-	 * @param silent Will not output any messages - useful when using the API or command blocks.
-	 * @param temp If true, the next time the player re-logs, spectator mode will be re-enabled.
-	 * @param worldChange Was the enable spectate caused by a world change?
-	 * 
-	 * @since 2.0
-	 */
-	protected void disableSpectate(Player spectator, CommandSender sender, boolean silent, boolean temp, boolean worldChange) {
-		if (getPlayerData(spectator).isSpectating()) {
-			// Show them to everyone
-			for (Player target : getServer().getOnlinePlayers()) {
-				if (seeSpecs && getPlayerData(target).isSpectating()) {
-					spectator.hidePlayer(target);
-				}
-				target.showPlayer(spectator);
-			}
-			
-			// Allow interaction
-			getPlayerData(spectator).setSpectating(false);
-			setCollidesWithEntities(spectator, true);
-			
-			spectator.setAllowFlight(false);
-			spectator.setGameMode(getPlayerData(spectator).getOldGameMode());
-			
-			loadPlayerInv(spectator);
-			
-			// Restore effects
-			spectator.removePotionEffect(PotionEffectType.INVISIBILITY);
-			spectator.removePotionEffect(PotionEffectType.SPEED);
-			spectator.removePotionEffect(PotionEffectType.WATER_BREATHING);
-			spectator.removePotionEffect(PotionEffectType.NIGHT_VISION);
-			spectator.addPotionEffects(getPlayerData(spectator).getEffects());
-			
-			spectator.setFlySpeed(0.1f);
-			
-			// Remove from spec team
-			if (scoreboard) {
-				if(getPlayerData(spectator).getOldScoreboard() != null) spectator.setScoreboard(getPlayerData(spectator).getOldScoreboard());
-				team.removePlayer(spectator);
-			}
-			
-			if (!worldChange) {
-				removePlayerFromArena(spectator, true); // Clear the arena they were spectating in
-				spawnPlayer(spectator); // Teleport to spawn
-			}
-			
-			if (!silent) {
-				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
-					if(output) {
-						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled");
-					}
-				}
-				else if (sender instanceof Player && !spectator.getName().equals(sender.getName())) {
-					if(output) {
-						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.RED + ((Player) sender).getDisplayName());
-					}
-					sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
-				}
-				else {
-					if(output) {
-						spectator.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " by " + ChatColor.DARK_RED + "Console");
-					}
-					sender.sendMessage(prefix + "Spectator mode " + ChatColor.RED + "disabled" + ChatColor.GOLD + " for " + ChatColor.RED + spectator.getDisplayName());
-				}
-			}
-
-			if (!temp) {
-				specs.getConfig().set(spectator.getName(), null);
-				specs.saveConfig();
-			}
-		} 
-		else {
-			// Spectate mode wasn't on
-			if (!silent) {
-				if (sender instanceof Player && spectator.getName().equals(sender.getName())) {
-					spectator.sendMessage(prefix + "You aren't spectating!");
-				} 
-				else {
-					sender.sendMessage(prefix + ChatColor.RED + spectator.getDisplayName() + ChatColor.GOLD + " isn't spectating!");
-				}
-			}
-		}
-	}
-
-	/**
 	 * Reload the configuration.
 	 * 
 	 * @param hardReload If true, the configuration will be reloaded from the disk.
@@ -1439,35 +1152,6 @@ public class SpectatorPlusOld extends ZPlugin
 	}
 
 	/**
-	 * Saves the player's inventory and clears it before enabling spectator mode.
-	 * 
-	 * @param player The concerned player.
-	 */
-	protected void savePlayerInv(Player player) {
-		getPlayerData(player).setInventory(player.getInventory().getContents());
-		getPlayerData(player).setArmour(player.getInventory().getArmorContents());
-
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
-	}
-
-	/**
-	 * Loads the player's inventory after disabling the spectate mode.
-	 * 
-	 * @param player The concerned player.
-	 */
-	protected void loadPlayerInv(Player player) {
-		player.getInventory().clear();
-		player.getInventory().setContents(getPlayerData(player).getInventory());
-		player.getInventory().setArmorContents(getPlayerData(player).getArmour());
-
-		getPlayerData(player).setInventory(null);
-		getPlayerData(player).setArmour(null);
-
-		player.updateInventory(); // yes, it's deprecated. But it still works!
-	}
-
-	/**
 	 * Broadcasts a message to all players with spectator mode enabled, and the sender.
 	 * 
 	 * @param sender The sender of the message to be broadcasted.
@@ -1659,25 +1343,25 @@ public class SpectatorPlusOld extends ZPlugin
 			}
 		}
 	}
-	
+
 	/**
 	 * Get the Spectator object (data store) for the player. It is created on-the-fly if needed.
-	 * 
+	 *
 	 * @param target The player to get the Spectator object of.
-	 * 
+	 *
 	 * @since 2.0
 	 */
 	public Spectator getPlayerData(Player target)
 	{
 		Spectator data = user.get(target.getName());
-		
+
 		// Created on-the-fly if needed.
 		if(data == null)
 		{
 			data = new Spectator();
 			user.put(target.getName(), data);
 		}
-		
+
 		return data;
 	}
 	
@@ -1690,16 +1374,6 @@ public class SpectatorPlusOld extends ZPlugin
 	 */
 	public final SpectateAPI getAPI() {
 		return api;
-	}
-	
-	protected Boolean parseBoolean(String input) {
-		if (input.equalsIgnoreCase("on") || input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("y") || input.equalsIgnoreCase("true")) {
-			return true;
-		} else if (input.equalsIgnoreCase("off") || input.equalsIgnoreCase("no") || input.equalsIgnoreCase("n") || input.equalsIgnoreCase("false")) {
-			return false;
-		} else {
-			return null; 
-		}
 	}
 
 	public static SpectatorPlusOld get()

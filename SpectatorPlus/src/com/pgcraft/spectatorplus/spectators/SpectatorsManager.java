@@ -35,7 +35,10 @@ import com.pgcraft.spectatorplus.ConfigAccessor;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -66,6 +69,61 @@ public class SpectatorsManager
 	public ConfigAccessor getSavedSpectatingPlayers()
 	{
 		return savedSpectatingPlayers;
+	}
+
+
+
+	/* **  Spectators lobby  ** */
+
+	public boolean teleportToLobby(Spectator spectator)
+	{
+		Player player = spectator.getPlayer();
+		if (player == null) return false;
+
+		Location spectatorsLobby = /* FIXME lobby location */null;
+
+		if (spectatorsLobby != null)
+		{
+			// We need a safe spot
+			Location aboveLobby = spectatorsLobby.clone().add(0, 1, 0);
+			Location belowLobby = spectatorsLobby.clone().add(0, -1, 0);
+
+			while (spectatorsLobby.getBlock().getType() != Material.AIR || aboveLobby.getBlock().getType() != Material.AIR || belowLobby.getBlock().getType() == Material.AIR || belowLobby.getBlock().getType() == Material.LAVA || belowLobby.getBlock().getType() == Material.STATIONARY_LAVA)
+			{
+				spectatorsLobby.add(0, 1, 0);
+				aboveLobby.add(0, 1, 0);
+				belowLobby.add(0, 1, 0);
+
+				if (spectatorsLobby.getY() > spectatorsLobby.getWorld().getHighestBlockYAt(spectatorsLobby))
+				{
+					spectatorsLobby.add(0, -2, 0);
+					aboveLobby.add(0, -2, 0);
+					belowLobby.add(0, -2, 0);
+
+					break;
+				}
+			}
+
+			spectator.setTeleporting(true);
+			player.teleport(spectatorsLobby);
+			spectator.setTeleporting(false);
+
+			return true;
+		}
+
+		else if (/* FIXME teleportToSpawnOnSpecChangeWithoutLobby */false)
+		{
+			if (/* FIXME useSpawnCommandToTeleport */true && Bukkit.getServer().getPluginCommand("spawn") != null)
+			{
+				return player.performCommand("spawn");
+			}
+			else
+			{
+				return player.teleport(player.getWorld().getSpawnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+			}
+		}
+
+		else return false;
 	}
 
 

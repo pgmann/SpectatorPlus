@@ -24,7 +24,7 @@ public enum SpectatorMode {
 	 * Returns the mode with the specified name.
 	 * 
 	 * @param mode The mode.
-	 * @return {@link SpectatorPlusMode}.
+	 * @return {@link SpectatorMode}.
 	 * 
 	 * @throws IllegalArgumentException if there isn't any mode with this name.
 	 * @throws NullPointerException if mode is null.

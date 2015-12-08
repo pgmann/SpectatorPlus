@@ -173,6 +173,8 @@ public class Spectator
 	    player.setFoodLevel(20);
 	    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
 
+	    player.setFireTicks(0);
+
 	    // TODO fill spectating inventory
 
 	    // We disable all interactions if possible
@@ -205,7 +207,7 @@ public class Spectator
 	    // We teleports the player to the spectating lobby, if needed
 	    if (!worldChange)
 	    {
-		    // TODO teleportation to the lobby
+		    SpectatorPlus.get().getSpectatorsManager().teleportToLobby(this);
 	    }
 
 
@@ -290,7 +292,7 @@ public class Spectator
 		// The player is teleported back to the spawn if needed
 		if (!worldChange)
 		{
-			// TODO teleport player back to the spawn
+			SpectatorPlus.get().getSpectatorsManager().teleportToLobby(this);
 		}
 
 
