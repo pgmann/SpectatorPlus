@@ -31,13 +31,15 @@
  */
 package com.pgcraft.spectatorplus.spectators;
 
-import com.pgcraft.spectatorplus.utils.ConfigAccessor;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
+import com.pgcraft.spectatorplus.utils.ConfigAccessor;
+import fr.zcraft.zlib.tools.PluginLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -50,6 +52,10 @@ public class SpectatorsManager
 	private SpectatorPlus p;
 
 	private ConfigAccessor savedSpectatingPlayers;
+	private ConfigAccessor spectatorsSetup;
+
+	private SpectatorMode spectatorsMode;
+	private Location spectatorsLobby = null;
 
 	private Scoreboard spectatorsScoreboard;
 	private Team spectatorsTeam;
@@ -64,6 +70,9 @@ public class SpectatorsManager
 		p = plugin;
 
 		savedSpectatingPlayers = new ConfigAccessor(p, "specs");
+		spectatorsSetup = new ConfigAccessor(p, "setup");
+
+		loadSpectatorsSetup();
 		rebuildScoreboard();
 	}
 
@@ -76,12 +85,95 @@ public class SpectatorsManager
 
 	/* **  Spectators lobby  ** */
 
+	private void loadSpectatorsSetup()
+	{
+		spectatorsSetup.saveDefaultConfig();
+
+		boolean updated = false;
+
+
+		// Spectating mode
+		try
+		{
+			spectatorsMode = SpectatorMode.fromString(spectatorsSetup.getConfig().getString("mode", "ANY"));
+		}
+		catch(RuntimeException e)
+		{
+			spectatorsMode = SpectatorMode.ANY;
+			updated = true;
+		}
+
+
+		// Spectators lobby
+		spectatorsLobby = null;
+
+		if (spectatorsSetup.getConfig().getBoolean("active", false))
+		{
+			World lobbyWorld = p.getServer().getWorld(spectatorsSetup.getConfig().getString("world", "world"));
+			if (lobbyWorld != null)
+			{
+				try
+				{
+					Double lobbyX = Double.valueOf(spectatorsSetup.getConfig().getString("xPos"));
+					Double lobbyY = Double.valueOf(spectatorsSetup.getConfig().getString("yPos"));
+					Double lobbyZ = Double.valueOf(spectatorsSetup.getConfig().getString("zPos"));
+
+					Float lobbyPitch = Float.valueOf(spectatorsSetup.getConfig().getString("pitch"));
+					Float lobbyYaw   = Float.valueOf(spectatorsSetup.getConfig().getString("yaw"));
+
+					// Values check
+					if (lobbyY > lobbyWorld.getMaxHeight()) lobbyY = (double) lobbyWorld.getMaxHeight();
+					else if (lobbyY < 0) lobbyY = 0d;
+
+					lobbyPitch %= 360;
+					lobbyYaw %= 360;
+
+					if (lobbyPitch < 0) lobbyPitch += 360;
+					if (lobbyYaw < 0)   lobbyYaw   += 360;
+
+					spectatorsLobby = new Location(lobbyWorld, lobbyX, lobbyY, lobbyZ, lobbyPitch, lobbyYaw);
+				}
+				catch (NumberFormatException e)
+				{
+					PluginLogger.warning("Invalid spectator lobby stored in setup.yml (invalid coordinates), removing the lobby.");
+				}
+			}
+			else
+			{
+				PluginLogger.warning("Invalid spectator lobby stored in setup.yml (unknown world), removing the lobby.");
+			}
+
+			if (spectatorsLobby == null) // If the lobby is still null, the location is invalid and not kept.
+				updated = true;
+		}
+
+
+		if (updated)
+			saveSpectatorsSetup();
+	}
+
+	private void saveSpectatorsSetup()
+	{
+		spectatorsSetup.getConfig().set("active", spectatorsLobby != null);
+
+		spectatorsSetup.getConfig().set("xPos",  spectatorsLobby != null ? spectatorsLobby.getX()     : 0d);
+		spectatorsSetup.getConfig().set("yPos",  spectatorsLobby != null ? spectatorsLobby.getY()     : 0d);
+		spectatorsSetup.getConfig().set("zPos",  spectatorsLobby != null ? spectatorsLobby.getZ()     : 0d);
+		spectatorsSetup.getConfig().set("pitch", spectatorsLobby != null ? spectatorsLobby.getPitch() : 0f);
+		spectatorsSetup.getConfig().set("yaw",   spectatorsLobby != null ? spectatorsLobby.getYaw()   : 0f);
+
+		spectatorsSetup.getConfig().set("world", spectatorsLobby != null ? spectatorsLobby.getWorld().getName() : "null");
+
+		spectatorsSetup.getConfig().set("mode", spectatorsMode.toString());
+
+		spectatorsSetup.saveConfig();
+	}
+
+
 	public boolean teleportToLobby(Spectator spectator)
 	{
 		Player player = spectator.getPlayer();
 		if (player == null) return false;
-
-		Location spectatorsLobby = /* FIXME lobby location */null;
 
 		if (spectatorsLobby != null)
 		{
@@ -125,6 +217,28 @@ public class SpectatorsManager
 		}
 
 		else return false;
+	}
+
+	public void setSpectatorsMode(SpectatorMode mode)
+	{
+		this.spectatorsMode = mode;
+		saveSpectatorsSetup();
+	}
+
+	public void setSpectatorsLobby(Location lobby)
+	{
+		spectatorsLobby = lobby;
+		saveSpectatorsSetup();
+	}
+
+	public SpectatorMode getSpectatorsMode()
+	{
+		return spectatorsMode;
+	}
+
+	public Location getSpectatorsLobby()
+	{
+		return spectatorsLobby;
 	}
 
 
