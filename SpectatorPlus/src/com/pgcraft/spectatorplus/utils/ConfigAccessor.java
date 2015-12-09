@@ -21,7 +21,7 @@
  * 
  * <pgmann> Thanks to author of this class! All credit goes to them.
  */
-package com.pgcraft.spectatorplus;
+package com.pgcraft.spectatorplus.utils;
 
 import java.io.File;
 import java.io.IOException;

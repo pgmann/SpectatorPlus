@@ -1,6 +1,6 @@
 package com.pgcraft.spectatorplus.arenas;
 
-import com.pgcraft.spectatorplus.ConfigAccessor;
+import com.pgcraft.spectatorplus.utils.ConfigAccessor;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

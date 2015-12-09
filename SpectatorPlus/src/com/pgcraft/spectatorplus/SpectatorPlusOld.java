@@ -5,6 +5,7 @@ import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import com.pgcraft.spectatorplus.tasks.SpectatorManagerTask;
+import com.pgcraft.spectatorplus.utils.ConfigAccessor;
 import fr.zcraft.zlib.core.ZPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

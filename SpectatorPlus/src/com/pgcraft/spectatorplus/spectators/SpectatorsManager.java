@@ -31,7 +31,7 @@
  */
 package com.pgcraft.spectatorplus.spectators;
 
-import com.pgcraft.spectatorplus.ConfigAccessor;
+import com.pgcraft.spectatorplus.utils.ConfigAccessor;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import org.bukkit.Bukkit;
