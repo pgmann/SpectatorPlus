@@ -42,60 +42,60 @@ public class Toggles
 {
 	/* Miscellaneous toggles */
 
-	public static final ConfigurationItem<Boolean> OUTPUT_MESSAGES = ConfigurationItem.item("outputMessages", true);
+	public static final ConfigurationItem<Boolean> OUTPUT_MESSAGES = ConfigurationItem.item("outputMessages", true, "outputmessages");
 	public static final ConfigurationItem<Boolean> VANILLA_SPECTATOR_MODE = ConfigurationItem.item("spectators.useVanillaMode", false);
 
 	public static final ConfigurationItem<Boolean> SKRIPT_INTEGRATION = ConfigurationItem.item("skriptIntegration", false);
 
-	public static final ConfigurationItem<Boolean> SPECTATOR_MODE_ON_DEATH = ConfigurationItem.item("spectatorModeOnDeath", false);
-	public static final ConfigurationItem<Boolean> ENFORCE_ARENA_BOUNDARIES = ConfigurationItem.item("enforceArenaBoundaries", false);
+	public static final ConfigurationItem<Boolean> SPECTATOR_MODE_ON_DEATH = ConfigurationItem.item("spectatorModeOnDeath", false, "deathspec");
+	public static final ConfigurationItem<Boolean> ENFORCE_ARENA_BOUNDARIES = ConfigurationItem.item("enforceArenaBoundaries", false, "enforceArenaBoundary");
 
 
 	/* Spectators lobby */
 
-	public static final ConfigurationItem<Boolean> ONSPECMODECHANGED_TELEPORTATION_TOSPAWN = ConfigurationItem.item("onSpectatorModeChanged.teleportation.toSpawnWithoutLobby", false);
-	public static final ConfigurationItem<Boolean> ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD = ConfigurationItem.item("onSpectatorModeChanged.teleportation.usingSpawnCommand", false);
+	public static final ConfigurationItem<Boolean> ONSPECMODECHANGED_TELEPORTATION_TOSPAWN = ConfigurationItem.item("onSpectatorModeChanged.teleportation.toSpawnWithoutLobby", false, "teleportToSpawnOnSpecChangeWithoutLobby");
+	public static final ConfigurationItem<Boolean> ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD = ConfigurationItem.item("onSpectatorModeChanged.teleportation.usingSpawnCommand", false, "useSpawnCommandToTeleport");
 
 
 	/* Scoreboards-related */
 
-	public static final ConfigurationItem<Boolean> SPECTATORS_TABLIST_PREFIX = ConfigurationItem.item("spectators.tabListPrefix", false);
-	public static final ConfigurationItem<Boolean> SPECTATORS_SEE_OTHERS = ConfigurationItem.item("spectators.spectatorsSeeSpectators", false);
+	public static final ConfigurationItem<Boolean> SPECTATORS_TABLIST_PREFIX = ConfigurationItem.item("spectators.tabListPrefix", false, "colouredtablist");
+	public static final ConfigurationItem<Boolean> SPECTATORS_SEE_OTHERS = ConfigurationItem.item("spectators.spectatorsSeeSpectators", false, "seespecs");
 
 
 	/* Spectators tools */
 
-	public static final ConfigurationItem<Boolean>  TOOLS_NEWBIES_MODE = ConfigurationItem.item("tools.newbieMode", true);
+	public static final ConfigurationItem<Boolean>  TOOLS_NEWBIES_MODE = ConfigurationItem.item("tools.newbieMode", true, "newbieMode");
 
-	public static final ConfigurationItem<Boolean>  TOOLS_TELEPORTER_ENABLED = ConfigurationItem.item("tools.teleporter.enabled", true);
-	public static final ConfigurationItem<Material> TOOLS_TELEPORTER_ITEM = ConfigurationItem.item("tools.teleporter.item", Material.COMPASS);
-	public static final ConfigurationItem<Boolean>  TOOLS_TELEPORTER_INSPECTOR = ConfigurationItem.item("tools.teleporter.inspector", true);
-	public static final ConfigurationItem<Boolean>  TOOLS_TELEPORTER_HEALTH = ConfigurationItem.item("tools.teleporter.health", true);
-	public static final ConfigurationItem<Boolean>  TOOLS_TELEPORTER_LOCATION = ConfigurationItem.item("tools.teleporter.location", true);
+	public static final ConfigurationItem<Boolean>  TOOLS_TELEPORTER_ENABLED = ConfigurationItem.item("tools.teleporter.enabled", true, "compass");
+	public static final ConfigurationItem<Material> TOOLS_TELEPORTER_ITEM = ConfigurationItem.item("tools.teleporter.item", Material.COMPASS, "compassItem");
+	public static final ConfigurationItem<Boolean>  TOOLS_TELEPORTER_INSPECTOR = ConfigurationItem.item("tools.teleporter.inspector", true, "inspectPlayerFromTeleportationMenu");
+	public static final ConfigurationItem<Boolean>  TOOLS_TELEPORTER_HEALTH = ConfigurationItem.item("tools.teleporter.health", true, "playersHealthInTeleportationMenu");
+	public static final ConfigurationItem<Boolean>  TOOLS_TELEPORTER_LOCATION = ConfigurationItem.item("tools.teleporter.location", true, "playersLocationInTeleportationMenu");
 
-	public static final ConfigurationItem<Boolean>  TOOLS_ARENACHOOSER_ENABLED = ConfigurationItem.item("tools.arenaChooser.enabled", true);
-	public static final ConfigurationItem<Material> TOOLS_ARENACHOOSER_ITEM = ConfigurationItem.item("tools.arenaChooser.item", Material.WATCH);
+	public static final ConfigurationItem<Boolean>  TOOLS_ARENACHOOSER_ENABLED = ConfigurationItem.item("tools.arenaChooser.enabled", true, "arenaclock");
+	public static final ConfigurationItem<Material> TOOLS_ARENACHOOSER_ITEM = ConfigurationItem.item("tools.arenaChooser.item", Material.WATCH, "clockItem");
 
-	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_ENABLED = ConfigurationItem.item("tools.tools.enabled", true);
-	public static final ConfigurationItem<Material> TOOLS_TOOLS_ITEM = ConfigurationItem.item("tools.tools.item", Material.MAGMA_CREAM);
+	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_ENABLED = ConfigurationItem.item("tools.tools.enabled", true, "spectatorsTools");
+	public static final ConfigurationItem<Material> TOOLS_TOOLS_ITEM = ConfigurationItem.item("tools.tools.item", Material.MAGMA_CREAM, "spectatorsToolsItem");
 	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_SPEED = ConfigurationItem.item("tools.tools.speed", true);
 	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_NIGHTVISION = ConfigurationItem.item("tools.tools.nightVision", true);
 	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_DIVINGSUIT = ConfigurationItem.item("tools.tools.divingSuit", true);
 	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_NOCLIP = ConfigurationItem.item("tools.tools.noClipMode", true);
-	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_TPTODEATH_ENABLED = ConfigurationItem.item("tools.tools.tpToDeath.enabled", true);
-	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE = ConfigurationItem.item("tools.tools.tpToDeath.displayCause", true);
+	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_TPTODEATH_ENABLED = ConfigurationItem.item("tools.tools.tpToDeath.enabled", true, "tpToDeathTool");
+	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE = ConfigurationItem.item("tools.tools.tpToDeath.displayCause", true, "tpToDeathToolShowCause");
 
 	public static final ConfigurationItem<Boolean>  TOOLS_TOOLS_GLOW = ConfigurationItem.item("tools.tools.glowEffectIfActive", true);
 
-	public static final ConfigurationItem<Boolean>  TOOLS_INSPECTOR_ENABLED = ConfigurationItem.item("tools.inspector.enabled", false);
-	public static final ConfigurationItem<Material> TOOLS_INSPECTOR_ITEM = ConfigurationItem.item("tools.inspector.item", Material.FEATHER);
+	public static final ConfigurationItem<Boolean>  TOOLS_INSPECTOR_ENABLED = ConfigurationItem.item("tools.inspector.enabled", false, "inspector");
+	public static final ConfigurationItem<Material> TOOLS_INSPECTOR_ITEM = ConfigurationItem.item("tools.inspector.item", Material.FEATHER, "inspectorItem");
 
 
 	/* Spectators chat */
 
-	public static final ConfigurationItem<Boolean> CHAT_ENABLED = ConfigurationItem.item("chat.spectatorChat", true);
-	public static final ConfigurationItem<Boolean> CHAT_BLOCKCOMMANDS_ENABLED = ConfigurationItem.item("chat.blockCommands.enabled", true);
-	public static final ConfigurationItem<Boolean> CHAT_BLOCKCOMMANDS_ADMINBYPASS = ConfigurationItem.item("chat.blockCommands.adminBypass", true);
+	public static final ConfigurationItem<Boolean> CHAT_ENABLED = ConfigurationItem.item("chat.spectatorChat", true, "specchat");
+	public static final ConfigurationItem<Boolean> CHAT_BLOCKCOMMANDS_ENABLED = ConfigurationItem.item("chat.blockCommands.enabled", true, "blockcmds");
+	public static final ConfigurationItem<Boolean> CHAT_BLOCKCOMMANDS_ADMINBYPASS = ConfigurationItem.item("chat.blockCommands.adminBypass", true, "adminbypass");
 
 	public static final ConfigurationItem<List<String>> CHAT_BLOCKCOMMANDS_WHITELIST = ConfigurationItem.item("chat.blockCommands.whitelist", Collections.<String>emptyList());
 }
