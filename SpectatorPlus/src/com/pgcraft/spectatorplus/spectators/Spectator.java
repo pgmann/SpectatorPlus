@@ -2,6 +2,7 @@ package com.pgcraft.spectatorplus.spectators;
 
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
+import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.utils.SPUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,13 +22,13 @@ public class Spectator
 {
     private UUID playerID;
 
-	private boolean spectating = false;
-	private boolean teleporting = false;
-	private boolean gamemodeChangeAllowed = false;
-    private boolean hideFromTp = false;
-    private boolean wasSpectatorBeforeWorldChanged = false;
+	private Boolean spectating = false;
+	private Boolean teleporting = false;
+	private Boolean gamemodeChangeAllowed = false;
+    private Boolean hiddenFromTp = false;
+    private Boolean wasSpectatorBeforeWorldChanged = false;
 
-	private UUID arena = null;
+	private Arena arena = null;
 
 
 	private ItemStack[] oldInventoryContent = null;
@@ -383,14 +384,14 @@ public class Spectator
     }
 
     /**
-     * The ID of the current arena the spectator is in.
+     * The arena the spectator is in.
      */
-    public UUID getArena()
+    public Arena getArena()
     {
         return arena;
     }
 
-    public void setArena(UUID arena)
+    public void setArena(Arena arena)
     {
         this.arena = arena;
     }
@@ -486,14 +487,19 @@ public class Spectator
     /**
      * Whether the player is hidden from the spectator teleportation GUI.
      */
-    public boolean isHideFromTp()
+    public boolean isHiddenFromTp()
     {
-        return hideFromTp;
+	    Player player = getPlayer();
+
+	    if (player != null)
+	        return player.hasPermission("spectate.admin.hide") || hiddenFromTp;
+        else
+		    return hiddenFromTp;
     }
 
-    public void setHideFromTp(boolean hideFromTp)
+    public void setHiddenFromTp(boolean hideFromTp)
     {
-        this.hideFromTp = hideFromTp;
+        this.hiddenFromTp = hideFromTp;
     }
 
     /**

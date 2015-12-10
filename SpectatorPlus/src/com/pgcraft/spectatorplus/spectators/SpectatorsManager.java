@@ -33,6 +33,7 @@ package com.pgcraft.spectatorplus.spectators;
 
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
+import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.utils.ConfigAccessor;
 import fr.zcraft.zlib.tools.PluginLogger;
 import org.bukkit.Bukkit;
@@ -45,6 +46,10 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class SpectatorsManager
@@ -315,5 +320,48 @@ public class SpectatorsManager
 			spectatorsTeam.addPlayer(player);
 		else
 			spectatorsTeam.removePlayer(player);
+	}
+
+
+
+	/* **  Spectators queries  ** */
+
+	public List<Spectator> getVisiblePlayersFor(Spectator spectator)
+	{
+		Player player = spectator.getPlayer();
+		if (player == null) return Collections.emptyList();
+
+
+		List<Spectator> visiblePlayers = new ArrayList<>();
+
+		for (Player viewedPlayer : Bukkit.getOnlinePlayers())
+		{
+			Spectator viewedSpectator = SpectatorPlus.get().getPlayerData(player);
+
+			if (!viewedSpectator.isSpectating() || (viewedSpectator.isHiddenFromTp() && !player.hasPermission("spectate.admin.hide.see")))
+				continue;
+
+			switch (spectatorsMode)
+			{
+				case ANY:
+					visiblePlayers.add(viewedSpectator);
+					break;
+
+				case WORLD:
+					if (viewedPlayer.getWorld().equals(player.getWorld()))
+						visiblePlayers.add(viewedSpectator);
+
+					break;
+
+				case ARENA:
+					Arena arena = spectator.getArena();
+					if (arena != null && arena.isInside(viewedPlayer.getLocation()))
+						visiblePlayers.add(viewedSpectator);
+
+					break;
+			}
+		}
+
+		return visiblePlayers;
 	}
 }

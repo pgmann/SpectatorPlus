@@ -84,7 +84,7 @@ public class SpectateListener implements Listener {
 	protected void onPlayerJoin(PlayerJoinEvent e) {
 		
 		if(e.getPlayer().hasPermission("spectate.admin.hide.auto")) {
-			p.getPlayerData(e.getPlayer()).setHideFromTp(true);
+			p.getPlayerData(e.getPlayer()).setHiddenFromTp(true);
 		}
 		
 		for (Player target : p.getServer().getOnlinePlayers()) {
@@ -883,9 +883,9 @@ public class SpectateListener implements Listener {
 						p.getPlayerData(spectator).setGamemodeChangeAllowed(true);
 						spectator.setGameMode(GameMode.SPECTATOR);
 						p.getPlayerData(spectator).setGamemodeChangeAllowed(false);
-						
+
 						p.updateSpectatorInventory(spectator);
-						
+
 						spectator.sendMessage(ChatColor.GREEN + "No-clip mode enabled");
 						spectator.sendMessage(ChatColor.GRAY + "Open your inventory to access controls or to quit the no-clip mode");
 					}
