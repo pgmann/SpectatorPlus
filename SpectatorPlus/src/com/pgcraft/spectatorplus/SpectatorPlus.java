@@ -33,6 +33,7 @@ package com.pgcraft.spectatorplus;
 
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
+import com.pgcraft.spectatorplus.guis.inventories.SpectatorsInventoryListener;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.spectators.SpectatorsManager;
 import fr.zcraft.zlib.components.configuration.Configuration;
@@ -85,6 +86,10 @@ public class SpectatorPlus extends ZPlugin
 		spectatorsManager = new SpectatorsManager(this);
 		arenasManager = new ArenasManager(this);
 
+		// Loading listeners
+		getServer().getPluginManager().registerEvents(new SpectatorsInventoryListener(), this);
+
+		// Loading API
 		api = new SpectateAPI(this);
 	}
 

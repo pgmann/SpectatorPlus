@@ -162,22 +162,20 @@ public class Spectator
 
 
 	    // We clear the player
-	    player.getInventory().clear();
-	    player.getInventory().setArmorContents(null);
-
 	    for (PotionEffect effect : player.getActivePotionEffects())
 	    {
 		    player.removePotionEffect(effect.getType());
 	    }
+
+	    player.setFireTicks(0);
 
 	    // We add spectating capabilities to the player
 	    player.setAllowFlight(true);
 	    player.setFoodLevel(20);
 	    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
 
-	    player.setFireTicks(0);
-
-	    // TODO fill spectating inventory
+	    // We update the spectator's inventory
+	    SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(player);
 
 	    // We disable all interactions if possible
 	    player.setGameMode(Toggles.VANILLA_SPECTATOR_MODE.get() ? GameMode.ADVENTURE : GameMode.SPECTATOR);
@@ -263,6 +261,7 @@ public class Spectator
 
 		player.getInventory().setContents(oldInventoryContent);
 		player.getInventory().setArmorContents(oldArmourContent);
+		player.updateInventory();
 
 		// The arena is reset
 		if (!worldChange)

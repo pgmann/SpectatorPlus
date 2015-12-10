@@ -34,6 +34,7 @@ package com.pgcraft.spectatorplus.spectators;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.guis.inventories.SpectatorsInventoryManager;
 import com.pgcraft.spectatorplus.utils.ConfigAccessor;
 import fr.zcraft.zlib.tools.PluginLogger;
 import org.bukkit.Bukkit;
@@ -56,6 +57,8 @@ public class SpectatorsManager
 {
 	private SpectatorPlus p;
 
+	private SpectatorsInventoryManager inventoryManager;
+
 	private ConfigAccessor savedSpectatingPlayers;
 	private ConfigAccessor spectatorsSetup;
 
@@ -77,6 +80,8 @@ public class SpectatorsManager
 		savedSpectatingPlayers = new ConfigAccessor(p, "specs");
 		spectatorsSetup = new ConfigAccessor(p, "setup");
 
+		inventoryManager = new SpectatorsInventoryManager();
+
 		loadSpectatorsSetup();
 		rebuildScoreboard();
 	}
@@ -86,6 +91,10 @@ public class SpectatorsManager
 		return savedSpectatingPlayers;
 	}
 
+	public SpectatorsInventoryManager getInventoryManager()
+	{
+		return inventoryManager;
+	}
 
 
 	/* **  Spectators lobby  ** */
@@ -228,6 +237,9 @@ public class SpectatorsManager
 	{
 		this.spectatorsMode = mode;
 		saveSpectatorsSetup();
+
+		// Needed to add (or remove) the arena selector
+		getInventoryManager().equipSpectators();
 	}
 
 	public void setSpectatorsLobby(Location lobby)

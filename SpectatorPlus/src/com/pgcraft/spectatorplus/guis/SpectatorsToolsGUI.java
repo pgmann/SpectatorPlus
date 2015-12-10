@@ -354,7 +354,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		getPlayer().setGameMode(GameMode.SPECTATOR);
 		SpectatorPlus.get().getPlayerData(getPlayer()).setGamemodeChangeAllowed(false);
 
-		// TODO update inventory
+		SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(getPlayer());
 
 		getPlayer().sendMessage(ChatColor.GREEN + "No-clip mode enabled");
 		getPlayer().sendMessage(ChatColor.GRAY + "Open your inventory to access controls or to quit the no-clip mode");
@@ -372,8 +372,8 @@ public class SpectatorsToolsGUI extends ActionGui
 		}
 		else
 		{
-			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0), true);
-			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0), true);
+			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, true, false), true);
+			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0, true, false), true);
 		}
 
 		update();
