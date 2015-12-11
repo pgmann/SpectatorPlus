@@ -34,8 +34,10 @@ package com.pgcraft.spectatorplus.spectators;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.guis.ArenasSelectorGUI;
 import com.pgcraft.spectatorplus.guis.inventories.SpectatorsInventoryManager;
 import com.pgcraft.spectatorplus.utils.ConfigAccessor;
+import fr.zcraft.zlib.components.gui.Gui;
 import fr.zcraft.zlib.tools.PluginLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -51,6 +53,7 @@ import org.bukkit.scoreboard.Team;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 public class SpectatorsManager
@@ -123,7 +126,9 @@ public class SpectatorsManager
 
 		if (spectatorsSetup.getConfig().getBoolean("active", false))
 		{
-			World lobbyWorld = p.getServer().getWorld(spectatorsSetup.getConfig().getString("world", "world"));
+			final String worldName = spectatorsSetup.getConfig().getString("world", "null");
+			final World lobbyWorld = p.getServer().getWorld(worldName);
+
 			if (lobbyWorld != null)
 			{
 				try
@@ -154,7 +159,9 @@ public class SpectatorsManager
 			}
 			else
 			{
-				PluginLogger.warning("Invalid spectator lobby stored in setup.yml (unknown world), removing the lobby.");
+				// Error message only displayed if the world is not the null name
+				if (!Objects.equals(worldName, "null"))
+					PluginLogger.warning("Invalid spectator lobby stored in setup.yml (unknown world), removing the lobby.");
 			}
 
 			if (spectatorsLobby == null) // If the lobby is still null, the location is invalid and not kept.
@@ -240,6 +247,10 @@ public class SpectatorsManager
 
 		// Needed to add (or remove) the arena selector
 		getInventoryManager().equipSpectators();
+
+		// Force-close the arena selector if the new mode is not the arena one.
+		if (mode != SpectatorMode.ARENA)
+			Gui.close(ArenasSelectorGUI.class);
 	}
 
 	public void setSpectatorsLobby(Location lobby)

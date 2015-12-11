@@ -3,7 +3,9 @@ package com.pgcraft.spectatorplus.spectators;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.guis.TeleportationGUI;
 import com.pgcraft.spectatorplus.utils.SPUtils;
+import fr.zcraft.zlib.components.gui.Gui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -134,6 +136,9 @@ public class Spectator
 	            enableSpectatorMode(executor, silent, worldChange);
 	        else
 	            disableSpectatorMode(executor, silent, worldChange);
+
+	        if(!worldChange)
+		        Gui.update(TeleportationGUI.class);
         }
     }
 
