@@ -48,7 +48,9 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> SKRIPT_INTEGRATION = ConfigurationItem.item("skriptIntegration", false);
 
 	public static final ConfigurationItem<Boolean> SPECTATOR_MODE_ON_DEATH = ConfigurationItem.item("spectatorModeOnDeath", false, "deathspec");
-	public static final ConfigurationItem<Boolean> ENFORCE_ARENA_BOUNDARIES = ConfigurationItem.item("enforceArenaBoundaries", false, "enforceArenaBoundary");
+
+	public static final ConfigurationItem<Boolean> ENFORCE_ARENA_BOUNDARIES = ConfigurationItem.item("enforceBoundaries.arenas", false, "enforceArenaBoundary", "enforceArenaBoundaries");
+	public static final ConfigurationItem<Double> ENFORCE_LOBBY_BOUNDARIES = ConfigurationItem.item("enforceBoundaries.lobby", 0d);
 
 
 	/* Spectators lobby */

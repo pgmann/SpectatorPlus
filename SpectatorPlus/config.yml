@@ -116,5 +116,7 @@ outputMessages: true
 spectatorModeOnDeath: false
 
 # Should spectators be stopped from going out of the boundary of the arena they're in?
-# Stops them from generating far-off chunks
-enforceArenaBoundaries: true
+# Stops them from generating far-off chunks.
+enforceBoundaries:
+    arenas: true  # Cannot quit the arena
+    lobby: 0      # Cannot quit the spectator lobby (max x blocks from it are allowed in a sphere; if 0 or negative, disabled)

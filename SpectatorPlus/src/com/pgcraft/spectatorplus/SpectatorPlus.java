@@ -38,6 +38,7 @@ import com.pgcraft.spectatorplus.listeners.ServerActionsListener;
 import com.pgcraft.spectatorplus.listeners.SpectatorsInteractionsListener;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.spectators.SpectatorsManager;
+import com.pgcraft.spectatorplus.tasks.SpectatorManagerTask;
 import fr.zcraft.zlib.components.configuration.Configuration;
 import fr.zcraft.zlib.core.ZPlugin;
 import org.bukkit.ChatColor;
@@ -94,6 +95,9 @@ public class SpectatorPlus extends ZPlugin
 		pm.registerEvents(new ServerActionsListener(), this);
 		pm.registerEvents(new SpectatorsInteractionsListener(), this);
 		pm.registerEvents(new SpectatorsInventoryListener(), this);
+
+		// Loading checking task
+		getServer().getScheduler().runTaskTimer(this, new SpectatorManagerTask(), 20l, 20l);
 
 		// Loading API
 		api = new SpectateAPI(this);

@@ -1,55 +1,85 @@
 package com.pgcraft.spectatorplus.tasks;
 
-import com.pgcraft.spectatorplus.spectators.SpectatorMode;
-import com.pgcraft.spectatorplus.SpectatorPlusOld;
+import com.pgcraft.spectatorplus.SpectatorPlus;
+import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.spectators.Spectator;
+import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+
 
 /**
- * Handle players trying to leave the arena in arena mode.<br>
- * Players outside the arena borders will have the move event cancelled;<br>
- * Players more than 5 blocks away from the global lobby will also have their move event cancelled.
+ * Handle players trying to leave the arena in arena mode.
+ *
+ * Players outside the arena borders will have the move event cancelled; players more than x blocks
+ * away (set in config) from the global lobby will also have their move event cancelled.
+ *
+ * This also ensures spectators are always able to fly.
  */
-public class SpectatorManagerTask extends BukkitRunnable {
-	SpectatorPlusOld p;
-	
-	public SpectatorManagerTask(SpectatorPlusOld p) {
-		this.p = p;
+public class SpectatorManagerTask implements Runnable
+{
+	SpectatorPlus p;
+
+	public SpectatorManagerTask()
+	{
+		p = SpectatorPlus.get();
 	}
-	
+
 	@Override
-	public void run() {
-		
-		for (Player target:p.getServer().getOnlinePlayers()) {
-			if (p.getPlayerData(target).isSpectating()) {
+	public void run()
+	{
+		final Boolean ARENA_MODE = p.getSpectatorsManager().getSpectatorsMode() == SpectatorMode.ARENA;
+		final Boolean ENFORCE_ARENA_BOUNDARIES = Toggles.ENFORCE_ARENA_BOUNDARIES.get();
+		final Boolean ENFORCE_LOBBY_BOUNDARIES = Toggles.ENFORCE_LOBBY_BOUNDARIES.get() > 0d;
+		final Double MAX_LOBBY_DISTANCE_SQUARED = Math.pow(Toggles.ENFORCE_LOBBY_BOUNDARIES.get(), 2d);
+
+		for (Player target : p.getServer().getOnlinePlayers())
+		{
+			final Spectator spectator = p.getPlayerData(target);
+
+			if (spectator.isSpectating())
+			{
 				// Spectators should always be able to fly.
 				// to help prevent glitches when enabling/disabling flight, only set allow flight when it's not already on.
 				if (!target.getAllowFlight()) target.setAllowFlight(true);
-				
+
 				// In arena mode, if boundaries are enforced, check if spectators are not inside the boundary.
 				// [Spawn allows free movement (before choosing an arena).]
-				if (p.mode.equals(SpectatorMode.ARENA) && p.enforceArenaBoundary) {
-					boolean outOfBounds = true;
-					
-					Arena arena = p.arenasManager.getArena(p.getPlayerData(target).getArena());
-					if (arena != null) { // ignore players not in an arena.
-						if(!arena.isEnabled() || !arena.isRegistered() || arena.getCorner1() == null || arena.getCorner2() == null) {
-							p.getPlayerData(target).setArena(null);
-							target.sendMessage(SpectatorPlusOld.prefix+"The arena you were in was removed.");
-							p.spawnPlayer(target);
-							outOfBounds = false;
-						} else if (isValidPos(target, arena)) {
+				if (ARENA_MODE && ENFORCE_ARENA_BOUNDARIES)
+				{
+					final Arena arena = spectator.getArena();
+					Boolean outOfBounds = false;
+
+					if (arena != null)
+					{
+						// ignore players not in an arena.
+						if (!arena.isEnabled() || !arena.isRegistered() || arena.getCorner1() == null || arena.getCorner2() == null)
+						{
+							spectator.setArena(null);
+							p.getSpectatorsManager().teleportToLobby(spectator);
+
+							p.sendMessage(target, "The arena you were in was removed.");
+
 							outOfBounds = false;
 						}
-					} else {
-						outOfBounds = false;
+						else
+						{
+							outOfBounds = !arena.isInside(target.getLocation());
+						}
 					}
-					
-					if (outOfBounds) {
-						if (p.output) target.sendMessage(SpectatorPlusOld.prefix + "Stay inside the arena!");
+					else
+					{
+						if (ENFORCE_LOBBY_BOUNDARIES)
+						{
+							final Location lobby = p.getSpectatorsManager().getSpectatorsLobby();
+							outOfBounds = !lobby.getWorld().equals(target.getWorld()) || lobby.distanceSquared(target.getLocation()) > MAX_LOBBY_DISTANCE_SQUARED;
+						}
+					}
+
+					if (outOfBounds)
+					{
+						p.sendMessage(target, "Stay inside the arena!");
 						target.teleport(getValidPos(target.getLocation(), arena));
 					}
 				}
@@ -57,78 +87,32 @@ public class SpectatorManagerTask extends BukkitRunnable {
 		}
 	}
 
-	boolean isValidPos(Player target, Arena arena) {
-		Location loc1 = getLargestCorner(arena.getCorner1(), arena.getCorner2());
-		Location loc2 = getSmallestCorner(arena.getCorner1(), arena.getCorner2());
-		
-		if (target.getLocation().getX() <= loc1.getX() && target.getLocation().getX() >= loc2.getX()) {
-			if (target.getLocation().getY() <= loc1.getY() && target.getLocation().getY() >= loc2.getY()) {
-				if (target.getLocation().getZ() <= loc1.getZ() && target.getLocation().getZ() >= loc2.getZ()) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	Location getValidPos(Location target, Arena arena) {
-		Location safePos = new Location(arena.getCorner1().getWorld(), target.getX(),target.getY(),target.getZ());
-		Location loc1 = getLargestCorner(arena.getCorner1(), arena.getCorner2());
-		Location loc2 = getSmallestCorner(arena.getCorner1(), arena.getCorner2());
-		
-		if (target.getX() > loc1.getX()) safePos.setX(loc1.getX()-0.01);
-		if (target.getX() < loc2.getX()) safePos.setX(loc2.getX()+0.01);
-		
-		if (target.getY() > loc1.getY()) safePos.setY(loc1.getY()-0.01);
-		if (target.getY() < loc2.getY()) safePos.setY(loc2.getY()+0.01);
-		
-		if (target.getZ() > loc1.getZ()) safePos.setZ(loc1.getZ()-0.01);
-		if (target.getZ() < loc2.getZ()) safePos.setZ(loc2.getZ()+0.01);
-		
+	private Location getValidPos(Location target, Arena arena)
+	{
+		final Location lobby = p.getSpectatorsManager().getSpectatorsLobby();
+
+		Location safePos = new Location(
+				arena != null ? arena.getCorner1().getWorld() : lobby.getWorld(),
+				target.getX(),
+				target.getY(),
+				target.getZ()
+		);
+
+		Location lowestCorner  = arena != null ? arena.getCorner1() : lobby.clone().add(-5, -5, -5);
+		Location highestCorner = arena != null ? arena.getCorner2() : lobby.clone().add(5, 5, 5);
+
+		if (target.getX() > highestCorner.getX()) safePos.setX(highestCorner.getX() - 0.01);
+		if (target.getX() < lowestCorner.getX()) safePos.setX(lowestCorner.getX() + 0.01);
+
+		if (target.getY() > highestCorner.getY()) safePos.setY(highestCorner.getY() - 0.01);
+		if (target.getY() < lowestCorner.getY()) safePos.setY(lowestCorner.getY() + 0.01);
+
+		if (target.getZ() > highestCorner.getZ()) safePos.setZ(highestCorner.getZ() - 0.01);
+		if (target.getZ() < lowestCorner.getZ()) safePos.setZ(lowestCorner.getZ() + 0.01);
+
 		// Must have the same pitch and yaw to possibly equal the player's current position. Also, looks better.
 		safePos.setDirection(target.getDirection());
-		
+
 		return safePos;
-		
-	}
-	
-	Location getSafePos(Player target) {
-		Location where = target.getLocation();
-		Location aboveWhere = target.getLocation().add(0,1,0);
-		Location belowWhere = target.getLocation().subtract(0,1,0);
-		if (where.getBlock().getType() != Material.AIR || aboveWhere.getBlock().getType() != Material.AIR || (belowWhere.getBlock().getType() == Material.AIR || belowWhere.getBlock().getType() == Material.LAVA || belowWhere.getBlock().getType() == Material.WATER)) {
-			while (where.getBlock().getType() != Material.AIR || aboveWhere.getBlock().getType() != Material.AIR || (belowWhere.getBlock().getType() == Material.AIR || belowWhere.getBlock().getType() == Material.LAVA || belowWhere.getBlock().getType() == Material.WATER)) {
-				where.setY(where.getY()+1);
-				aboveWhere.setY(aboveWhere.getY()+1);
-				belowWhere.setY(belowWhere.getY()+1);
-				if (where.getY() > target.getLocation().getWorld().getHighestBlockYAt(where)) {
-					where.setY(where.getY()-2);
-					aboveWhere.setY(aboveWhere.getY()-2);
-					belowWhere.setY(belowWhere.getY()-2);
-				}
-			}
-		}
-		return where;
-	}
-	
-	Location getLargestCorner(Location loc1, Location loc2) {
-		if (!loc1.getWorld().equals(loc2.getWorld())) {
-			return null;
-		}
-		Location largest = new Location(loc1.getWorld(), loc1.getX(), loc1.getY(), loc1.getZ());
-		if(loc1.getX() < loc2.getX()) largest.setX(loc2.getX());
-		if(loc1.getY() < loc2.getY()) largest.setY(loc2.getY());
-		if(loc1.getZ() < loc2.getZ()) largest.setZ(loc2.getZ());
-		return largest;
-	}
-	Location getSmallestCorner(Location loc1, Location loc2) {
-		if (!loc1.getWorld().equals(loc2.getWorld())) {
-			return null;
-		}
-		Location smallest = new Location(loc1.getWorld(), loc1.getX(), loc1.getY(), loc1.getZ());
-		if(loc1.getX() > loc2.getX()) smallest.setX(loc2.getX());
-		if(loc1.getY() > loc2.getY()) smallest.setY(loc2.getY());
-		if(loc1.getZ() > loc2.getZ()) smallest.setZ(loc2.getZ());
-		return smallest;
 	}
 }
