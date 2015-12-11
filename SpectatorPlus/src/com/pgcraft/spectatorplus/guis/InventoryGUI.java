@@ -53,7 +53,7 @@ public class InventoryGUI extends ActionGui
 		setTitle(displayedInventory.getTitle().startsWith("container.") ? displayedInventory.getType().getDefaultTitle() : displayedInventory.getTitle());
 
 		int slot = 0;
-		for (ItemStack stack : displayedInventory.getContents())
+		for (ItemStack stack : displayedInventory)
 		{
 			action("", slot++, stack);
 		}

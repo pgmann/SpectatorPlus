@@ -34,6 +34,8 @@ package com.pgcraft.spectatorplus;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import com.pgcraft.spectatorplus.guis.inventories.SpectatorsInventoryListener;
+import com.pgcraft.spectatorplus.listeners.ServerActionsListener;
+import com.pgcraft.spectatorplus.listeners.SpectatorsInteractionsListener;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.spectators.SpectatorsManager;
 import fr.zcraft.zlib.components.configuration.Configuration;
@@ -42,6 +44,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,8 +89,11 @@ public class SpectatorPlus extends ZPlugin
 		spectatorsManager = new SpectatorsManager(this);
 		arenasManager = new ArenasManager(this);
 
-		// Loading listeners
-		getServer().getPluginManager().registerEvents(new SpectatorsInventoryListener(), this);
+		// Registering listeners
+		final PluginManager pm = getServer().getPluginManager();
+		pm.registerEvents(new ServerActionsListener(), this);
+		pm.registerEvents(new SpectatorsInteractionsListener(), this);
+		pm.registerEvents(new SpectatorsInventoryListener(), this);
 
 		// Loading API
 		api = new SpectateAPI(this);

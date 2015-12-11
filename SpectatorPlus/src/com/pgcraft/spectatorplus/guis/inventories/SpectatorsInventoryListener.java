@@ -187,6 +187,9 @@ public class SpectatorsInventoryListener implements Listener
 
 	private void handlePunch(Player player, Player clicked)
 	{
-		Gui.open(player, new PlayerInventoryGUI(clicked));
+		if (!SpectatorPlus.get().getPlayerData(clicked).isSpectating())
+		{
+			Gui.open(player, new PlayerInventoryGUI(clicked));
+		}
 	}
 }

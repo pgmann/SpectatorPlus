@@ -1,22 +1,20 @@
 package com.pgcraft.spectatorplus.tasks;
 
-import com.pgcraft.spectatorplus.SpectatorPlusOld;
+import com.pgcraft.spectatorplus.SpectatorPlus;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
-public class AfterRespawnTask extends BukkitRunnable {
-	
-	private SpectatorPlusOld p;
+public class AfterRespawnTask implements Runnable
+{
 	private Player player;
 	
-	public AfterRespawnTask(Player player, SpectatorPlusOld p) {
-		this.p = p;
+	public AfterRespawnTask(Player player)
+	{
 		this.player = player;
 	}
 	
 	@Override
-	public void run() {
-		p.enableSpectate(player, player);
-		this.cancel();
+	public void run()
+	{
+		SpectatorPlus.get().getPlayerData(player).setSpectating(true);
 	}
 }
