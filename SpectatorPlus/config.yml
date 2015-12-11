@@ -103,6 +103,10 @@ onSpectatorModeChanged:
 
 
 # Enable Skript integration? Only set to true if needed.
+# /!\ If the Skript integration is enabled, the interaction events are not cancelled,
+#     and you'll have to cancel these events using a skript. Else, spectators will be
+#     able to interact with the world, pressing buttons, opening doors, etc.
+#     See https://github.com/pgmann/SpectatorPlus/pull/38 .
 skriptIntegration: false
 
 # Show spectatorplus plugin messages to spectators?
