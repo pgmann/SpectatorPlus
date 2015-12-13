@@ -45,7 +45,7 @@ public class SPUtils
 	public static String getName(CommandSender commandSender)
 	{
 		if (commandSender instanceof Player)
-			return commandSender.getName();
+			return ((Player) commandSender).getDisplayName();
 
 		else if (commandSender instanceof CommandBlock)
 			return "Command block '" + commandSender.getName() + "'";

@@ -494,63 +494,6 @@ public class SpectatorPlusOld extends ZPlugin
 	}
 
 	/**
-	 * Broadcasts a message to all players with spectator mode enabled, and the sender.
-	 * 
-	 * @param sender The sender of the message to be broadcasted.
-	 * @param message The message to broadcast.
-	 */
-	protected void broadcastToSpectators(CommandSender sender, String message) {
-		String senderName = null;
-		if(sender instanceof Player) {
-			senderName = ChatColor.WHITE + ((Player) sender).getDisplayName();
-		}
-		else {
-			senderName = ChatColor.DARK_RED + "CONSOLE";
-		}
-
-		String formattedMessage = ChatColor.GOLD + "[" + senderName + ChatColor.GOLD + " -> spectators] " + ChatColor.RESET + message;
-
-		for (Player player : getServer().getOnlinePlayers()) {
-			if(getPlayerData(player).isSpectating() || player.getName().equals(sender.getName())) {
-				player.sendMessage(formattedMessage);
-			}
-		}
-
-		console.sendMessage(formattedMessage);
-	}
-
-	/**
-	 * Sends a spectator chat message, from one spectator to all other spectators. 
-	 * Includes "/me" actions
-	 * 
-	 * @param sender The sender of the message.
-	 * @param message The text of the message.
-	 * @param isAction If true, the message will be displayed as an action message (like /me <message>).
-	 */
-	protected void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {
-		String playerName = null;
-		if(sender instanceof Player) {
-			playerName = ChatColor.WHITE + ((Player) sender).getDisplayName();
-		} else {
-			playerName = ChatColor.DARK_RED + "CONSOLE";
-		}
-
-		String invite = null;
-		if(isAction) {
-			invite = "* " + playerName + " " + ChatColor.GRAY;
-		} else {
-			invite = playerName + ChatColor.GRAY + ": ";
-		}
-
-		for (Player player : getServer().getOnlinePlayers()) {
-			if(getPlayerData(player).isSpectating()) {
-				player.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + message);
-			}
-		}
-		console.sendMessage(ChatColor.GRAY + "[SPEC] " + invite + message);
-	}
-
-	/**
 	 * Get the Spectator object (data store) for the player. It is created on-the-fly if needed.
 	 *
 	 * @param target The player to get the Spectator object of.

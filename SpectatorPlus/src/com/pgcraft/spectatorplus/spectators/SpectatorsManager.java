@@ -61,6 +61,7 @@ public class SpectatorsManager
 	private SpectatorPlus p;
 
 	private SpectatorsInventoryManager inventoryManager;
+	private SpectatorsChatManager chatManager;
 
 	private ConfigAccessor savedSpectatingPlayers;
 	private ConfigAccessor spectatorsSetup;
@@ -84,6 +85,7 @@ public class SpectatorsManager
 		spectatorsSetup = new ConfigAccessor(p, "setup");
 
 		inventoryManager = new SpectatorsInventoryManager();
+		chatManager = new SpectatorsChatManager();
 
 		loadSpectatorsSetup();
 		rebuildScoreboard();
@@ -97,6 +99,11 @@ public class SpectatorsManager
 	public SpectatorsInventoryManager getInventoryManager()
 	{
 		return inventoryManager;
+	}
+
+	public SpectatorsChatManager getChatManager()
+	{
+		return chatManager;
 	}
 
 
@@ -239,6 +246,7 @@ public class SpectatorsManager
 
 		else return false;
 	}
+
 
 	public void setSpectatorsMode(SpectatorMode mode)
 	{

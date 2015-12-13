@@ -36,6 +36,7 @@ import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import com.pgcraft.spectatorplus.guis.inventories.SpectatorsInventoryListener;
 import com.pgcraft.spectatorplus.listeners.GuiUpdatesListener;
 import com.pgcraft.spectatorplus.listeners.ServerActionsListener;
+import com.pgcraft.spectatorplus.listeners.SpectatorsChatListener;
 import com.pgcraft.spectatorplus.listeners.SpectatorsInteractionsListener;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.spectators.SpectatorsManager;
@@ -96,6 +97,7 @@ public class SpectatorPlus extends ZPlugin
 		pm.registerEvents(new ServerActionsListener(), this);
 		pm.registerEvents(new SpectatorsInteractionsListener(), this);
 		pm.registerEvents(new SpectatorsInventoryListener(), this);
+		pm.registerEvents(new SpectatorsChatListener(), this);
 		pm.registerEvents(new GuiUpdatesListener(), this);
 
 		// Loading checking task
