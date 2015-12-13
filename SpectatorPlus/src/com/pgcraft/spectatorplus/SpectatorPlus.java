@@ -41,7 +41,9 @@ import com.pgcraft.spectatorplus.listeners.SpectatorsInteractionsListener;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.spectators.SpectatorsManager;
 import com.pgcraft.spectatorplus.tasks.SpectatorManagerTask;
+import fr.zcraft.zlib.components.commands.Commands;
 import fr.zcraft.zlib.components.configuration.Configuration;
+import fr.zcraft.zlib.components.gui.Gui;
 import fr.zcraft.zlib.core.ZPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -85,6 +87,9 @@ public class SpectatorPlus extends ZPlugin
 	@Override
 	public void onEnable()
 	{
+		// Loading zLib components
+		loadComponents(Gui.class, Commands.class);
+
 		// Loading config
 		Configuration.init(Toggles.class);
 
