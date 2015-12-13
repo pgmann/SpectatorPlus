@@ -493,12 +493,7 @@ public class Spectator
      */
     public boolean isHiddenFromTp()
     {
-	    Player player = getPlayer();
-
-	    if (player != null)
-	        return player.hasPermission("spectate.admin.hide") || hiddenFromTp;
-        else
-		    return hiddenFromTp;
+	    return hiddenFromTp;
     }
 
     public void setHiddenFromTp(boolean hideFromTp)

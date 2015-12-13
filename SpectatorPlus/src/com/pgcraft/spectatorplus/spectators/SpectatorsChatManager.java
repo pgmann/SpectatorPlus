@@ -31,6 +31,7 @@
  */
 package com.pgcraft.spectatorplus.spectators;
 
+import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.utils.SPUtils;
@@ -79,7 +80,7 @@ public class SpectatorsChatManager
 	 */
 	public boolean isCommandWhitelisted(String rawCommand, final Player sender)
 	{
-		if (Toggles.CHAT_BLOCKCOMMANDS_ADMINBYPASS.get() && sender.hasPermission("spectate.admin"))
+		if (Toggles.CHAT_BLOCKCOMMANDS_ADMINBYPASS.get() && Permissions.BYPASS_COMMANDS_WHITELIST.grantedTo(sender))
 			return true;
 
 		rawCommand = rawCommand.toLowerCase();

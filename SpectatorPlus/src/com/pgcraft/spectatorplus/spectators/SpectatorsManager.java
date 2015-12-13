@@ -31,6 +31,7 @@
  */
 package com.pgcraft.spectatorplus.spectators;
 
+import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
@@ -369,7 +370,7 @@ public class SpectatorsManager
 		{
 			Spectator viewedSpectator = SpectatorPlus.get().getPlayerData(player);
 
-			if (!viewedSpectator.isSpectating() || (viewedSpectator.isHiddenFromTp() && !player.hasPermission("spectate.admin.hide.see")))
+			if (!viewedSpectator.isSpectating() || (viewedSpectator.isHiddenFromTp() && !Permissions.SEE_HIDDEN_PLAYERS.grantedTo(player)))
 				continue;
 
 			switch (spectatorsMode)

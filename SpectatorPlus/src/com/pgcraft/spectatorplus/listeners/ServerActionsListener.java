@@ -31,6 +31,7 @@
  */
 package com.pgcraft.spectatorplus.listeners;
 
+import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.spectators.Spectator;
@@ -69,7 +70,7 @@ public class ServerActionsListener implements Listener
 	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(final PlayerJoinEvent ev)
 	{
-		if (ev.getPlayer().hasPermission("spectate.admin.hide.auto"))
+		if (Permissions.AUTO_HIDE_FROM_SPECTATORS.grantedTo(ev.getPlayer()))
 		{
 			p.getPlayerData(ev.getPlayer()).setHiddenFromTp(true);
 		}

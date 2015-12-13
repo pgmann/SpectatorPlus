@@ -64,7 +64,7 @@ chat:
     blockCommands:
         enabled: true
 
-        # Allow anyone with spectate.admin to bypass command blocking?
+        # Allow anyone with spectate.admin.bypasswhitelist to bypass command blocking?
         adminBypass: true
         
         # Commands allowed even without the bypass permission.
