@@ -260,6 +260,10 @@ public class SpectatorsInventoryManager
 			for (int slot = 0; slot < inventory.getSize(); slot++)
 			{
 				final ItemStack item = inventory.getItem(slot);
+
+				if (item == null || item.getType() == Material.AIR)
+					continue;
+
 				final ItemMeta meta = item.getItemMeta();
 				final String displayName = meta.getDisplayName();
 

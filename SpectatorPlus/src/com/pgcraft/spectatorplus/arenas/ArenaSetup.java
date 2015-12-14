@@ -73,7 +73,7 @@ public class ArenaSetup
 	{
 		step++;
 
-		Validate.isTrue(step > 0 && location != null, "The location is required for the second and third steps.");
+		Validate.isTrue(step <= 0 || location != null, "The location is required for the second and third steps.");
 
 		Player player = Bukkit.getPlayer(playerID);
 		Spectator spectator = SpectatorPlus.get().getPlayerData(playerID);

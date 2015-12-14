@@ -59,7 +59,7 @@ public class SpectatorsInventoryListener implements Listener
 {
 	/* **  GUIs or action buttons  ** */
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onInventoryClick(InventoryClickEvent ev)
 	{
 		if (!(ev.getWhoClicked() instanceof Player) || ev.getCurrentItem() == null)
@@ -67,7 +67,7 @@ public class SpectatorsInventoryListener implements Listener
 
 		Player clicker = (Player) ev.getWhoClicked();
 
-		if (ev.getInventory().equals(clicker.getInventory()) && SpectatorPlus.get().getPlayerData(clicker).isSpectating())
+		if (SpectatorPlus.get().getPlayerData(clicker).isSpectating())
 		{
 			handleClick(clicker, ev.getCurrentItem());
 		}
@@ -121,10 +121,7 @@ public class SpectatorsInventoryListener implements Listener
 	{
 		if (SpectatorPlus.get().getPlayerData(((Player) ev.getPlayer())).isSpectating())
 		{
-			if (ev.getInventory().equals(ev.getPlayer().getInventory()))
-			{
-				SpectatorPlus.get().getSpectatorsManager().getInventoryManager().updateNewbieTips(((Player) ev.getPlayer()), true);
-			}
+			SpectatorPlus.get().getSpectatorsManager().getInventoryManager().updateNewbieTips(((Player) ev.getPlayer()), true);
 		}
 	}
 
@@ -133,10 +130,7 @@ public class SpectatorsInventoryListener implements Listener
 	{
 		if (SpectatorPlus.get().getPlayerData(((Player) ev.getPlayer())).isSpectating())
 		{
-			if (ev.getInventory().equals(ev.getPlayer().getInventory()))
-			{
-				SpectatorPlus.get().getSpectatorsManager().getInventoryManager().updateNewbieTips(((Player) ev.getPlayer()), false);
-			}
+			SpectatorPlus.get().getSpectatorsManager().getInventoryManager().updateNewbieTips(((Player) ev.getPlayer()), false);
 		}
 	}
 
@@ -145,6 +139,9 @@ public class SpectatorsInventoryListener implements Listener
 
 	private void handleClick(Player player, ItemStack clicked)
 	{
+		if (clicked == null || !clicked.hasItemMeta())
+			return;
+
 		final SpectatorsInventoryManager inventoryManager = SpectatorPlus.get().getSpectatorsManager().getInventoryManager();
 		final String displayName = clicked.getItemMeta().getDisplayName();
 
