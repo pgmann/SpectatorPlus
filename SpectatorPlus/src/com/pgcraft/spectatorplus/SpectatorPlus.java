@@ -33,6 +33,13 @@ package com.pgcraft.spectatorplus;
 
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
+import com.pgcraft.spectatorplus.commands.admin.BroadcastCommand;
+import com.pgcraft.spectatorplus.commands.admin.SetLobbyCommand;
+import com.pgcraft.spectatorplus.commands.admin.SetSpectatingModeCommand;
+import com.pgcraft.spectatorplus.commands.admin.ToggleHideCommand;
+import com.pgcraft.spectatorplus.commands.users.BackFromNoClipCommand;
+import com.pgcraft.spectatorplus.commands.users.DisableSpectatorModeCommand;
+import com.pgcraft.spectatorplus.commands.users.EnableSpectatorModeCommand;
 import com.pgcraft.spectatorplus.guis.inventories.SpectatorsInventoryListener;
 import com.pgcraft.spectatorplus.listeners.GuiUpdatesListener;
 import com.pgcraft.spectatorplus.listeners.ServerActionsListener;
@@ -85,6 +92,7 @@ public class SpectatorPlus extends ZPlugin
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void onEnable()
 	{
 		// Loading zLib components
@@ -104,6 +112,22 @@ public class SpectatorPlus extends ZPlugin
 		pm.registerEvents(new SpectatorsInventoryListener(), this);
 		pm.registerEvents(new SpectatorsChatListener(), this);
 		pm.registerEvents(new GuiUpdatesListener(), this);
+
+		// Registering commands
+		Commands.register(
+				new String[]{"spec", "spectate"},
+
+				EnableSpectatorModeCommand.class,
+				DisableSpectatorModeCommand.class,
+
+				SetSpectatingModeCommand.class,
+				SetLobbyCommand.class,
+
+				ToggleHideCommand.class,
+				BackFromNoClipCommand.class,
+
+				BroadcastCommand.class
+		);
 
 		// Loading checking task
 		getServer().getScheduler().runTaskTimer(this, new SpectatorManagerTask(), 20l, 20l);

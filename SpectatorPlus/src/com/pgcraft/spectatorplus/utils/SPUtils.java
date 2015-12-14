@@ -32,6 +32,7 @@
 package com.pgcraft.spectatorplus.utils;
 
 import fr.zcraft.zlib.tools.PluginLogger;
+import org.bukkit.Bukkit;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,6 +53,15 @@ public class SPUtils
 
 		else
 			return "Console";
+	}
+
+	public static Player getPlayer(String playerName)
+	{
+		for (Player player : Bukkit.getOnlinePlayers())
+			if (player.getName().equals(playerName))
+				return player;
+
+		return null;
 	}
 
 	/**

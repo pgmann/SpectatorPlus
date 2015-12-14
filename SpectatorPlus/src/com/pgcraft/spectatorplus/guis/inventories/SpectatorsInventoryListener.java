@@ -181,7 +181,9 @@ public class SpectatorsInventoryListener implements Listener
 
 			inventoryManager.equipSpectator(player);
 
-			player.sendMessage(ChatColor.GREEN + "No-clip mode disabled");
+			player.setAllowFlight(true);
+
+			player.sendMessage(ChatColor.GREEN + "No-clip mode disabled.");
 		}
 	}
 

@@ -108,6 +108,17 @@ public class Spectator
 	 *
 	 * @param spectating {@code true} to enable the spectator mode.
 	 * @param executor the player, console or command block ordering the spectator mode change.
+	 */
+	public void setSpectating(boolean spectating, CommandSender executor)
+	{
+		setSpectating(spectating, executor, false);
+	}
+
+	/**
+	 * Enables or disables the spectator mode on this player.
+	 *
+	 * @param spectating {@code true} to enable the spectator mode.
+	 * @param executor the player, console or command block ordering the spectator mode change.
 	 * @param silent {@code true} to silently enable or disable the spectator mode.
 	 */
 	public void setSpectating(boolean spectating, CommandSender executor, boolean silent)
