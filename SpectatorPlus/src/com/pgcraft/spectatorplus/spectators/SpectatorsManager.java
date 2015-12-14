@@ -380,7 +380,7 @@ public class SpectatorsManager
 		{
 			Spectator viewedSpectator = SpectatorPlus.get().getPlayerData(player);
 
-			if (!viewedSpectator.isSpectating() || (viewedSpectator.isHiddenFromTp() && !Permissions.SEE_HIDDEN_PLAYERS.grantedTo(player)))
+			if (viewedSpectator.isSpectating() || (viewedSpectator.isHiddenFromTp() && !Permissions.SEE_HIDDEN_PLAYERS.grantedTo(player)))
 				continue;
 
 			switch (spectatorsMode)
