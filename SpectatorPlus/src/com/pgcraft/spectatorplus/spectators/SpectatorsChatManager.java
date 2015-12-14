@@ -154,7 +154,7 @@ public class SpectatorsChatManager
 	 * @param message  The message.
 	 * @param isAction {@code true} if this is an action message (/me).
 	 */
-	public void sendSpectatorsChatMessage(final Player sender, final String message, final boolean isAction)
+	public void sendSpectatorsChatMessage(final CommandSender sender, final String message, final boolean isAction)
 	{
 		sendRawMessageToSpectators(formatMessage(isAction ? SPECTATORS_ACTION_FORMAT : SPECTATORS_CHAT_FORMAT, sender, message));
 	}

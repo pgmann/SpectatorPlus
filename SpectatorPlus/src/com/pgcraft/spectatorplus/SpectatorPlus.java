@@ -137,7 +137,7 @@ public class SpectatorPlus extends ZPlugin
 		getServer().getScheduler().runTaskTimer(this, new SpectatorManagerTask(), 20l, 20l);
 
 		// Loading API
-		api = new SpectateAPI(this);
+		api = new SpectateAPI();
 
 
 		// Re-enable spectator mode if necessary
