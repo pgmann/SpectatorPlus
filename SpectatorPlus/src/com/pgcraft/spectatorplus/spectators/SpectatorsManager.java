@@ -108,6 +108,16 @@ public class SpectatorsManager
 	}
 
 
+	/**
+	 * Saves into file all things stored in a config file.
+	 */
+	public void save()
+	{
+		saveSpectatorsSetup();
+		savedSpectatingPlayers.saveConfig();
+	}
+
+
 	/* **  Spectators lobby  ** */
 
 	private void loadSpectatorsSetup()

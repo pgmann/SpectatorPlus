@@ -138,6 +138,39 @@ public class SpectatorPlus extends ZPlugin
 
 		// Loading API
 		api = new SpectateAPI(this);
+
+
+		// Re-enable spectator mode if necessary
+		for(Player player : getServer().getOnlinePlayers())
+		{
+			if (spectatorsManager.getSavedSpectatingPlayers().getConfig().contains(player.getUniqueId().toString()))
+			{
+				getPlayerData(player).setSpectating(true, true);
+			}
+		}
+	}
+
+	@Override
+	public void onDisable()
+	{
+		// zLib requirement
+		super.onDisable();
+
+		// Disabling spectator mode for every spectator, so the inventories, etc., are saved by the server.
+		for (Player player : getServer().getOnlinePlayers())
+		{
+			Spectator spectator = getPlayerData(player);
+
+			if (spectator.isSpectating())
+			{
+				spectator.setSpectating(false, true);
+				spectator.saveSpectatorModeInFile(true);
+			}
+		}
+
+		// Just to be sure...
+		arenasManager.save();
+		spectatorsManager.save();
 	}
 
 
