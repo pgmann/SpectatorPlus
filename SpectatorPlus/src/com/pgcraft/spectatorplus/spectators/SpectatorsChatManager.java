@@ -35,6 +35,7 @@ import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.utils.SPUtils;
+import fr.zcraft.zlib.tools.text.MessageSender;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -174,7 +175,7 @@ public class SpectatorsChatManager
 		// If the sender don't receive the spectators chat
 		if (sender instanceof Player && !p.getPlayerData(((Player) sender)).isSpectating())
 		{
-			sender.sendMessage(formattedMessage);
+			MessageSender.sendChatMessage(((Player) sender), formattedMessage);
 		}
 	}
 
@@ -207,7 +208,7 @@ public class SpectatorsChatManager
 		{
 			if (p.getPlayerData(player).isSpectating())
 			{
-				player.sendMessage(message);
+				MessageSender.sendChatMessage(player, message);
 			}
 		}
 
