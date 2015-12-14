@@ -38,6 +38,7 @@ import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import fr.zcraft.zlib.components.commands.Command;
 import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
+import fr.zcraft.zlib.tools.PluginLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -109,6 +110,13 @@ public class ManageArenasCommand extends Command
 
 		String arenaName = args[1].trim();
 
+		Arena exists = SpectatorPlus.get().getArenasManager().getArena(arenaName);
+		if (exists != null)
+		{
+			error("An arena with this name (" + arenaName + ") already exists!");
+		}
+
+
 		Location corner1 = null;
 		Location corner2 = null;
 
@@ -161,8 +169,16 @@ public class ManageArenasCommand extends Command
 
 		if (corner1 != null && corner2 != null)
 		{
-			SpectatorPlus.get().getArenasManager().registerArena(new Arena(arenaName, corner1, corner2));
-			info("Successfully registered the arena " + arenaName + "!");
+			try
+			{
+				SpectatorPlus.get().getArenasManager().registerArena(new Arena(arenaName, corner1, corner2));
+				info("Successfully registered the arena " + arenaName + "!");
+			}
+			catch (IllegalArgumentException e)
+			{
+				PluginLogger.error("An error occurred while adding the arena {0}.", e, arenaName);
+				error("An error occurred while adding the arena " + arenaName + "; see console for details.");
+			}
 		}
 		else
 		{
