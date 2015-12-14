@@ -27,7 +27,7 @@ public class Spectator
 
 	private Boolean spectating = false;
 	private Boolean teleporting = false;
-	private Boolean gamemodeChangeAllowed = false;
+	private Boolean gamemodeChangeAllowed = true;
     private Boolean hiddenFromTp = false;
     private Boolean wasSpectatorBeforeWorldChanged = false;
 
@@ -192,12 +192,13 @@ public class Spectator
 	    player.setFoodLevel(20);
 	    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
 
-	    // We update the spectator's inventory
-	    SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(player);
-
 	    // We disable all interactions if possible
 	    player.setGameMode(Toggles.VANILLA_SPECTATOR_MODE.get() ? GameMode.ADVENTURE : GameMode.SPECTATOR);
 	    SPUtils.setCollidesWithEntities(player, false);
+	    setGamemodeChangeAllowed(false);
+
+	    // We update the spectator's inventory
+	    SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(player);
 
 	    // We hide this player if seeSpecs mode is off and the target isn't spectating
 	    for (Player other : Bukkit.getOnlinePlayers())
@@ -273,6 +274,7 @@ public class Spectator
 		player.setFlySpeed(oldFlySpeed);
 
 		SPUtils.setCollidesWithEntities(player, true);
+		setGamemodeChangeAllowed(true);
 
 		player.setAllowFlight(oldFlyMode);
 		player.setGameMode(oldGameMode);
