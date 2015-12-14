@@ -1,5 +1,6 @@
 package com.pgcraft.spectatorplus.arenas;
 
+import com.pgcraft.spectatorplus.SpectatorPlus;
 import fr.zcraft.zlib.tools.PluginLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -46,12 +47,13 @@ public class Arena implements ConfigurationSerializable
 	 */
 	public Arena(String name, Location corner1, Location corner2)
 	{
-
 		this.id = UUID.randomUUID();
 		this.name = name;
 
 		this.corner1 = corner1;
 		this.corner2 = corner2;
+
+		reequilibrateCorners();
 	}
 
 	/**
@@ -63,7 +65,6 @@ public class Arena implements ConfigurationSerializable
 	 */
 	public Arena(Map<String, Object> serialized)
 	{
-
 		this.id = UUID.fromString((String) serialized.get("id"));
 		this.name = (String) serialized.get("name");
 
@@ -210,6 +211,9 @@ public class Arena implements ConfigurationSerializable
 	public void setName(String name)
 	{
 		this.name = name;
+
+		if(isRegistered())
+			SpectatorPlus.get().getArenasManager().save();
 	}
 
 	/**
@@ -232,6 +236,9 @@ public class Arena implements ConfigurationSerializable
 	{
 		this.corner1 = corner1;
 		reequilibrateCorners();
+
+		if(isRegistered())
+			SpectatorPlus.get().getArenasManager().save();
 	}
 
 	/**
@@ -254,6 +261,9 @@ public class Arena implements ConfigurationSerializable
 	{
 		this.corner2 = corner2;
 		reequilibrateCorners();
+
+		if(isRegistered())
+			SpectatorPlus.get().getArenasManager().save();
 	}
 
 	/**
@@ -284,6 +294,9 @@ public class Arena implements ConfigurationSerializable
 	public void setLobby(Location lobby)
 	{
 		this.lobby = lobby;
+
+		if(isRegistered())
+			SpectatorPlus.get().getArenasManager().save();
 	}
 
 	/**

@@ -3,6 +3,7 @@ package com.pgcraft.spectatorplus.spectators;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
+import com.pgcraft.spectatorplus.arenas.ArenaSetup;
 import com.pgcraft.spectatorplus.guis.TeleportationGUI;
 import com.pgcraft.spectatorplus.utils.SPUtils;
 import fr.zcraft.zlib.components.gui.Gui;
@@ -31,6 +32,7 @@ public class Spectator
     private Boolean wasSpectatorBeforeWorldChanged = false;
 
 	private Arena arena = null;
+	private ArenaSetup arenaSetup = null;
 
 
 	private ItemStack[] oldInventoryContent = null;
@@ -46,11 +48,6 @@ public class Spectator
 
 	private String lastDeathMessage = null;
 	private Location deathLocation = null;
-	
-	private int setup = 0;
-	private String arenaName = null;
-	private Location pos1 = null;
-	private Location pos2 = null;
 
 
 	public Spectator(UUID id)
@@ -67,6 +64,11 @@ public class Spectator
 	public Player getPlayer()
 	{
 		return Bukkit.getPlayer(playerID);
+	}
+
+	public UUID getPlayerUniqueId()
+	{
+		return playerID;
 	}
 
 
@@ -409,9 +411,38 @@ public class Spectator
     public void setArena(Arena arena)
     {
         this.arena = arena;
+
+	    if (arena == null)
+	    {
+		    SpectatorPlus.get().sendMessage(this, "You were removed from your arena.");
+		    SpectatorPlus.get().getSpectatorsManager().teleportToLobby(this);
+	    }
+
+	    else
+	    {
+		    SpectatorPlus.get().sendMessage(this, "You are now in the " + arena.getName() + " arena.");
+
+		    if (arena.getLobby() != null)
+		    {
+			    Player player = getPlayer();
+			    if (player != null && player.isOnline())
+				    player.teleport(arena.getLobby());
+		    }
+	    }
     }
 
-    /**
+	public ArenaSetup getArenaSetup()
+	{
+		return arenaSetup;
+	}
+
+	public void setArenaSetup(ArenaSetup arenaSetup)
+	{
+		this.arenaSetup = arenaSetup;
+	}
+
+
+	/**
      * The last death message for this player, with his name replaced by "You",
      * and "Name was" replaced by "You were".
      * <p>
@@ -444,62 +475,7 @@ public class Spectator
         this.deathLocation = deathLocation;
     }
 
-    /**
-     * The setup step.
-     *  - 0: no setup in progress;
-     *  - 1: first corner set;
-     *  - 2: second corner set.
-     */
-    public int getSetup()
-    {
-        return setup;
-    }
-
-    public void setSetup(int setup)
-    {
-        this.setup = setup;
-    }
-
-    /**
-     * If the player setup an arena, the entered name of this arena is stored here.
-     */
-    public String getArenaName()
-    {
-        return arenaName;
-    }
-
-    public void setArenaName(String arenaName)
-    {
-        this.arenaName = arenaName;
-    }
-
-    /**
-     * The location of the first corner of an arena (in setup mode).
-     */
-    public Location getPos1()
-    {
-        return pos1;
-    }
-
-    public void setPos1(Location pos1)
-    {
-        this.pos1 = pos1;
-    }
-
-    /**
-     * The location of the second corner of an arena (in setup mode).
-     */
-    public Location getPos2()
-    {
-        return pos2;
-    }
-
-    public void setPos2(Location pos2)
-    {
-        this.pos2 = pos2;
-    }
-
-    /**
+	/**
      * Whether the player is hidden from the spectator teleportation GUI.
      */
     public boolean isHiddenFromTp()

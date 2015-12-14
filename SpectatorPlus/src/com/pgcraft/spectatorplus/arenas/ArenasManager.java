@@ -1,11 +1,13 @@
 package com.pgcraft.spectatorplus.arenas;
 
+import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.utils.ConfigAccessor;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -99,7 +101,7 @@ public class ArenasManager
 			arena.setRegistered(false);
 		}
 
-		arenas = new HashMap<UUID, Arena>();
+		arenas = new HashMap<>();
 
 		save();
 	}
@@ -189,6 +191,16 @@ public class ArenasManager
 	{
 		arenas.remove(arena.getUUID());
 		arena.setRegistered(false);
+
+		for (Player player : Bukkit.getOnlinePlayers())
+		{
+			Spectator spectator = SpectatorPlus.get().getPlayerData(player);
+
+			if (spectator.isSpectating() && spectator.getArena() != null && spectator.getArena().equals(arena))
+			{
+				spectator.setArena(null);
+			}
+		}
 
 		save();
 	}

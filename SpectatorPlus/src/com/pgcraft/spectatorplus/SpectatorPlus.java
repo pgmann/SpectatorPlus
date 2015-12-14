@@ -34,6 +34,7 @@ package com.pgcraft.spectatorplus;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import com.pgcraft.spectatorplus.commands.admin.BroadcastCommand;
+import com.pgcraft.spectatorplus.commands.admin.ManageArenasCommand;
 import com.pgcraft.spectatorplus.commands.admin.SetLobbyCommand;
 import com.pgcraft.spectatorplus.commands.admin.SetSpectatingModeCommand;
 import com.pgcraft.spectatorplus.commands.admin.ToggleHideCommand;
@@ -41,6 +42,7 @@ import com.pgcraft.spectatorplus.commands.users.BackFromNoClipCommand;
 import com.pgcraft.spectatorplus.commands.users.DisableSpectatorModeCommand;
 import com.pgcraft.spectatorplus.commands.users.EnableSpectatorModeCommand;
 import com.pgcraft.spectatorplus.guis.inventories.SpectatorsInventoryListener;
+import com.pgcraft.spectatorplus.listeners.ArenaSetupListener;
 import com.pgcraft.spectatorplus.listeners.GuiUpdatesListener;
 import com.pgcraft.spectatorplus.listeners.ServerActionsListener;
 import com.pgcraft.spectatorplus.listeners.SpectatorsChatListener;
@@ -112,6 +114,7 @@ public class SpectatorPlus extends ZPlugin
 		pm.registerEvents(new SpectatorsInventoryListener(), this);
 		pm.registerEvents(new SpectatorsChatListener(), this);
 		pm.registerEvents(new GuiUpdatesListener(), this);
+		pm.registerEvents(new ArenaSetupListener(), this);
 
 		// Registering commands
 		Commands.register(
@@ -122,6 +125,7 @@ public class SpectatorPlus extends ZPlugin
 
 				SetSpectatingModeCommand.class,
 				SetLobbyCommand.class,
+				ManageArenasCommand.class,
 
 				ToggleHideCommand.class,
 				BackFromNoClipCommand.class,
@@ -200,6 +204,21 @@ public class SpectatorPlus extends ZPlugin
 	public void sendMessage(CommandSender receiver, String message)
 	{
 		sendMessage(receiver, message, false);
+	}
+
+	public void sendMessage(Spectator receiver, String message)
+	{
+		sendMessage(receiver.getPlayerUniqueId(), message);
+	}
+
+	public void sendMessage(UUID id, String message)
+	{
+		if (id == null)
+			return;
+
+		Player player = getServer().getPlayer(id);
+		if (player != null && player.isOnline())
+			sendMessage(player, message);
 	}
 
 
