@@ -154,9 +154,6 @@ public class SpectatorPlus extends ZPlugin
 	@Override
 	public void onDisable()
 	{
-		// zLib requirement
-		super.onDisable();
-
 		// Disabling spectator mode for every spectator, so the inventories, etc., are saved by the server.
 		for (Player player : getServer().getOnlinePlayers())
 		{
@@ -172,6 +169,9 @@ public class SpectatorPlus extends ZPlugin
 		// Just to be sure...
 		arenasManager.save();
 		spectatorsManager.save();
+
+		// zLib requirement
+		super.onDisable();
 	}
 
 
