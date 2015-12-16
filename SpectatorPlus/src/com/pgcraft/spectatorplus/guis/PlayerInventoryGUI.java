@@ -31,8 +31,10 @@
  */
 package com.pgcraft.spectatorplus.guis;
 
+import com.pgcraft.spectatorplus.utils.RomanNumber;
 import fr.zcraft.zlib.components.gui.ActionGui;
 import fr.zcraft.zlib.components.gui.GuiUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -45,14 +47,17 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 
 public class PlayerInventoryGUI extends ActionGui
 {
-	private static final DecimalFormat FORMATTER = new DecimalFormat("0.0");
+	private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat("0.0");
+	private static final DecimalFormat INTEGER_FORMATTER = new DecimalFormat("00");
 
 	private Player displayedInventoryOwner;
 	private PlayerInventory displayedInventory;
@@ -118,7 +123,7 @@ public class PlayerInventoryGUI extends ActionGui
 
 		final ItemStack xp = GuiUtils.makeItem(Material.EXP_BOTTLE, ChatColor.GREEN + "" + ChatColor.BOLD + "Experience", Collections.singletonList(
 				ChatColor.GRAY + "Level " + ChatColor.WHITE + displayedInventoryOwner.getLevel() + ChatColor.GRAY
-						+ "(" + ChatColor.WHITE + ((int) Math.floor(displayedInventoryOwner.getExp() * 100)) + "%" + ChatColor.GRAY + " towards level " + (displayedInventoryOwner.getLevel() + 1) + ")"
+						+ " (" + ChatColor.WHITE + ((int) Math.floor(displayedInventoryOwner.getExp() * 100)) + "%" + ChatColor.GRAY + " towards level " + (displayedInventoryOwner.getLevel() + 1) + ")"
 		));
 
 		xp.setAmount(displayedInventoryOwner.getLevel());
@@ -142,16 +147,25 @@ public class PlayerInventoryGUI extends ActionGui
 			PotionMeta meta = (PotionMeta) effects.getItemMeta();
 
 			meta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Potion effects");
-			meta.setLore(Arrays.asList(
-					ChatColor.GRAY + "" + activePotionEffects.size() + " active potion effect(s).",
-					""
-			));
+
+			List<String> lore = new ArrayList<>();
+			lore.add(ChatColor.GRAY + "" + activePotionEffects.size() + " active potion effect" + (activePotionEffects.size() > 1 ? "s" : "") + ".");
+			lore.add("");
 
 			meta.clearCustomEffects();
 			for (PotionEffect potionEffect : activePotionEffects)
 			{
 				meta.addCustomEffect(potionEffect, true);
+
+				final String effectName = WordUtils.capitalizeFully(potionEffect.getType().getName().replace("_", " "));
+				final String effectAmplifier = potionEffect.getAmplifier() == 0 ? "" : " " + RomanNumber.toRoman(potionEffect.getAmplifier() + 1);
+				final String effectDuration = INTEGER_FORMATTER.format(Math.floor(potionEffect.getDuration() / 60)) + ":" + INTEGER_FORMATTER.format(potionEffect.getDuration() % 60);
+
+				lore.add(ChatColor.GRAY + effectName + effectAmplifier + " (" + effectDuration + ")");
 			}
+
+			meta.setLore(lore);
+			GuiUtils.hideItemAttributes(meta);
 
 			effects.setItemMeta(meta);
 			effects.setAmount(activePotionEffects.size());
@@ -163,7 +177,7 @@ public class PlayerInventoryGUI extends ActionGui
 		// Health
 
 		final ItemStack health = GuiUtils.makeItem(Material.GOLDEN_APPLE, ChatColor.DARK_RED + "" + ChatColor.BOLD + "Health", Collections.singletonList(
-				ChatColor.WHITE + "" + ((int) displayedInventoryOwner.getHealth()) + ChatColor.GRAY + " life points (out of 20)"
+				ChatColor.GOLD + "" + ((int) displayedInventoryOwner.getHealth()) + ChatColor.WHITE + " life points " + ChatColor.GRAY + "(out of 20)"
 		));
 		health.setAmount((int) displayedInventoryOwner.getHealth());
 
@@ -173,8 +187,8 @@ public class PlayerInventoryGUI extends ActionGui
 		// Food level
 
 		final ItemStack food = GuiUtils.makeItem(Material.COOKIE, ChatColor.GOLD + "" + ChatColor.BOLD + "Food level", Arrays.asList(
-						ChatColor.GRAY + "Food level: " + ChatColor.WHITE + displayedInventoryOwner.getFoodLevel() + ChatColor.GRAY + " food points (out of 20)",
-						ChatColor.GRAY + "Saturation: " + ChatColor.WHITE + FORMATTER.format(displayedInventoryOwner.getSaturation())
+				ChatColor.GRAY + "Food level: " + ChatColor.GOLD + displayedInventoryOwner.getFoodLevel() + ChatColor.WHITE + " food points " + ChatColor.GRAY + "(out of 20)",
+				ChatColor.GRAY + "Saturation: " + ChatColor.GOLD + DECIMAL_FORMATTER.format(displayedInventoryOwner.getSaturation()) + ChatColor.WHITE + "points"
 		));
 		food.setAmount(displayedInventoryOwner.getFoodLevel());
 

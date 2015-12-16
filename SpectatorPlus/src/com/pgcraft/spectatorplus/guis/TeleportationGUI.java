@@ -122,7 +122,7 @@ public class TeleportationGUI extends ExplorerGui<Spectator>
 			{
 				if (!player.getWorld().equals(getPlayer().getWorld()))
 				{
-					lore.add(ChatColor.GRAY + "You and " + player.getName() + " are not in the same world.");
+					lore.add(ChatColor.GRAY + player.getName() + " is in the " + ChatColor.WHITE + player.getWorld().getName() + ChatColor.GRAY + " world.");
 				}
 				else
 				{
@@ -195,10 +195,10 @@ public class TeleportationGUI extends ExplorerGui<Spectator>
 			lore.add(""); // separator
 		}
 
-		lore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Left click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to be teleported");
+		lore.add(ChatColor.DARK_GRAY + "» " + ChatColor.WHITE + "Left click" + ChatColor.GRAY + " to be teleported");
 		if (Toggles.TOOLS_TELEPORTER_INSPECTOR.get())
 		{
-			lore.add(ChatColor.GOLD + "" + ChatColor.ITALIC + "Right click" + ChatColor.DARK_GRAY + ChatColor.ITALIC + " to see inventory");
+			lore.add(ChatColor.DARK_GRAY + "» " + ChatColor.WHITE + "Right click" + ChatColor.GRAY + " to see the inventory");
 		}
 
 		meta.setLore(lore);
