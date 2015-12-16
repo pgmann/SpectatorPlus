@@ -101,6 +101,7 @@ public class SpectatorPlus extends ZPlugin
 		loadComponents(Gui.class, Commands.class);
 
 		// Loading config
+		saveDefaultConfig();
 		Configuration.init(Toggles.class);
 
 		// Loading managers

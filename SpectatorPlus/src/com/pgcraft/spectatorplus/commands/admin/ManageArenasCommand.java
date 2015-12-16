@@ -99,11 +99,11 @@ public class ManageArenasCommand extends Command
 	{
 		if (args.length == 1 || (args.length > 2 && args.length < 6) || (args.length > 7 && args.length < 8))
 		{
-			warning("Usage:");
+			warning(ChatColor.BOLD + "Usage:");
 			warning("/spec arena add <name> - interactive arena setup (player only);");
 			warning("/spec arena add <name> <x1> <z1> <x2> <z2> [world] - arena from the bottom to the top of the map inside these coordinates;");
 			warning("/spec arena add <name> <x1> <y1> <z1> <x2> <y2> <z2> [world] - arena inside these coordinates.");
-			warning("In the two commands above, the world is required if the sender is the console; else (command block or player) the current world is used if missing.");
+			info("In the two commands above, the world is required if the sender is the console; else (command block or player) the current world is used if missing.");
 
 			return;
 		}
@@ -172,7 +172,7 @@ public class ManageArenasCommand extends Command
 			try
 			{
 				SpectatorPlus.get().getArenasManager().registerArena(new Arena(arenaName, corner1, corner2));
-				info("Successfully registered the arena " + arenaName + "!");
+				success("Successfully registered the arena " + arenaName + "!");
 			}
 			catch (IllegalArgumentException e)
 			{

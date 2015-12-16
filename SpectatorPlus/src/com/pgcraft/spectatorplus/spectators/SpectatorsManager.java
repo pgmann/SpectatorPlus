@@ -373,12 +373,11 @@ public class SpectatorsManager
 		Player player = spectator.getPlayer();
 		if (player == null) return Collections.emptyList();
 
-
 		List<Spectator> visiblePlayers = new ArrayList<>();
 
 		for (Player viewedPlayer : Bukkit.getOnlinePlayers())
 		{
-			Spectator viewedSpectator = SpectatorPlus.get().getPlayerData(player);
+			Spectator viewedSpectator = SpectatorPlus.get().getPlayerData(viewedPlayer);
 
 			if (viewedSpectator.isSpectating() || (viewedSpectator.isHiddenFromTp() && !Permissions.SEE_HIDDEN_PLAYERS.grantedTo(player)))
 				continue;

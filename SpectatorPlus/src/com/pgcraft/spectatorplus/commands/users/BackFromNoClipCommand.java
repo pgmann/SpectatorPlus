@@ -62,7 +62,7 @@ public class BackFromNoClipCommand extends Command
 
 			SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(playerSender());
 
-			info("No-clip mode disabled.");
+			success("No-clip mode disabled.");
 		}
 	}
 }

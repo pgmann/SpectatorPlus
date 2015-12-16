@@ -57,7 +57,7 @@ public class SetSpectatingModeCommand extends Command
 		final SpectatorMode mode = getEnumParameter(0, SpectatorMode.class);
 
 		SpectatorPlus.get().getSpectatorsManager().setSpectatorsMode(mode);
-		info("Spectating mode changed to " + mode + ".");
+		success("Spectating mode changed to " + mode + ".");
 		info(mode.getDescription());
 	}
 
