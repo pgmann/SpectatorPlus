@@ -75,11 +75,20 @@ public class ArenasSelectorGUI extends ExplorerGui<Arena>
 	}
 
 	@Override
+	protected ItemStack getEmptyViewItem()
+	{
+		return GuiUtils.makeItem(Material.BARRIER, ChatColor.RED + "No arena has been created yet.", Arrays.asList(
+				ChatColor.GRAY + "Ask your administrator to create one.",
+				"",
+				ChatColor.GRAY + "If you are the administrator, check out",
+				ChatColor.GRAY + "the " + ChatColor.WHITE + "/spec arena" + ChatColor.GRAY + " command."
+		));
+	}
+
+	@Override
 	protected ItemStack getPickedUpItem(Arena arena)
 	{
 		SpectatorPlus.get().getPlayerData(getPlayer()).setArena(arena);
-		SpectatorPlus.get().sendMessage(getPlayer(), "You are now in the " + ChatColor.RED + arena.getName() + ChatColor.GOLD + " arena.");
-
 		close();
 
 		return null;

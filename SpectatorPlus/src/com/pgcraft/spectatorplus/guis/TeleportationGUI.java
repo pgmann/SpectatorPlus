@@ -46,6 +46,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -66,7 +67,27 @@ public class TeleportationGUI extends ExplorerGui<Spectator>
 	@Override
 	protected ItemStack getEmptyViewItem()
 	{
-		return GuiUtils.makeItem(Material.BARRIER, ChatColor.RED + "No one is currently spectating!");
+		String domain = "";
+		switch (SpectatorPlus.get().getSpectatorsManager().getSpectatorsMode())
+		{
+			case ANY:
+				domain = "server";
+				break;
+
+			case ARENA:
+				domain = "arena";
+				break;
+
+			case WORLD:
+				domain = "world";
+				break;
+		}
+
+		return GuiUtils.makeItem(Material.BARRIER, ChatColor.RED + "There's no player to display!", Arrays.asList(
+				ChatColor.GRAY + "Either all players on this " + domain,
+				ChatColor.GRAY + "are currently spectating, or you're",
+				ChatColor.GRAY + "not allowed to see some of them."
+		));
 	}
 
 	@Override

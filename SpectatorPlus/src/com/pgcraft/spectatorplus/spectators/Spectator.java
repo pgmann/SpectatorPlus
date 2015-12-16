@@ -193,7 +193,7 @@ public class Spectator
 	    player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15), true);
 
 	    // We disable all interactions if possible
-	    player.setGameMode(Toggles.VANILLA_SPECTATOR_MODE.get() ? GameMode.ADVENTURE : GameMode.SPECTATOR);
+	    player.setGameMode(Toggles.VANILLA_SPECTATOR_MODE.get() ? GameMode.SPECTATOR : GameMode.ADVENTURE);
 	    SPUtils.setCollidesWithEntities(player, false);
 	    setGamemodeChangeAllowed(false);
 

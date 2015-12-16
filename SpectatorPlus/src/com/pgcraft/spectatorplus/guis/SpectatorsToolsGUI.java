@@ -302,7 +302,7 @@ public class SpectatorsToolsGUI extends ActionGui
 	}
 
 
-	@GuiAction (value = "speed_0")
+	@GuiAction ("speed_0")
 	protected void normalSpeed()
 	{
 		getPlayer().removePotionEffect(PotionEffectType.SPEED);
@@ -311,7 +311,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		update();
 	}
 
-	@GuiAction (value = "speed_1")
+	@GuiAction ("speed_1")
 	protected void speedI()
 	{
 		getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0), true);
@@ -320,7 +320,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		update();
 	}
 
-	@GuiAction (value = "speed_2")
+	@GuiAction ("speed_2")
 	protected void speedII()
 	{
 		getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1), true);
@@ -329,7 +329,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		update();
 	}
 
-	@GuiAction (value = "speed_3")
+	@GuiAction ("speed_3")
 	protected void speedIII()
 	{
 		getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2), true);
@@ -338,7 +338,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		update();
 	}
 
-	@GuiAction (value = "speed_4")
+	@GuiAction ("speed_4")
 	protected void speedIV()
 	{
 		getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 3), true);
@@ -347,7 +347,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		update();
 	}
 
-	@GuiAction (value = "noClip")
+	@GuiAction ("noClip")
 	protected void noClip()
 	{
 		SpectatorPlus.get().getPlayerData(getPlayer()).setGamemodeChangeAllowed(true);
@@ -362,7 +362,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		close();
 	}
 
-	@GuiAction (value = "nightVision")
+	@GuiAction ("nightVision")
 	protected void nightVision()
 	{
 		if (getPlayer().hasPotionEffect(PotionEffectType.NIGHT_VISION))
@@ -379,7 +379,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		update();
 	}
 
-	@GuiAction (value = "divingSuit")
+	@GuiAction ("divingSuit")
 	protected void divingSuit()
 	{
 		if (getPlayer().getInventory().getBoots() != null && getPlayer().getInventory().getBoots().getType() == Material.DIAMOND_BOOTS)
@@ -396,7 +396,7 @@ public class SpectatorsToolsGUI extends ActionGui
 		update();
 	}
 
-	@GuiAction (value = "deathPoint")
+	@GuiAction ("deathPoint")
 	protected void deathPoint()
 	{
 		getPlayer().teleport(SpectatorPlus.get().getPlayerData(getPlayer()).getDeathLocation().setDirection(getPlayer().getLocation().getDirection()));

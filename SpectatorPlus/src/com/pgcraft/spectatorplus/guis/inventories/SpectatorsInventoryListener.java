@@ -67,7 +67,8 @@ public class SpectatorsInventoryListener implements Listener
 
 		Player clicker = (Player) ev.getWhoClicked();
 
-		if (SpectatorPlus.get().getPlayerData(clicker).isSpectating())
+		// Player is spectating and the clicked slot is in his own inventory
+		if (SpectatorPlus.get().getPlayerData(clicker).isSpectating() && (ev.getView().getTopInventory() == null || ev.getRawSlot() >= ev.getInventory().getSize()))
 		{
 			handleClick(clicker, ev.getCurrentItem());
 		}
@@ -139,7 +140,7 @@ public class SpectatorsInventoryListener implements Listener
 
 	private void handleClick(Player player, ItemStack clicked)
 	{
-		if (clicked == null || !clicked.hasItemMeta())
+		if (clicked == null || !clicked.hasItemMeta() || !clicked.getItemMeta().hasDisplayName())
 			return;
 
 		final SpectatorsInventoryManager inventoryManager = SpectatorPlus.get().getSpectatorsManager().getInventoryManager();
@@ -165,8 +166,8 @@ public class SpectatorsInventoryListener implements Listener
 		}
 		else if (displayName.startsWith(SpectatorsInventoryManager.NIGHT_VISION_INACTIVE_TITLE))
 		{
-			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0, true, false), true);
-			player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 0, true, false), true);
+			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 1, true, false), true);
+			player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, 1, true, false), true);
 
 			inventoryManager.equipSpectator(player);
 		}
@@ -179,6 +180,7 @@ public class SpectatorsInventoryListener implements Listener
 			inventoryManager.equipSpectator(player);
 
 			player.setAllowFlight(true);
+			player.setFlying(true); // The player comes from the spectator mode, so he was flying.
 
 			player.sendMessage(ChatColor.GREEN + "No-clip mode disabled.");
 		}

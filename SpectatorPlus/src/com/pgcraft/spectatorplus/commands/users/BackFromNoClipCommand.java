@@ -58,6 +58,7 @@ public class BackFromNoClipCommand extends Command
 			spectator.setGamemodeChangeAllowed(false);
 
 			playerSender().setAllowFlight(true);
+			playerSender().setFlying(true); // The player comes from the spectator mode, so he was flying.
 
 			SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(playerSender());
 
