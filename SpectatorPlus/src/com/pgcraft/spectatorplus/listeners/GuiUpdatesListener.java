@@ -31,9 +31,11 @@
  */
 package com.pgcraft.spectatorplus.listeners;
 
+import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.guis.InventoryGUI;
 import com.pgcraft.spectatorplus.guis.PlayerInventoryGUI;
 import fr.zcraft.zlib.components.gui.Gui;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -109,20 +111,34 @@ public class GuiUpdatesListener implements Listener
 	}
 
 
-	private void updateInventory(Inventory inventory)
+	private void updateInventory(final Inventory inventory)
 	{
-		if (inventory.getType() == InventoryType.PLAYER || inventory.getType() == InventoryType.CREATIVE)
+		Bukkit.getScheduler().runTaskLater(SpectatorPlus.get(), new Runnable()
 		{
-			updatePlayerInventoryGUI();
-		}
-		else if (inventory.getType() == InventoryType.CHEST)
-		{
-			Gui.update(InventoryGUI.class);
-		}
+			@Override
+			public void run()
+			{
+				if (inventory.getType() == InventoryType.PLAYER || inventory.getType() == InventoryType.CREATIVE)
+				{
+					updatePlayerInventoryGUI();
+				}
+				else if (inventory.getType() == InventoryType.CHEST)
+				{
+					Gui.update(InventoryGUI.class);
+				}
+			}
+		}, 1l);
 	}
 
 	private void updatePlayerInventoryGUI()
 	{
-		Gui.update(PlayerInventoryGUI.class);
+		Bukkit.getScheduler().runTaskLater(SpectatorPlus.get(), new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Gui.update(PlayerInventoryGUI.class);
+			}
+		}, 1l);
 	}
 }
