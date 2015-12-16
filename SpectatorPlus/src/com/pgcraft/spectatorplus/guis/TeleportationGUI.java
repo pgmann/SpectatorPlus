@@ -122,7 +122,23 @@ public class TeleportationGUI extends ExplorerGui<Spectator>
 			{
 				if (!player.getWorld().equals(getPlayer().getWorld()))
 				{
-					lore.add(ChatColor.GRAY + player.getName() + " is in the " + ChatColor.WHITE + player.getWorld().getName() + ChatColor.GRAY + " world.");
+					ChatColor worldColor = ChatColor.GRAY;
+					switch (player.getWorld().getEnvironment())
+					{
+						case NORMAL:
+							worldColor = ChatColor.DARK_GREEN;
+							break;
+
+						case NETHER:
+							worldColor = ChatColor.RED;
+							break;
+
+						case THE_END:
+							worldColor = ChatColor.LIGHT_PURPLE;
+							break;
+					}
+
+					lore.add(ChatColor.GRAY + player.getName() + " is in the " + worldColor + player.getWorld().getName() + ChatColor.GRAY + " world.");
 				}
 				else
 				{
