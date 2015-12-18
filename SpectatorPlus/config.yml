@@ -76,15 +76,17 @@ chat:
 
 
 spectators:
-    # Prefix spectator names in the tab list?
-    # This will change the Scoreboard used, and restore the old one when spectator mode is disabled.
+    # These settings will change the Scoreboard used, and restore the old one when spectator mode is disabled.
     # If you see another plugin's sidebar/infos on players list disappearing when you enable the spectator mode,
     # try to disable this.
-    tabListPrefix: true
+    tabList:
+        prefix: false   # Prefix spectator names in the tab list?
+        health: false   # Display player's health to spectators in the tab list?
+
     
     # See other spectators when you're spectating?
-    # Requires spectators.tabListPrefix to be true.
-    spectatorsSeeSpectators: true
+    # Requires spectators.tabList.prefix to be true.
+    spectatorsSeeSpectators: false
     
     # Use vanilla spectate mode (gamemode 3) instead of adventure mode.
     # Same as no-clip mode tool, but mandatory.
