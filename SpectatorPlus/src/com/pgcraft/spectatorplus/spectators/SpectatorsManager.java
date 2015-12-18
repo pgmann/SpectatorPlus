@@ -75,7 +75,7 @@ public class SpectatorsManager
 
 	private static final String SPECTATORS_TEAM_NAME = "spectators";
 	private static final String SPECTATORS_HEALTH_OBJECTIVE_NAME = "health";
-	private static final String SPECTATORS_TEAM_PREFIX = ChatColor.GRAY + "Spectator " + ChatColor.DARK_GRAY + " ▏ ";
+	private static final String SPECTATORS_TEAM_PREFIX = ChatColor.DARK_GRAY + "SPEC ▏ " + ChatColor.GRAY;
 
 
 	public SpectatorsManager(SpectatorPlus plugin)
