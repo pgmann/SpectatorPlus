@@ -48,6 +48,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -297,19 +298,27 @@ public class SpectatorsManager
 	 */
 	public void rebuildScoreboard()
 	{
-		if (Toggles.SPECTATORS_TABLIST_PREFIX.get())
+		if (Toggles.SPECTATORS_TABLIST_PREFIX.get() || Toggles.SPECTATORS_TABLIST_HEALTH.get())
 		{
+			resetScoreboard();
+
 			spectatorsScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-			spectatorsScoreboard.registerNewObjective(SPECTATORS_HEALTH_OBJECTIVE_NAME, "health")
-					.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
-			spectatorsTeam = spectatorsScoreboard.registerNewTeam(SPECTATORS_TEAM_NAME);
-			spectatorsTeam.setPrefix(SPECTATORS_TEAM_PREFIX);
-			spectatorsTeam.setSuffix(ChatColor.RESET.toString());
+			if (Toggles.SPECTATORS_TABLIST_HEALTH.get())
+			{
+				spectatorsScoreboard.registerNewObjective(SPECTATORS_HEALTH_OBJECTIVE_NAME, "health")
+						.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+			}
 
-			if (Toggles.SPECTATORS_SEE_OTHERS.get())
-				spectatorsTeam.setCanSeeFriendlyInvisibles(true);
+			if (Toggles.SPECTATORS_TABLIST_PREFIX.get())
+			{
+				spectatorsTeam = spectatorsScoreboard.registerNewTeam(SPECTATORS_TEAM_NAME);
+				spectatorsTeam.setPrefix(SPECTATORS_TEAM_PREFIX);
+				spectatorsTeam.setSuffix(ChatColor.RESET.toString());
+			}
+
+			spectatorsTeam.setCanSeeFriendlyInvisibles(Toggles.SPECTATORS_SEE_OTHERS.get());
 
 
 			for (Player spectator : Bukkit.getOnlinePlayers())
@@ -323,16 +332,33 @@ public class SpectatorsManager
 		}
 		else if (spectatorsScoreboard != null)
 		{
-			spectatorsTeam.unregister();
-
-			spectatorsTeam = null;
-			spectatorsScoreboard = null;
+			resetScoreboard();
 
 			for (Player spectator : Bukkit.getOnlinePlayers())
 			{
 				SpectatorPlus.get().getPlayerData(spectator).resetScoreboard();
 			}
 		}
+	}
+
+	private void resetScoreboard()
+	{
+		if (spectatorsScoreboard == null)
+			return;
+
+		if (spectatorsTeam != null)
+		{
+			spectatorsTeam.unregister();
+			spectatorsTeam = null;
+		}
+
+		final Objective objective = spectatorsScoreboard.getObjective(SPECTATORS_HEALTH_OBJECTIVE_NAME);
+		if (objective != null)
+		{
+			objective.unregister();
+		}
+
+		spectatorsScoreboard = null;
 	}
 
 	/**

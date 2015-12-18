@@ -61,7 +61,8 @@ public class Toggles
 
 	/* Scoreboards-related */
 
-	public static final ConfigurationItem<Boolean> SPECTATORS_TABLIST_PREFIX = ConfigurationItem.item("spectators.tabListPrefix", false, "colouredtablist");
+	public static final ConfigurationItem<Boolean> SPECTATORS_TABLIST_PREFIX = ConfigurationItem.item("spectators.tabList.prefix", false, "colouredtablist", "spectators.tabListPrefix");
+	public static final ConfigurationItem<Boolean> SPECTATORS_TABLIST_HEALTH = ConfigurationItem.item("spectators.tabList.health", false);
 	public static final ConfigurationItem<Boolean> SPECTATORS_SEE_OTHERS = ConfigurationItem.item("spectators.spectatorsSeeSpectators", false, "seespecs");
 
 
