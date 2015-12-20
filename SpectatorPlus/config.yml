@@ -74,6 +74,15 @@ chat:
         whitelist:
             - /login
 
+    autocompleteSpectators:
+        # Non-spectators still see spectators when they auto-complete for names. Without that option, as the
+        # server auto-completes with the names of the players this player can see, the spectators are not listed.
+        forPlayers: false
+
+        # If spectators don't see spectators, they will not be able to autocomplete against their names (same logic
+        # as above). Except if this option is set to true.
+        forSpectators: true
+
 
 spectators:
     # These settings will change the Scoreboard used, and restore the old one when spectator mode is disabled.
