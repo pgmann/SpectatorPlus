@@ -36,6 +36,7 @@ import com.pgcraft.spectatorplus.guis.ArenasSelectorGUI;
 import com.pgcraft.spectatorplus.guis.PlayerInventoryGUI;
 import com.pgcraft.spectatorplus.guis.SpectatorsToolsGUI;
 import com.pgcraft.spectatorplus.guis.TeleportationGUI;
+import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import fr.zcraft.zlib.components.gui.Gui;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -151,6 +152,14 @@ public class SpectatorsInventoryListener implements Listener
 
 		if (displayName.startsWith(SpectatorsInventoryManager.TELEPORTER_TITLE))
 		{
+			if (SpectatorPlus.get().getSpectatorsManager().getSpectatorsMode() == SpectatorMode.ARENA && SpectatorPlus.get().getPlayerData(player).getArena() == null)
+			{
+				player.sendMessage(ChatColor.RED + "You have to select an arena before teleporting to a player.");
+				player.sendMessage(ChatColor.GRAY + "Use the arena selector, next to the teleporter, to do so.");
+
+				return;
+			}
+
 			Gui.open(player, new TeleportationGUI());
 		}
 		else if (displayName.startsWith(SpectatorsInventoryManager.ARENA_SELECTOR_TITLE))
