@@ -65,7 +65,10 @@ public class ArenasSelectorGUI extends ExplorerGui<Arena>
 
 		final ItemStack arenaButton = GuiUtils.makeItem(Material.BOOK, ChatColor.RESET + arena.getName(), Arrays.asList(
 				"",
-				ChatColor.GRAY + (inThisArena ? "Current arena" : "Click to select this arena")
+				(inThisArena ?
+						ChatColor.GRAY + "Current arena" :
+						ChatColor.DARK_GRAY + "» " + ChatColor.WHITE + "Click" + ChatColor.GRAY + " to select this arena"
+				)
 		));
 
 		if (inThisArena && Toggles.TOOLS_TOOLS_GLOW.get())

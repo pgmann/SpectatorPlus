@@ -32,9 +32,9 @@
 package com.pgcraft.spectatorplus.guis;
 
 import com.pgcraft.spectatorplus.utils.RomanNumber;
+import com.pgcraft.spectatorplus.utils.SPUtils;
 import fr.zcraft.zlib.components.gui.ActionGui;
 import fr.zcraft.zlib.components.gui.GuiUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -149,19 +149,17 @@ public class PlayerInventoryGUI extends ActionGui
 			meta.setDisplayName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Potion effects");
 
 			List<String> lore = new ArrayList<>();
-			lore.add(ChatColor.GRAY + "" + activePotionEffects.size() + " active potion effect" + (activePotionEffects.size() > 1 ? "s" : "") + ".");
+			lore.add(ChatColor.GOLD + "" + activePotionEffects.size() + ChatColor.WHITE + " active potion effect" + (activePotionEffects.size() > 1 ? "s" : "") + ".");
 			lore.add("");
 
 			meta.clearCustomEffects();
 			for (PotionEffect potionEffect : activePotionEffects)
 			{
-				meta.addCustomEffect(potionEffect, true);
-
-				final String effectName = WordUtils.capitalizeFully(potionEffect.getType().getName().replace("_", " "));
+				final String effectName = SPUtils.getEffectName(potionEffect.getType());
 				final String effectAmplifier = potionEffect.getAmplifier() == 0 ? "" : " " + RomanNumber.toRoman(potionEffect.getAmplifier() + 1);
-				final String effectDuration = INTEGER_FORMATTER.format(Math.floor(potionEffect.getDuration() / 60)) + ":" + INTEGER_FORMATTER.format(potionEffect.getDuration() % 60);
+				final String effectDuration = INTEGER_FORMATTER.format(Math.floor(potionEffect.getDuration() / (60 * 20))) + ":" + INTEGER_FORMATTER.format((potionEffect.getDuration() / 20) % 60);
 
-				lore.add(ChatColor.GRAY + effectName + effectAmplifier + " (" + effectDuration + ")");
+				lore.add(ChatColor.DARK_GRAY + "- " + ChatColor.WHITE + effectName + effectAmplifier + ChatColor.GRAY + " (" + effectDuration + ")");
 			}
 
 			meta.setLore(lore);
@@ -188,7 +186,7 @@ public class PlayerInventoryGUI extends ActionGui
 
 		final ItemStack food = GuiUtils.makeItem(Material.COOKIE, ChatColor.GOLD + "" + ChatColor.BOLD + "Food level", Arrays.asList(
 				ChatColor.GRAY + "Food level: " + ChatColor.GOLD + displayedInventoryOwner.getFoodLevel() + ChatColor.WHITE + " food points " + ChatColor.GRAY + "(out of 20)",
-				ChatColor.GRAY + "Saturation: " + ChatColor.GOLD + DECIMAL_FORMATTER.format(displayedInventoryOwner.getSaturation()) + ChatColor.WHITE + "points"
+				ChatColor.GRAY + "Saturation: " + ChatColor.GOLD + DECIMAL_FORMATTER.format(displayedInventoryOwner.getSaturation()) + ChatColor.WHITE + " points"
 		));
 		food.setAmount(displayedInventoryOwner.getFoodLevel());
 

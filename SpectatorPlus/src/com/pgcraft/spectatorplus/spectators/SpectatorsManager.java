@@ -36,6 +36,7 @@ import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.guis.ArenasSelectorGUI;
+import com.pgcraft.spectatorplus.guis.TeleportationGUI;
 import com.pgcraft.spectatorplus.guis.inventories.SpectatorsInventoryManager;
 import com.pgcraft.spectatorplus.utils.ConfigAccessor;
 import fr.zcraft.zlib.components.gui.Gui;
@@ -268,9 +269,18 @@ public class SpectatorsManager
 		// Needed to add (or remove) the arena selector
 		getInventoryManager().equipSpectators();
 
-		// Force-close the arena selector if the new mode is not the arena one.
+
+		// Force-closes the arena selector if the new mode is not the arena one.
 		if (mode != SpectatorMode.ARENA)
 			Gui.close(ArenasSelectorGUI.class);
+
+		// Force-closes the teleportation GUI if the new mode is the Arena one, as
+		// players will have to select an arena.
+		else
+			Gui.close(TeleportationGUI.class);
+
+		// Updates the teleportation GUIs because the displayed players may change.
+		Gui.update(TeleportationGUI.class);
 	}
 
 	public void setSpectatorsLobby(Location lobby)

@@ -113,6 +113,8 @@ public class TeleportationGUI extends ExplorerGui<Spectator>
 
 		if (Toggles.TOOLS_TELEPORTER_HEALTH.get() || Toggles.TOOLS_TELEPORTER_LOCATION.get())
 		{
+			lore.add("");
+
 			if (Toggles.TOOLS_TELEPORTER_HEALTH.get())
 			{
 				lore.add(ChatColor.GOLD + "" + ((int) player.getHealth()) + " " + ChatColor.WHITE + "hearts" + ChatColor.GRAY + " out of 20");

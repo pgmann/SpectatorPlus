@@ -98,7 +98,10 @@ public class SpectatorsInventoryListener implements Listener
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerPunchEntity(EntityDamageByEntityEvent ev)
 	{
-		if (ev.getDamager() instanceof Player && ev.getEntity() instanceof Player && ((Player) ev.getDamager()).getItemInHand() != null)
+		if (ev.getDamager() instanceof Player && ev.getEntity() instanceof Player
+				&& ((Player) ev.getDamager()).getItemInHand() != null
+				&& ((Player) ev.getDamager()).getItemInHand().hasItemMeta()
+				&& ((Player) ev.getDamager()).getItemInHand().getItemMeta().hasDisplayName())
 		{
 			if (SpectatorPlus.get().getPlayerData(((Player) ev.getDamager())).isSpectating())
 			{
