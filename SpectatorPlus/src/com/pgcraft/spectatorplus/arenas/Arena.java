@@ -368,7 +368,7 @@ public class Arena implements ConfigurationSerializable
 	@Override
 	public boolean equals(Object other)
 	{
-		return other instanceof Arena && ((Arena) other).getUUID().equals(this.getUUID());
+		return other != null && other instanceof Arena && ((Arena) other).getUUID().equals(this.getUUID());
 	}
 
 	/**

@@ -34,6 +34,7 @@ package com.pgcraft.spectatorplus;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import com.pgcraft.spectatorplus.commands.admin.BroadcastCommand;
+import com.pgcraft.spectatorplus.commands.admin.ListCommand;
 import com.pgcraft.spectatorplus.commands.admin.ManageArenasCommand;
 import com.pgcraft.spectatorplus.commands.admin.SetLobbyCommand;
 import com.pgcraft.spectatorplus.commands.admin.SetSpectatingModeCommand;
@@ -127,6 +128,7 @@ public class SpectatorPlus extends ZPlugin
 				SetSpectatingModeCommand.class,
 				SetLobbyCommand.class,
 				ManageArenasCommand.class,
+				ListCommand.class,
 
 				ToggleHideCommand.class,
 				BackFromNoClipCommand.class,
