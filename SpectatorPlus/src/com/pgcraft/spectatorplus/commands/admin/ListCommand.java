@@ -89,13 +89,13 @@ public class ListCommand extends Command
 		}
 		else
 		{
+			final String separator = ChatColor.GRAY + " - " + ChatColor.RESET;
+
 			for (int i = 0; i < spectators.size(); i += 3)
 			{
 				String line = spectators.get(i).getDisplayName();
-				if (i + 1 < spectators.size())
-					line += ChatColor.GRAY + " - " + spectators.get(i + 1).getDisplayName();
-				if (i + 2 < spectators.size())
-					line += ChatColor.GRAY + " - " + spectators.get(i + 2).getDisplayName();
+				if (i + 1 < spectators.size()) line += separator + spectators.get(i + 1).getDisplayName();
+				if (i + 2 < spectators.size()) line += separator + spectators.get(i + 2).getDisplayName();
 
 				sender.sendMessage(line);
 			}
