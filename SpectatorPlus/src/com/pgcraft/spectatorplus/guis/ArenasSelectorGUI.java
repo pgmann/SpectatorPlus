@@ -65,10 +65,7 @@ public class ArenasSelectorGUI extends ExplorerGui<Arena>
 
 		final ItemStack arenaButton = GuiUtils.makeItem(Material.BOOK, ChatColor.RESET + arena.getName(), Arrays.asList(
 				"",
-				(inThisArena ?
-						ChatColor.GRAY + "Current arena" :
-						ChatColor.DARK_GRAY + "» " + ChatColor.WHITE + "Click" + ChatColor.GRAY + " to select this arena"
-				)
+				ChatColor.DARK_GRAY + "» " + ChatColor.WHITE + "Click" + ChatColor.GRAY + " to " + (inThisArena ? "leave" : "select") + " this arena"
 		));
 
 		if (inThisArena && Toggles.TOOLS_TOOLS_GLOW.get())
@@ -91,9 +88,14 @@ public class ArenasSelectorGUI extends ExplorerGui<Arena>
 	@Override
 	protected ItemStack getPickedUpItem(Arena arena)
 	{
-		SpectatorPlus.get().getPlayerData(getPlayer()).setArena(arena);
-		close();
+		final Spectator spectator = SpectatorPlus.get().getPlayerData(getPlayer());
 
+		if (spectator.getArena() != null && spectator.getArena().equals(arena))
+			spectator.setArena(null);
+		else
+			spectator.setArena(arena);
+
+		close();
 		return null;
 	}
 
