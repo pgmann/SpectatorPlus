@@ -26,6 +26,12 @@ tools:
     arenaChooser:
         enabled: true
         item: WATCH
+
+        # Set to true to display the number of players in this arena in the tooltip
+        playersCount: true
+
+        # Set to true to display technical informations to the players with the `spectate.admin.arena` permission.
+        technicalInfos: true
     
     # Speed, night or underwater vision, teleportation to death location
     tools:

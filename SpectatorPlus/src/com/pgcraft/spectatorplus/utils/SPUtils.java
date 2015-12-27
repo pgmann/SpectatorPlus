@@ -34,6 +34,7 @@ package com.pgcraft.spectatorplus.utils;
 import fr.zcraft.zlib.tools.PluginLogger;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -82,6 +83,11 @@ public class SPUtils
 
 		else
 			return WordUtils.capitalizeFully(type.getName().replace("_", " "));
+	}
+
+	public static String userFriendlyLocation(Location location)
+	{
+		return location.getWorld().getName() + " @ " + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
 	}
 
 	public static Player getPlayer(String playerName)

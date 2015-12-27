@@ -78,6 +78,8 @@ public class Toggles
 
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_ENABLED = ConfigurationItem.item("tools.arenaChooser.enabled", true, "arenaclock");
 	public static final ConfigurationItem<String>  TOOLS_ARENA_SELECTOR_ITEM = ConfigurationItem.item("tools.arenaChooser.item", Material.WATCH.toString(), "clockItem");
+	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_PLAYERS_COUNT = ConfigurationItem.item("tools.arenaChooser.playersCount", true);
+	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_TECH_INFOS = ConfigurationItem.item("tools.arenaChooser.technicalInfos", true);
 
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_ENABLED = ConfigurationItem.item("tools.tools.enabled", true, "spectatorsTools");
 	public static final ConfigurationItem<String>  TOOLS_TOOLS_ITEM = ConfigurationItem.item("tools.tools.item", Material.MAGMA_CREAM.toString(), "spectatorsToolsItem");

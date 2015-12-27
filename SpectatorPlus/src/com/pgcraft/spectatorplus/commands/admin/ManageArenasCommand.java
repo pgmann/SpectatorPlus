@@ -35,6 +35,7 @@ import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenaSetup;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
+import com.pgcraft.spectatorplus.utils.SPUtils;
 import fr.zcraft.zlib.components.commands.Command;
 import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
@@ -246,7 +247,7 @@ public class ManageArenasCommand extends Command
 			if (arena.getLobby() != null)
 			{
 				description += "Lobby configured " + ChatColor.GRAY;
-				description += "(" + arena.getLobby().getWorld().getName() + ";" + arena.getLobby().getBlockX() + ";" + arena.getLobby().getBlockY() + ";" + arena.getLobby().getBlockZ() + ")";
+				description += "(" + SPUtils.userFriendlyLocation(arena.getLobby()) + ")";
 				description += ChatColor.GOLD + ".";
 			}
 			else
