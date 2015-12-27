@@ -222,6 +222,7 @@ public class SpectatorPlus extends ZPlugin
 	/**
 	 * Sends a message to the payer if the messages are enabled in the config.
 	 *
+	 * @param receiver The receiver of this message.
 	 * @param message The message to be sent. It will be prefixed by the Spectator Plus prefix.
 	 */
 	public void sendMessage(CommandSender receiver, String message)
@@ -229,11 +230,23 @@ public class SpectatorPlus extends ZPlugin
 		sendMessage(receiver, message, false);
 	}
 
+	/**
+	 * Sends a message to the payer if the messages are enabled in the config.
+	 *
+	 * @param receiver The receiver of this message.
+	 * @param message The message to be sent. It will be prefixed by the Spectator Plus prefix.
+	 */
 	public void sendMessage(Spectator receiver, String message)
 	{
 		sendMessage(receiver.getPlayerUniqueId(), message);
 	}
 
+	/**
+	 * Sends a message to the payer if the messages are enabled in the config.
+	 *
+	 * @param id The UUID of the receiver of this message.
+	 * @param message The message to be sent. It will be prefixed by the Spectator Plus prefix.
+	 */
 	public void sendMessage(UUID id, String message)
 	{
 		if (id == null)
