@@ -31,7 +31,6 @@
  */
 package com.pgcraft.spectatorplus;
 
-import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenasManager;
 import com.pgcraft.spectatorplus.commands.admin.BroadcastCommand;
 import com.pgcraft.spectatorplus.commands.admin.ListCommand;
@@ -57,7 +56,6 @@ import fr.zcraft.zlib.components.gui.Gui;
 import fr.zcraft.zlib.core.ZPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
@@ -83,21 +81,11 @@ public class SpectatorPlus extends ZPlugin
 
 
 	@Override
-	public void onLoad()
-	{
-		instance = this;
-
-		// ZLib requirement
-		super.onLoad();
-
-		// Registers the Arena class as a serializable one.
-		ConfigurationSerialization.registerClass(Arena.class);
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public void onEnable()
 	{
+		instance = this;
+
 		// Loading zLib components
 		loadComponents(Gui.class, Commands.class);
 
@@ -169,7 +157,6 @@ public class SpectatorPlus extends ZPlugin
 		}
 
 		// Just to be sure...
-		arenasManager.save();
 		spectatorsManager.save();
 
 		// zLib requirement

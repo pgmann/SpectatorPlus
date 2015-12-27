@@ -1,14 +1,14 @@
 package com.pgcraft.spectatorplus.arenas;
 
+import com.pgcraft.spectatorplus.SpectatorPlus;
+import com.pgcraft.spectatorplus.arenas.io.ArenasIO;
+import com.pgcraft.spectatorplus.arenas.io.ArenasMigrator;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.utils.ConfigAccessor;
-import com.pgcraft.spectatorplus.SpectatorPlus;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,24 +25,25 @@ import java.util.UUID;
  */
 public class ArenasManager
 {
-	private SpectatorPlus p;
 
 	private Map<UUID, Arena> arenas = new HashMap<>();
 	private ConfigAccessor storageConfig;
 
-	private static final String STORAGE_KEY = "arenas";
-
 
 	public ArenasManager(SpectatorPlus plugin)
 	{
-		p = plugin;
-		storageConfig = new ConfigAccessor(plugin, "setup");
+		ArenasMigrator.prepareMigration(new File(SpectatorPlus.get().getDataFolder().getPath() + File.separator + "setup.yml"));
+		storageConfig = plugin.getSpectatorsManager().getSpectatorsSetup();
+
+		// Migrates the old arenas to the new storage
+		for (Arena arena : ArenasMigrator.migrate(storageConfig.getConfig()))
+			registerArena(arena);
 
 		// Loads the arenas from the config
 		reload();
 
-		// Migrates the old arenas to the new storage
-		migrate();
+		// Save, to store in file the migrated arenas
+		save();
 	}
 
 
@@ -53,14 +54,9 @@ public class ArenasManager
 	 */
 	public void reload()
 	{
-		if (storageConfig.getConfig().isConfigurationSection(STORAGE_KEY))
+		for (Arena arena : ArenasIO.loadArenas(storageConfig.getConfig()))
 		{
-			ConfigurationSection configArenas = storageConfig.getConfig().getConfigurationSection(STORAGE_KEY);
-
-			for (String key : configArenas.getKeys(false))
-			{
-				arenas.put(UUID.fromString(key), (Arena) configArenas.get(key));
-			}
+			arenas.put(arena.getUUID(), arena);
 		}
 	}
 
@@ -71,19 +67,7 @@ public class ArenasManager
 	 */
 	public void save()
 	{
-		// The configuration is rewrote every time, to take deletions into account.
-		if (storageConfig.getConfig().isConfigurationSection(STORAGE_KEY))
-		{
-			storageConfig.getConfig().set(STORAGE_KEY, null);
-		}
-
-		ConfigurationSection configArenas = storageConfig.getConfig().createSection(STORAGE_KEY);
-
-		for (UUID id : arenas.keySet())
-		{
-			configArenas.set(id.toString(), arenas.get(id));
-		}
-
+		ArenasIO.saveArenas(storageConfig.getConfig(), arenas.values());
 		storageConfig.saveConfig();
 	}
 
@@ -203,60 +187,5 @@ public class ArenasManager
 		}
 
 		save();
-	}
-
-
-	/**
-	 * Migrates the arenas stored in the old format to this new one.
-	 *
-	 * @since 2.0
-	 */
-	private void migrate()
-	{
-		final String OLD_STORAGE_KEY = "arena";
-		final String NEXT_ARENA_KEY = "nextarena";
-
-		if (storageConfig.getConfig().isConfigurationSection(OLD_STORAGE_KEY) && storageConfig.getConfig().contains(NEXT_ARENA_KEY))
-		{
-
-			int lastNumericID = storageConfig.getConfig().getInt(NEXT_ARENA_KEY);
-
-			for (int i = 1; i < lastNumericID; i++)
-			{
-
-				String name = storageConfig.getConfig().getString(OLD_STORAGE_KEY + "." + i + ".name");
-
-				World defaultWorld = Bukkit.getWorlds().get(0);
-				Location corner1 = new Location(defaultWorld,
-						storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".1.x"),
-						storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".1.y"),
-						storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".1.z"));
-				Location corner2 = new Location(defaultWorld,
-						storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".2.x"),
-						storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".2.y"),
-						storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".2.z"));
-
-				Arena importedArena = new Arena(name, corner1, corner2);
-
-				// Is a lobby registered?
-				if (storageConfig.getConfig().isConfigurationSection(OLD_STORAGE_KEY + "." + i + ".lobby"))
-				{
-					Location lobby = new Location(Bukkit.getWorld(storageConfig.getConfig().getString(OLD_STORAGE_KEY + "." + i + ".lobby.world")),
-							storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".lobby.x"),
-							storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".lobby.y"),
-							storageConfig.getConfig().getDouble(OLD_STORAGE_KEY + "." + i + ".lobby.z"));
-					importedArena.setLobby(lobby);
-				}
-
-				this.registerArena(importedArena);
-			}
-
-			// The old configuration is removed
-			storageConfig.getConfig().set(OLD_STORAGE_KEY, null);
-			storageConfig.getConfig().set(NEXT_ARENA_KEY, null);
-
-			// The config file is wrote
-			this.save();
-		}
 	}
 }

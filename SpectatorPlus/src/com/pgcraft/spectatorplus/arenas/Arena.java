@@ -1,42 +1,34 @@
 package com.pgcraft.spectatorplus.arenas;
 
 import com.pgcraft.spectatorplus.SpectatorPlus;
-import fr.zcraft.zlib.tools.PluginLogger;
-import org.bukkit.Bukkit;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 
 /**
- * Represents an Arena in SpectatorPlusOld. <p> An arena is a 3D space, represented by two opposed
+ * Represents an Arena in SpectatorPlus.
+ *
+ * <p>An arena is a 3D space, represented by two opposed
  * corners; the spectators inside an arena can teleport themselves only to the players inside this
  * arena.
  *
  * @since 2.0
  */
-public class Arena implements ConfigurationSerializable
+public class Arena
 {
-
 	private UUID id = null;
 	private String name = null;
 
 	private Location corner1 = null;
 	private Location corner2 = null;
-
 	private Location lobby = null;
 
 	private Boolean registered = false;
-
 	private Boolean enabled = true;
-
-	private String tempWorldName = "", tempLobbyWorldName = "";
-	private Map<String, Object> tempSerialized;
 
 	/**
 	 * Standard constructor.<br> This constructor is <em>only</em> used to create a new arena.
@@ -57,140 +49,32 @@ public class Arena implements ConfigurationSerializable
 	}
 
 	/**
-	 * Constructs an object from the serialized version.<br> Error handling:<ul> <li>null world ->
-	 * disable arena until fixed.</li> <li>null lobby world -> use arena world.</li> <li>can migrate
-	 * old config if new values don't exist.</li> </ul>
+	 * From-config constructor.
 	 *
-	 * @param serialized The serialized version, returned by {@link #serialize()}.
+	 * @param id Arena UUID.
+	 * @param name Arena name.
+	 * @param corner1 First corner.
+	 * @param corner2 Other corner.
+	 * @param lobby Lobby.
+	 * @param registered Registered?
+	 * @param enabled Enabled?
 	 */
-	public Arena(Map<String, Object> serialized)
+	public Arena(UUID id, String name, Location corner1, Location corner2, Location lobby, boolean registered, boolean enabled)
 	{
-		this.id = UUID.fromString((String) serialized.get("id"));
-		this.name = (String) serialized.get("name");
+		Validate.notNull(id, "Arena UUID can't be null");
+		Validate.notNull(name, "Arena name can't be null");
+		Validate.notNull(corner1, "Arena corner 1 can't be null");
+		Validate.notNull(corner2, "Arena corner 2 can't be null");
 
-		tempWorldName = (String) serialized.get("world");
-		World world = Bukkit.getWorld(tempWorldName);
-
-		if (world == null)
-		{
-			// Log to console, disable and return. Prevents loading arenas in a world where there isn't supposed to be an arena.
-			PluginLogger.warning("Arena {0} is meant to be in a world called '{1}', but it couldn't be found. Disabling this arena.", name, tempWorldName);
-
-			setEnabled(false);
-
-			// Keep the old configuration, to make fixing easier.
-			tempSerialized = serialized;
-
-			return;
-		}
-		else
-		{
-			// If it's been fixed, make sure to reset tempSerialized to allow the arena to be saved in future.
-			tempSerialized = null;
-		}
-
-
-		this.corner1 = ((Vector) serialized.get("corner1")).toLocation(world);
-		this.corner2 = ((Vector) serialized.get("corner2")).toLocation(world);
+		this.id = id;
+		this.name = name;
+		this.corner1 = corner1;
+		this.corner2 = corner2;
+		this.lobby = lobby;
+		this.registered = registered;
+		this.enabled = enabled;
 
 		reequilibrateCorners();
-
-
-		if (serialized.get("lobby.location") != null)
-		{
-			tempLobbyWorldName = (String) serialized.get("lobby.world");
-			World worldLobby = Bukkit.getWorld(tempLobbyWorldName);
-
-			if (worldLobby == null)
-			{
-				// Take an educated guess at where the lobby should be. In the arena's world is the best bet.
-				PluginLogger.warning("Arena {0}'s lobby is meant to be in a world called '{1}', but it couldn't be found. Using the arena's world instead.", name, tempLobbyWorldName);
-				worldLobby = world; // world cannot be null at this point or code would have exited.
-			}
-
-			// Get the coordinates of the lobby in the decided world
-			this.lobby = ((Vector) serialized.get("lobby.location")).toLocation(worldLobby);
-		}
-
-
-		this.registered = (Boolean) serialized.get("registered");
-
-		// Migration
-		if (serialized.containsKey("enabled"))
-		{
-			this.enabled = (Boolean) serialized.get("enabled");
-		}
-		else
-		{
-			this.enabled = true;
-		}
-	}
-
-	/**
-	 * Returns a map representing this object. <p> Required by {@link org.bukkit.configuration.serialization.ConfigurationSerializable
-	 * ConfigurationSerializable}.
-	 *
-	 * @return A representation of the object.
-	 */
-	@Override
-	public Map<String, Object> serialize()
-	{
-		Map<String, Object> serialized = new HashMap<>();
-
-		if (tempSerialized != null)
-		{
-			// This is if the world is null - keep the exact same config for this arena as was loaded to ease fixing.
-			serialized = tempSerialized;
-			PluginLogger.warning("Remember to fix arena {0}'s world! No world called {1} exists!", name, tempWorldName);
-			return serialized;
-		}
-
-		String worldName;
-		if (corner1.getWorld() != null)
-		{
-			worldName = corner1.getWorld().getName();
-		}
-		else
-		{
-			// Just in case, to deal with worlds that have magically disappeared during runtime...
-			worldName = tempWorldName;
-			setEnabled(false);
-
-			PluginLogger.warning("Remember to fix arena {0}'s world!", name);
-		}
-
-		serialized.put("id", id.toString());
-		serialized.put("name", name);
-		serialized.put("world", worldName);
-		serialized.put("corner1", corner1.toVector());
-		serialized.put("corner2", corner2.toVector());
-
-		if (lobby != null)
-		{
-			// Deal with nonexistent lobby world, previously detected at load. Keep the old world name to make fixing easier.
-			if (lobby.getWorld() != null && lobby.getWorld().getName().equals(tempLobbyWorldName))
-			{
-				worldName = lobby.getWorld().getName();
-			}
-			else
-			{
-				PluginLogger.warning("Remember to fix arena {0}'s lobby location! No world called {1} exists!", name, tempLobbyWorldName);
-				worldName = tempLobbyWorldName;
-			}
-
-			serialized.put("lobby.location", lobby.toVector());
-			serialized.put("lobby.world", worldName);
-		}
-		else
-		{
-			serialized.put("lobby.location", null);
-			serialized.put("lobby.world", null);
-		}
-
-		serialized.put("registered", registered);
-		serialized.put("enabled", enabled);
-
-		return serialized;
 	}
 
 	/**

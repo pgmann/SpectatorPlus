@@ -6,9 +6,6 @@
 
 
 
-# Config version (do not alter)
-version: 3.0
-
 # All the tools available in the spectators' hotbar
 tools:
     teleporter:

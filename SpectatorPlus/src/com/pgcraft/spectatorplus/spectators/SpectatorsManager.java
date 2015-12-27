@@ -99,6 +99,11 @@ public class SpectatorsManager
 		return savedSpectatingPlayers;
 	}
 
+	public ConfigAccessor getSpectatorsSetup()
+	{
+		return spectatorsSetup;
+	}
+
 	public SpectatorsInventoryManager getInventoryManager()
 	{
 		return inventoryManager;
