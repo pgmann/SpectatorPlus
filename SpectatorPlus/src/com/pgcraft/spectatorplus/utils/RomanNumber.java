@@ -29,10 +29,16 @@ public class RomanNumber
 		map.put(1, "I");
 	}
 
-	public static String toRoman(int number)
+	public static String toRoman(Integer number)
 	{
-		int l = map.floorKey(number);
-		if (number == l)
+		if (number == null)
+			return "0";
+
+		Integer l = map.floorKey(number);
+
+		if (l == null)
+			return String.valueOf(number);
+		else if (number.equals(l))
 			return map.get(number);
 
 		return map.get(l) + toRoman(number - l);
