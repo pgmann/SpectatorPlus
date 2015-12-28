@@ -33,6 +33,8 @@
 					<include>setup.yml</include>
 					<include>config.yml</include>
 					<include>spectators.yml</include>
+					<include>help/*</include>
+					<include>help/spec/*</include>
 				</includes>
 			</resource>
 		</resources>

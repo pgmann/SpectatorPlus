@@ -1,0 +1,4 @@
+Lists the spectators.
+
+[arena name]: if provided, lists the spectators in
+this arena only.

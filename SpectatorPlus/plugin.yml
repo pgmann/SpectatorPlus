@@ -6,8 +6,8 @@ author: pgmann
 authors: ["AmauryPi"]
 commands:
   spectate:
-    description: 'See [/spec help] for help'
-    usage: 'An error occurred while loading the plugin! Please file a bug report on BukkitDev.'
+    description: 'See /<command> help for help'
+    usage: 'See /<command> help for help'
     aliases: spec
 permissions:
   spectate.*:

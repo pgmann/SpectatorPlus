@@ -1,0 +1,15 @@
+Displays or updates the configuration.
+
+This command displays the configuration values, if used
+without a new value (/spec config <path>), or updates
+the configuration entries directly from the game.
+
+The updates are instantaneously applied: as example, if
+you change the item representing the teleporter, all the
+spectators will see this item change in their inventory.
+Or, if you disable the spectators tools, all players with
+the tools GUI opened will have it force-closed.
+
+§oThis is basically an interface to the config.yml file.
+§oBut please note that some values cannot be updated, like
+§othe lists.
