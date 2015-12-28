@@ -31,11 +31,26 @@
  */
 package com.pgcraft.spectatorplus;
 
+import com.pgcraft.spectatorplus.guis.SpectatorsToolsGUI;
+import com.pgcraft.spectatorplus.spectators.Spectator;
+import fr.zcraft.zlib.components.configuration.Configuration;
 import fr.zcraft.zlib.components.configuration.ConfigurationItem;
+import fr.zcraft.zlib.components.gui.Gui;
+import fr.zcraft.zlib.tools.Callback;
+import fr.zcraft.zlib.tools.PluginLogger;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
+import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class Toggles
@@ -50,7 +65,7 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> SPECTATOR_MODE_ON_DEATH = ConfigurationItem.item("spectatorModeOnDeath", false, "deathspec");
 
 	public static final ConfigurationItem<Boolean> ENFORCE_ARENA_BOUNDARIES = ConfigurationItem.item("enforceBoundaries.arenas", false, "enforceArenaBoundary", "enforceArenaBoundaries");
-	public static final ConfigurationItem<Double> ENFORCE_LOBBY_BOUNDARIES = ConfigurationItem.item("enforceBoundaries.lobby", 0d);
+	public static final ConfigurationItem<Double>  ENFORCE_LOBBY_BOUNDARIES = ConfigurationItem.item("enforceBoundaries.lobby", 0d);
 
 
 	/* Spectators lobby */
@@ -106,4 +121,155 @@ public class Toggles
 
 	public static final ConfigurationItem<Boolean> AUTOCOMPLETE_SPECTATORS_FOR_PLAYERS = ConfigurationItem.item("chat.autocompleteSpectators.forPlayers", false);
 	public static final ConfigurationItem<Boolean> AUTOCOMPLETE_SPECTATORS_FOR_SPECTATORS = ConfigurationItem.item("chat.autocompleteSpectators.forSpectators", true);
+
+
+
+	private static Map<String, ConfigurationItem<?>> ITEMS_PER_PATH = new HashMap<>();
+
+	static
+	{
+		/* **  Storage of the fields in a searchable map  ** */
+
+		for (Field field : Toggles.class.getDeclaredFields())
+		{
+			try
+			{
+				field.setAccessible(true);
+				Object item = field.get(null);
+
+				if (item instanceof ConfigurationItem)
+				{
+					ITEMS_PER_PATH.put(((ConfigurationItem<?>) item).getFieldName(), (ConfigurationItem<?>) item);
+				}
+			}
+			catch (IllegalAccessException e)
+			{
+				PluginLogger.error("Cannot access a field from the Toggle class, something weird just happened.", e);
+			}
+		}
+
+
+
+		/* **  Update callback  ** */
+
+		Configuration.registerConfigurationUpdateCallback(new Callback<ConfigurationItem<?>>()
+		{
+			@Override
+			@SuppressWarnings ("unchecked")
+			public void call(ConfigurationItem<?> toggle)
+			{
+				if (toggle == TOOLS_ARENA_SELECTOR_ITEM || toggle == TOOLS_INSPECTOR_ITEM || toggle == TOOLS_TELEPORTER_ITEM || toggle == TOOLS_TOOLS_ITEM
+						|| toggle == TOOLS_ARENA_SELECTOR_ENABLED || toggle == TOOLS_INSPECTOR_ENABLED || toggle == TOOLS_TELEPORTER_ENABLED || toggle == TOOLS_TOOLS_ENABLED)
+				{
+					SpectatorPlus.get().getSpectatorsManager().getInventoryManager().updateSpectatorsInventoriesConfig();
+				}
+
+				else if (toggle == TOOLS_NEWBIES_MODE)
+				{
+					SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectators();
+				}
+
+				else if (toggle == VANILLA_SPECTATOR_MODE)
+				{
+					if(VANILLA_SPECTATOR_MODE.get())
+					{
+						for (Player player : Bukkit.getOnlinePlayers())
+						{
+							final Spectator spectator = SpectatorPlus.get().getPlayerData(player);
+							if (spectator.isSpectating())
+							{
+								spectator.setGameMode(GameMode.ADVENTURE);
+								SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(player);
+							}
+						}
+					}
+
+					SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectators();
+				}
+
+				else if (toggle == SPECTATORS_TABLIST_PREFIX || toggle == SPECTATORS_TABLIST_HEALTH || toggle == SPECTATORS_SEE_OTHERS)
+				{
+					SpectatorPlus.get().getSpectatorsManager().rebuildScoreboard();
+				}
+
+				else if (toggle == TOOLS_ARENA_SELECTOR_PLAYERS_COUNT || toggle == TOOLS_ARENA_SELECTOR_TECH_INFOS
+						|| toggle == TOOLS_TOOLS_SPEED || toggle == TOOLS_TOOLS_NIGHTVISION || toggle == TOOLS_TOOLS_DIVINGSUIT || toggle == TOOLS_TOOLS_NOCLIP
+						|| toggle == TOOLS_TOOLS_TPTODEATH_ENABLED || toggle == TOOLS_TOOLS_TPTODEATH_DISPLAYCAUSE
+						|| toggle == TOOLS_TOOLS_GLOW)
+				{
+					Gui.update(SpectatorsToolsGUI.class);
+
+					if (toggle == TOOLS_TOOLS_NOCLIP && !TOOLS_TOOLS_NOCLIP.get())
+					{
+						for (Player player : Bukkit.getOnlinePlayers())
+						{
+							final Spectator spectator = SpectatorPlus.get().getPlayerData(player);
+							if (spectator.isSpectating())
+							{
+								spectator.setGameMode(GameMode.ADVENTURE);
+								SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(player);
+							}
+						}
+					}
+					else if (toggle == TOOLS_TOOLS_DIVINGSUIT && !TOOLS_TOOLS_DIVINGSUIT.get())
+					{
+						for (Player player : Bukkit.getOnlinePlayers())
+						{
+							if (SpectatorPlus.get().getPlayerData(player).isSpectating())
+							{
+								player.getInventory().setArmorContents(null);
+							}
+						}
+					}
+					else if (toggle == TOOLS_TOOLS_SPEED && !TOOLS_TOOLS_SPEED.get())
+					{
+						for (Player player : Bukkit.getOnlinePlayers())
+						{
+							if (SpectatorPlus.get().getPlayerData(player).isSpectating())
+							{
+								player.removePotionEffect(PotionEffectType.SPEED);
+								player.setFlySpeed(0.1f);
+							}
+						}
+					}
+					else if (toggle == TOOLS_TOOLS_NIGHTVISION && !TOOLS_TOOLS_NIGHTVISION.get())
+					{
+						for (Player player : Bukkit.getOnlinePlayers())
+						{
+							if (SpectatorPlus.get().getPlayerData(player).isSpectating())
+							{
+								player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+								player.removePotionEffect(PotionEffectType.WATER_BREATHING);
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+
+	/**
+	 * @return all the toggles.
+	 */
+	public static Collection<ConfigurationItem<?>> getToggles()
+	{
+		return Collections.unmodifiableCollection(ITEMS_PER_PATH.values());
+	}
+
+	/**
+	 * @return all the toggles' paths.
+	 */
+	public static Set<String> getPaths()
+	{
+		return Collections.unmodifiableSet(ITEMS_PER_PATH.keySet());
+	}
+
+	/**
+	 * @param path A toggle's path.
+	 * @return The toggle; {@code null} if there isn't any toggle at this path.
+	 */
+	public static ConfigurationItem<?> getToggleFromPath(String path)
+	{
+		return ITEMS_PER_PATH.get(path);
+	}
 }

@@ -402,6 +402,21 @@ public class Spectator
         this.gamemodeChangeAllowed = gamemodeChangeAllowed;
     }
 
+	/**
+	 * Changes the gamemode of the player, bypassing the locked mode.
+	 * @param mode The new gamemode.
+	 */
+	public void setGameMode(GameMode mode)
+	{
+		Player player = getPlayer();
+		if (player != null)
+		{
+			setGamemodeChangeAllowed(true);
+			player.setGameMode(mode);
+			setGamemodeChangeAllowed(false);
+		}
+	}
+
     /**
      * The arena the spectator is in.
      */
