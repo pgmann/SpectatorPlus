@@ -31,7 +31,10 @@
  */
 package com.pgcraft.spectatorplus;
 
+import com.pgcraft.spectatorplus.guis.ArenasSelectorGUI;
+import com.pgcraft.spectatorplus.guis.PlayerInventoryGUI;
 import com.pgcraft.spectatorplus.guis.SpectatorsToolsGUI;
+import com.pgcraft.spectatorplus.guis.TeleportationGUI;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import fr.zcraft.zlib.components.configuration.Configuration;
 import fr.zcraft.zlib.components.configuration.ConfigurationItem;
@@ -162,6 +165,23 @@ public class Toggles
 						|| toggle == TOOLS_ARENA_SELECTOR_ENABLED || toggle == TOOLS_INSPECTOR_ENABLED || toggle == TOOLS_TELEPORTER_ENABLED || toggle == TOOLS_TOOLS_ENABLED)
 				{
 					SpectatorPlus.get().getSpectatorsManager().getInventoryManager().updateSpectatorsInventoriesConfig();
+
+					if (!TOOLS_TELEPORTER_ENABLED.get())
+						Gui.close(TeleportationGUI.class);
+
+					if (!TOOLS_ARENA_SELECTOR_ENABLED.get())
+						Gui.close(ArenasSelectorGUI.class);
+
+					if (!TOOLS_TOOLS_ENABLED.get())
+						Gui.close(SpectatorsToolsGUI.class);
+
+					if (!TOOLS_INSPECTOR_ENABLED.get())
+						Gui.close(PlayerInventoryGUI.class);
+				}
+
+				else if (toggle == TOOLS_TELEPORTER_HEALTH || toggle == TOOLS_TELEPORTER_LOCATION || toggle == TOOLS_TELEPORTER_INSPECTOR)
+				{
+					Gui.update(TeleportationGUI.class);
 				}
 
 				else if (toggle == TOOLS_NEWBIES_MODE)
@@ -198,6 +218,7 @@ public class Toggles
 						|| toggle == TOOLS_TOOLS_GLOW)
 				{
 					Gui.update(SpectatorsToolsGUI.class);
+					Gui.update(ArenasSelectorGUI.class);
 
 					if (toggle == TOOLS_TOOLS_NOCLIP && !TOOLS_TOOLS_NOCLIP.get())
 					{
