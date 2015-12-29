@@ -133,7 +133,8 @@ public class Arena
 		this.highestCorner = corner2;
 		computeSortedCorners();
 
-		if (isRegistered())
+		// The arena manager is null if this is called from his constructor, by the arenas loader.
+		if (isRegistered() && SpectatorPlus.get().getArenasManager() != null)
 			SpectatorPlus.get().getArenasManager().save();
 	}
 

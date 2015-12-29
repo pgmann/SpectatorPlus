@@ -74,9 +74,9 @@ public class SpectatorPlus extends ZPlugin
 	public final static String BASE_PREFIX = ChatColor.BLUE + "Spectator" + ChatColor.DARK_BLUE + "Plus";
 	public final static String PREFIX = ChatColor.GOLD + "[" + BASE_PREFIX + ChatColor.GOLD + "] ";
 
-	private SpectateAPI api;
-	private SpectatorsManager spectatorsManager;
-	private ArenasManager arenasManager;
+	private SpectateAPI api = null;
+	private SpectatorsManager spectatorsManager = null;
+	private ArenasManager arenasManager = null;
 
 	private Map<UUID, Spectator> spectators = new HashMap<>();
 
