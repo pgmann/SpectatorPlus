@@ -119,8 +119,8 @@ public final class ArenasIO
 
 			storedArena.set("name", arena.getName());
 			storedArena.set("uuid", arena.getUUID().toString());
-			storedArena.set("corner1", location2String(arena.getCorner1()));
-			storedArena.set("corner2", location2String(arena.getCorner2()));
+			storedArena.set("corner1", location2String(arena.getLowestCorner()));
+			storedArena.set("corner2", location2String(arena.getHighestCorner()));
 			storedArena.set("lobby", location2String(arena.getLobby()));
 			storedArena.set("registered", arena.isRegistered());
 			storedArena.set("enabled", arena.isEnabled());

@@ -92,8 +92,8 @@ public class ArenasSelectorGUI extends ExplorerGui<Arena>
 			lore.add(ChatColor.BLUE + "About this arena");
 			lore.add(ChatColor.WHITE + "UUID" + ChatColor.GRAY + ": " + arena.getUUID().toString().toUpperCase());
 			lore.add(ChatColor.WHITE + "Corners" + ChatColor.GRAY + ":");
-			lore.add(ChatColor.GRAY + "- " + SPUtils.userFriendlyLocation(arena.getCorner1()));
-			lore.add(ChatColor.GRAY + "- " + SPUtils.userFriendlyLocation(arena.getCorner2()));
+			lore.add(ChatColor.GRAY + "- " + SPUtils.userFriendlyLocation(arena.getLowestCorner()));
+			lore.add(ChatColor.GRAY + "- " + SPUtils.userFriendlyLocation(arena.getHighestCorner()));
 			lore.add(ChatColor.WHITE + "Lobby" + ChatColor.GRAY + ": " + (arena.getLobby() == null ? "not set" : SPUtils.userFriendlyLocation(arena.getLobby())));
 		}
 

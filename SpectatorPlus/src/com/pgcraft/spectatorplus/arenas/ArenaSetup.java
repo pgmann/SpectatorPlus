@@ -103,8 +103,16 @@ public class ArenaSetup
 
 			case 2:
 				corner2 = location;
-				SpectatorPlus.get().getArenasManager().registerArena(new Arena(arenaName, corner1, corner2));
-				SpectatorPlus.get().sendMessage(player, "The arena " + ChatColor.RED + arenaName + ChatColor.GOLD + " was successfully registered!", true);
+				try
+				{
+					SpectatorPlus.get().getArenasManager().registerArena(new Arena(arenaName, corner1, corner2));
+					SpectatorPlus.get().sendMessage(player, "The arena " + ChatColor.RED + arenaName + ChatColor.GOLD + " was successfully registered!", true);
+				}
+				catch (IllegalArgumentException e)
+				{
+					SpectatorPlus.get().sendMessage(player, ChatColor.RED + "Cannot register the arena.", true);
+					SpectatorPlus.get().sendMessage(player, ChatColor.RED + "Error: " + e.getMessage(), true);
+				}
 
 				spectator.setArenaSetup(null);
 				break;

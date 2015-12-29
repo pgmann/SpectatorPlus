@@ -12,9 +12,8 @@ import java.util.UUID;
 /**
  * Represents an Arena in SpectatorPlus.
  *
- * <p>An arena is a 3D space, represented by two opposed
- * corners; the spectators inside an arena can teleport themselves only to the players inside this
- * arena.
+ * <p>An arena is a 3D space, represented by two opposed corners; the spectators inside an arena can
+ * teleport themselves only to the players inside this arena.
  *
  * @since 2.0
  */
@@ -23,41 +22,44 @@ public class Arena
 	private UUID id = null;
 	private String name = null;
 
-	private Location corner1 = null;
-	private Location corner2 = null;
+	private Location lowestCorner = null;
+	private Location highestCorner = null;
 	private Location lobby = null;
 
 	private Boolean registered = false;
 	private Boolean enabled = true;
 
 	/**
-	 * Standard constructor.<br> This constructor is <em>only</em> used to create a new arena.
+	 * Standard constructor.
+	 *
+	 * <p>This constructor is <em>only</em> used to create a new arena.</p>
 	 *
 	 * @param name    The name of the arena.
 	 * @param corner1 A corner of the arena.
 	 * @param corner2 The other, opposite corner of the arena.
+	 *
+	 * @throws IllegalArgumentException if both corners are not in the same world.
 	 */
 	public Arena(String name, Location corner1, Location corner2)
 	{
 		this.id = UUID.randomUUID();
 		this.name = name;
 
-		this.corner1 = corner1;
-		this.corner2 = corner2;
-
-		reequilibrateCorners();
+		setCorners(corner1, corner2);
 	}
 
 	/**
 	 * From-config constructor.
 	 *
-	 * @param id Arena UUID.
-	 * @param name Arena name.
-	 * @param corner1 First corner.
-	 * @param corner2 Other corner.
-	 * @param lobby Lobby.
+	 * @param id         Arena UUID.
+	 * @param name       Arena name.
+	 * @param corner1    First corner.
+	 * @param corner2    Other corner.
+	 * @param lobby      Lobby.
 	 * @param registered Registered?
-	 * @param enabled Enabled?
+	 * @param enabled    Enabled?
+	 *
+	 * @throws IllegalArgumentException if both corners are not in the same world.
 	 */
 	public Arena(UUID id, String name, Location corner1, Location corner2, Location lobby, boolean registered, boolean enabled)
 	{
@@ -68,13 +70,11 @@ public class Arena
 
 		this.id = id;
 		this.name = name;
-		this.corner1 = corner1;
-		this.corner2 = corner2;
 		this.lobby = lobby;
 		this.registered = registered;
 		this.enabled = enabled;
 
-		reequilibrateCorners();
+		setCorners(corner1, corner2);
 	}
 
 	/**
@@ -96,59 +96,47 @@ public class Arena
 	{
 		this.name = name;
 
-		if(isRegistered())
+		if (isRegistered())
 			SpectatorPlus.get().getArenasManager().save();
 	}
 
 	/**
-	 * Returns the location of the first corner of this arena. This will always be the corner with
-	 * the lowest coordinates, not the object passed to a previous call of {@link #setCorner1(Location)}.
-	 *
-	 * @return the location of the first corner of this arena.
+	 * @return The location of the corner of this arena with the lowest coordinates.
 	 */
-	public Location getCorner1()
+	public Location getLowestCorner()
 	{
-		return corner1;
+		return lowestCorner;
 	}
 
 	/**
-	 * Sets the location of the first corner of this arena.
-	 *
-	 * @param corner1 The first corner to set.
+	 * @return The location of the corner of this arena with the highest coordinates.
 	 */
-	public void setCorner1(Location corner1)
+	public Location getHighestCorner()
 	{
-		this.corner1 = corner1;
-		reequilibrateCorners();
+		return highestCorner;
+	}
 
-		if(isRegistered())
+
+	/**
+	 * Sets the location of the corners of this arena.
+	 *
+	 * @param corner1 One of the corners.
+	 * @param corner2 The other corner.
+	 *
+	 * @throws IllegalArgumentException if both corners are not in the same world.
+	 */
+	public void setCorners(Location corner1, Location corner2)
+	{
+		Validate.isTrue(corner1.getWorld().equals(corner2.getWorld()), "The two corners of an arena must be in the same world.");
+
+		this.lowestCorner = corner1;
+		this.highestCorner = corner2;
+		computeSortedCorners();
+
+		if (isRegistered())
 			SpectatorPlus.get().getArenasManager().save();
 	}
 
-	/**
-	 * Returns the location of the second corner of this arena. This will always be the corner with
-	 * the highest coordinates, not the object passed to a previous call of {@link #setCorner2(Location)}.
-	 *
-	 * @return the location of the second corner of this arena.
-	 */
-	public Location getCorner2()
-	{
-		return corner2;
-	}
-
-	/**
-	 * Sets the location of the second corner of this arena.
-	 *
-	 * @param corner2 The second corner to set.
-	 */
-	public void setCorner2(Location corner2)
-	{
-		this.corner2 = corner2;
-		reequilibrateCorners();
-
-		if(isRegistered())
-			SpectatorPlus.get().getArenasManager().save();
-	}
 
 	/**
 	 * Returns the {@link java.util.UUID UUID} of this arena.
@@ -179,7 +167,7 @@ public class Arena
 	{
 		this.lobby = lobby;
 
-		if(isRegistered())
+		if (isRegistered())
 			SpectatorPlus.get().getArenasManager().save();
 	}
 
@@ -197,7 +185,7 @@ public class Arena
 	/**
 	 * Sets the registration state of this {@link Arena}.
 	 *
-	 * @param registered
+	 * @param registered The status.
 	 */
 	protected void setRegistered(boolean registered)
 	{
@@ -224,22 +212,24 @@ public class Arena
 		this.enabled = enabled;
 	}
 
+
 	/**
 	 * Checks if the given location is inside this arena.
 	 *
 	 * @param location The location.
+	 *
 	 * @return {@code true} if inside.
 	 */
 	public boolean isInside(Location location)
 	{
 		return location != null
-				&& location.getWorld().equals(corner1.getWorld())
-				&& location.getX() > corner1.getX()
-				&& location.getX() < corner2.getX()
-				&& location.getY() > corner1.getY()
-				&& location.getY() < corner2.getY()
-				&& location.getZ() > corner1.getZ()
-				&& location.getZ() < corner2.getZ();
+				&& location.getWorld().equals(lowestCorner.getWorld())
+				&& location.getX() > lowestCorner.getX()
+				&& location.getX() < highestCorner.getX()
+				&& location.getY() > lowestCorner.getY()
+				&& location.getY() < highestCorner.getY()
+				&& location.getZ() > lowestCorner.getZ()
+				&& location.getZ() < highestCorner.getZ();
 	}
 
 
@@ -255,28 +245,54 @@ public class Arena
 		return other != null && other instanceof Arena && ((Arena) other).getUUID().equals(this.getUUID());
 	}
 
+
 	/**
 	 * Updates the corners so the first one is the lowest, and the second one the highest.
 	 */
-	private void reequilibrateCorners()
+	private void computeSortedCorners()
 	{
-		World world = corner1.getWorld();
+		World world = lowestCorner.getWorld();
 
-		Vector firstCorner  = corner1.toVector();
-		Vector secondCorner = corner2.toVector();
+		Vector firstCorner = lowestCorner.toVector();
+		Vector secondCorner = highestCorner.toVector();
 
-		corner1 = new Location(
+		lowestCorner = new Location(
 				world,
 				Math.min(firstCorner.getX(), secondCorner.getX()),
 				Math.min(firstCorner.getY(), secondCorner.getY()),
 				Math.min(firstCorner.getZ(), secondCorner.getZ())
 		);
 
-		corner2 = new Location(
+		highestCorner = new Location(
 				world,
 				Math.max(firstCorner.getX(), secondCorner.getX()),
 				Math.max(firstCorner.getY(), secondCorner.getY()),
 				Math.max(firstCorner.getZ(), secondCorner.getZ())
 		);
 	}
+
+
+	/**
+	 * @deprecated Use {@link #getLowestCorner()} instead.
+	 */
+	@Deprecated
+	public Location getCorner1() { return lowestCorner; }
+
+	/**
+	 * @deprecated Use {@link #getHighestCorner()} instead.
+	 */
+	@Deprecated
+	public Location getCorner2() { return highestCorner; }
+
+	/**
+	 * @deprecated Use {@link #setCorners(Location, Location)} instead.
+	 */
+	@Deprecated
+	public void setCorner1(Location corner1) { throw new UnsupportedOperationException("Cannot set only one corner at a time."); }
+
+	/**
+	 * @deprecated Use {@link #setCorners(Location, Location)} instead.
+	 */
+	@Deprecated
+	public void setCorner2(Location corner2) { throw new UnsupportedOperationException("Cannot set only one corner at a time."); }
 }

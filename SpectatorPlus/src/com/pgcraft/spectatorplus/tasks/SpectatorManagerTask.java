@@ -54,7 +54,7 @@ public class SpectatorManagerTask implements Runnable
 					if (arena != null)
 					{
 						// ignore players not in an arena.
-						if (!arena.isEnabled() || !arena.isRegistered() || arena.getCorner1() == null || arena.getCorner2() == null)
+						if (!arena.isEnabled() || !arena.isRegistered() || arena.getLowestCorner() == null || arena.getHighestCorner() == null)
 						{
 							spectator.setArena(null);
 							p.getSpectatorsManager().teleportToLobby(spectator);
@@ -92,14 +92,14 @@ public class SpectatorManagerTask implements Runnable
 		final Location lobby = p.getSpectatorsManager().getSpectatorsLobby();
 
 		Location safePos = new Location(
-				arena != null ? arena.getCorner1().getWorld() : lobby.getWorld(),
+				arena != null ? arena.getLowestCorner().getWorld() : lobby.getWorld(),
 				target.getX(),
 				target.getY(),
 				target.getZ()
 		);
 
-		Location lowestCorner  = arena != null ? arena.getCorner1() : lobby.clone().add(-5, -5, -5);
-		Location highestCorner = arena != null ? arena.getCorner2() : lobby.clone().add(5, 5, 5);
+		Location lowestCorner  = arena != null ? arena.getLowestCorner() : lobby.clone().add(-5, -5, -5);
+		Location highestCorner = arena != null ? arena.getHighestCorner() : lobby.clone().add(5, 5, 5);
 
 		if (target.getX() > highestCorner.getX()) safePos.setX(highestCorner.getX() - 0.01);
 		if (target.getX() < lowestCorner.getX()) safePos.setX(lowestCorner.getX() + 0.01);
