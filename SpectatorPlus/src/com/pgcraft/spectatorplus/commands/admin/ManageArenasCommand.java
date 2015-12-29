@@ -125,6 +125,7 @@ public class ManageArenasCommand extends Command
 		if (args.length == 2)
 		{
 			SpectatorPlus.get().getPlayerData(playerSender()).setArenaSetup(new ArenaSetup(playerSender(), arenaName));
+			return;
 		}
 
 		// 4 coordinates

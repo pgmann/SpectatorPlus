@@ -90,15 +90,15 @@ public class ArenaSetup
 		{
 			case 0:
 				SpectatorPlus.get().sendMessage(player, "You just entered arena setup mode for the arena " + ChatColor.RED + arenaName + ChatColor.GOLD + ".", true);
-				SpectatorPlus.get().sendMessage(player, "You'll have to mark the two opposite corners of the arena, witch is a 3D rectangular structure.", true);
-				SpectatorPlus.get().sendMessage(player, "Punch the " + ChatColor.RED + "first corner " + ChatColor.GOLD + " of the arena.", true);
-				SpectatorPlus.get().sendMessage(player, "You can also use the command " + ChatColor.RED + "/spec arena corner" + ChatColor.GOLD + " to set the corner at your current location.", true);
+				player.sendMessage(ChatColor.GRAY + "You'll have to mark the two opposite corners of the arena, witch is a 3D rectangular structure.");
+				player.sendMessage(ChatColor.GRAY + "Punch the " + ChatColor.RED + "first corner " + ChatColor.GOLD + " of the arena.");
+				player.sendMessage(ChatColor.GRAY + "You can also use the command " + ChatColor.WHITE + "/spec arena corner" + ChatColor.GRAY + " to set the corner at your current location.");
 				break;
 
 			case 1:
 				corner1 = location;
 				SpectatorPlus.get().sendMessage(player, "Now, punch the " + ChatColor.RED + "second corner " + ChatColor.GOLD + " of the arena, in the opposite corner.", true);
-				SpectatorPlus.get().sendMessage(player, "You can still use the " + ChatColor.RED + "/spec arena corner" + ChatColor.GOLD + " command.", true);
+				player.sendMessage(ChatColor.GRAY + "You can still use the " + ChatColor.WHITE + "/spec arena corner" + ChatColor.GRAY + " command.");
 				break;
 
 			case 2:
@@ -111,9 +111,8 @@ public class ArenaSetup
 				catch (IllegalArgumentException e)
 				{
 					SpectatorPlus.get().sendMessage(player, ChatColor.RED + "Cannot register the arena.", true);
-					SpectatorPlus.get().sendMessage(player, ChatColor.RED + "Error: " + e.getMessage(), true);
+					player.sendMessage(ChatColor.RED + "Error: " + e.getMessage());
 				}
-
 				spectator.setArenaSetup(null);
 				break;
 		}
