@@ -16,8 +16,9 @@ import java.util.UUID;
 
 
 /**
- * This is the API of SpectatorPlusOld. <p> Use the methods of this class to manage spectators,
- * arenas and everything else.
+ * This is the API of SpectatorPlus.
+ *
+ * <p> Use the methods of this class to manage spectators, arenas and everything else.</p>
  */
 public class SpectateAPI
 {
