@@ -1,4 +1,4 @@
-Broadcasts a messages to the spectators.
+Broadcasts a message to the spectators.
 
 The messages sent through this commands will only
 be displayed to the spectators and the sender of

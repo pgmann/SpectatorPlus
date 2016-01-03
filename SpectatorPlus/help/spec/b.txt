@@ -1,6 +1,6 @@
 Disables the no-clip mode.
 
-This command wan only be used if you are currently
+This command can only be used if you are currently
 spectating and if the forced vanilla spectator mode
 is not enabled.
 
