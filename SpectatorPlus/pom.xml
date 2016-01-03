@@ -8,10 +8,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pgcraft</groupId>
 	<artifactId>SpectatorPlus</artifactId>
-	<version>B2.1</version>
+	<version>B3.0</version>
 	<name>SpectatorPlus</name>
 	<url>http://github.com/pgmann/spectatorplus</url>
-	<description>This is a Minecraft Bukkit plugin, see http://github.com/pgmann/spectatorplus for the source and README.</description>
+	<description>This is a Minecraft Bukkit plugin providing an advanced spectator mode; see http://github.com/pgmann/spectatorplus for the source and README.</description>
 
 	<issueManagement>
 		<system>Github Issues</system>
