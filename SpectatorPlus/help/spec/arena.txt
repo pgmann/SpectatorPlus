@@ -1,0 +1,25 @@
+Manages arenas.
+
+This command provides options to create, update,
+delete and list arenas.
+It is only useful if the spectating mode is set
+to ARENA §7(see /spec help mode)§r.
+
+An arena is a three-dimensional space in the game;
+while spectating, a player have to select an arena
+using the arena selector GUI (next to his teleporter)
+and, when selected, he can only see in the teleportation
+GUI the players inside the bounds of the selected
+arena.
+
+An arena can have a lobby, were spectators are
+teleported when they select the arena.
+
+To create an arena, use §6/spec arena add§r. You
+can either specify bounds coordinates directly, or
+create the arena in a WorldEdit-like manner, by
+punching the corners, if you execute only §6/spec
+§6arena add <name>§r without coordinates.
+
+Use the other commands (see above) to set the lobby
+or delete an arena.

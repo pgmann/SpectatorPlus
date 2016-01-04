@@ -1,14 +1,16 @@
 name: SpectatorPlus
 main: com.pgcraft.spectatorplus.SpectatorPlus
-version: '2.1'
+version: '3.0'
 description: "Lets players spectate other competitors in events, games, etc. when they're not playing. Allows them to fly but stops them helping other players. Do [/spec help] for help!"
 author: pgmann
 authors: ["AmauryPi"]
+
 commands:
   spectate:
-    description: 'See [/spec help] for help'
-    usage: 'An error occurred while loading the plugin! Please file a bug report on BukkitDev.'
+    description: 'See /<command> help for help'
+    usage: 'See /<command> help for help'
     aliases: spec
+
 permissions:
   spectate.*:
     description: Allows you to spectate and stops players spectating you
@@ -17,7 +19,7 @@ permissions:
       spectate.admin: true
     default: false
   spectate.use:
-    description: Allows you to enable and disable spectate mode for yourself (recommended for players)
+    description: Allows you to enable and disable spectate mode for yourself
     default: op
     children:
       spectate.use.on: true
@@ -44,6 +46,8 @@ permissions:
       spectate.admin.config: true
       spectate.admin.hide: true
       spectate.admin.hide.see: true
+      spectate.admin.bypasswhitelist: true
+      spectate.admin.list: true
   spectate.admin.lobby:
     description: Allows you to set the global lobby
     default: op
@@ -55,6 +59,9 @@ permissions:
     default: op
   spectate.admin.reload:
     description: Allows you to reload the plugin
+    default: op
+  spectate.admin.list:
+    description: Allows you to list the spectators
     default: op
   spectate.admin.hide:
     description: Toggle to stop players spectating you (default off)
@@ -81,4 +88,9 @@ permissions:
       spectate.admin.reload: true
   spectate.admin.say:
     description: Allows you to send a message only to the spectators
+    default: op
+  spectate.admin.bypasswhitelist:
+    description: |
+      Allows a player to bypass the commands whitelist while spectating: he will be able to send any command.
+      Only effective if the chat.blockCommands.adminBypass configuration option is set to true.
     default: op

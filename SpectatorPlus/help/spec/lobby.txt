@@ -1,0 +1,12 @@
+Sets or deletes the spectators lobby.
+
+The spectators lobby is a location, defined with this
+command, where the spectators are teleported when they
+enter or leave the spectator mode, or when they leave
+an arena.
+
+§6/spec lobby set§r: sets the lobby at your current
+position. You have to be a player to do that.
+§6/spec lobby delete§r: deletes the lobby. The players
+will no longer be teleported anywhere when the spectator
+mode is enabled or disabled.

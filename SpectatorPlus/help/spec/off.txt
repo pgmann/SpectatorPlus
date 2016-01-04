@@ -1,0 +1,5 @@
+Disables the spectator mode for the given target.
+
+[player name]: The name of the player to put into player
+mode. This is required if you execute the command from the
+console.

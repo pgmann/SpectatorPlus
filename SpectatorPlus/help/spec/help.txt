@@ -1,0 +1,2 @@
+Displays help about a SpectatorPlus command or
+concept.

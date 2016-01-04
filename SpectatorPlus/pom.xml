@@ -1,12 +1,17 @@
+<!--
+  ~ This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
+  ~ If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pgcraft</groupId>
 	<artifactId>SpectatorPlus</artifactId>
-	<version>B2.1</version>
+	<version>B3.0</version>
 	<name>SpectatorPlus</name>
 	<url>http://github.com/pgmann/spectatorplus</url>
-	<description>This is a Minecraft Bukkit plugin, see http://github.com/pgmann/spectatorplus for the source and README.</description>
+	<description>This is a Minecraft Bukkit plugin providing an advanced spectator mode; see http://github.com/pgmann/spectatorplus for the source and README.</description>
 
 	<issueManagement>
 		<system>Github Issues</system>
@@ -31,8 +36,10 @@
 				<includes>
 					<include>plugin.yml</include>
 					<include>setup.yml</include>
-					<include>toggles.yml</include>
+					<include>config.yml</include>
 					<include>spectators.yml</include>
+					<include>help/*</include>
+					<include>help/spec/*</include>
 				</includes>
 			</resource>
 		</resources>
@@ -44,6 +51,32 @@
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<artifactSet>
+						<includes>
+							<include>fr.zcraft:zlib</include>
+						</includes>
+					</artifactSet>
+					<relocations>
+						<relocation>
+							<pattern>fr.zcraft.zlib</pattern>
+							<shadedPattern>com.pgcraft.spectatorplus</shadedPattern>
+						</relocation>
+					</relocations>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -57,18 +90,27 @@
 			<id>carrade-repo</id>
 			<url>http://depot.carrade.eu/maven2/</url>
 		</repository>
+		<repository>
+			<id>zDevelopers</id>
+			<url>http://maven.carrade.eu/artifactory/snapshots</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.8-R0.1-20141212.193312-29</version>
+			<version>1.8.3-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>fr.zcraft</groupId>
+			<artifactId>zlib</artifactId>
+			<version>0.99-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
