@@ -4,7 +4,6 @@
  */
 package com.pgcraft.spectatorplus.utils;
 
-import fr.zcraft.zlib.tools.PluginLogger;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,12 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 
-
-public class SPUtils
+public final class SPUtils
 {
+	private SPUtils() {}
+
 	/**
 	 * @param commandSender A command sender.
 	 * @return A name for this sender: the player name, or “Command block 'name'”, or “Console”.
@@ -94,45 +92,5 @@ public class SPUtils
 				return player;
 
 		return null;
-	}
-
-	/**
-	 * Sets whether the player collides with entities.
-	 *
-	 * @param player   The player.
-	 * @param collides Whether the player should collide with entities or not.
-	 *
-	 * @return true if the change was successful (compatible server, i.e. Spigot currently); false
-	 * else.
-	 */
-	public static boolean setCollidesWithEntities(Player player, boolean collides)
-	{
-		try
-		{
-			// We need to call player.spigot.setCollidesWithEntities(collides) .
-			Field playerSpigotField = player.getClass().getDeclaredField("spigot");
-			playerSpigotField.setAccessible(true);
-
-			Class<?> playerSpigotClazz = playerSpigotField.getType();
-			Object playerSpigotObject = playerSpigotField.get(player);
-
-
-			playerSpigotClazz.getDeclaredMethod("setCollidesWithEntities", boolean.class)
-					.invoke(playerSpigotObject, collides);
-
-			return true;
-		}
-
-		// Cannot enable/disable collisions :(
-		catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException e)
-		{
-			PluginLogger.error("Reflection exception caught while trying to change collisions status for " + player.getName(), e);
-			return false;
-		}
-		catch (InvocationTargetException e)
-		{
-			PluginLogger.error("Exception caught while trying to change collisions status for " + player.getName(), e.getCause());
-			return false;
-		}
 	}
 }

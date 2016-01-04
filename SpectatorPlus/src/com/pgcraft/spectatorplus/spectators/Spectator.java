@@ -10,6 +10,7 @@ import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenaSetup;
 import com.pgcraft.spectatorplus.guis.TeleportationGUI;
+import com.pgcraft.spectatorplus.utils.Collisions;
 import com.pgcraft.spectatorplus.utils.SPUtils;
 import fr.zcraft.zlib.components.gui.Gui;
 import org.bukkit.Bukkit;
@@ -49,6 +50,7 @@ public class Spectator
 	private GameMode oldGameMode = null;
 	private Boolean oldFlyMode = null;
 	private Float oldFlySpeed = null;
+	private Boolean oldCollision = null;
 
 
 	private String lastDeathMessage = null;
@@ -181,6 +183,7 @@ public class Spectator
 	    oldGameMode         = player.getGameMode();
 	    oldFlyMode          = player.getAllowFlight();
 	    oldFlySpeed         = player.getFlySpeed();
+	    oldCollision        = Collisions.collidesWithEntities(player);
 	    oldScoreboard       = player.getScoreboard() != null ? player.getScoreboard() : Bukkit.getScoreboardManager().getMainScoreboard();
 
 
@@ -199,7 +202,7 @@ public class Spectator
 
 	    // We disable all interactions if possible
 	    player.setGameMode(Toggles.VANILLA_SPECTATOR_MODE.get() ? GameMode.SPECTATOR : GameMode.ADVENTURE);
-	    SPUtils.setCollidesWithEntities(player, false);
+	    Collisions.setCollidesWithEntities(player, false);
 	    setGamemodeChangeAllowed(false);
 
 	    // We update the spectator's inventory
@@ -278,7 +281,7 @@ public class Spectator
 
 		player.setFlySpeed(oldFlySpeed);
 
-		SPUtils.setCollidesWithEntities(player, true);
+		Collisions.setCollidesWithEntities(player, oldCollision);
 		setGamemodeChangeAllowed(true);
 
 		player.setAllowFlight(oldFlyMode);

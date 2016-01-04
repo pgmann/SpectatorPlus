@@ -13,7 +13,7 @@ import java.util.TreeMap;
  *
  * @author bhlangonijr
  */
-public class RomanNumber
+public final class RomanNumber
 {
 	private final static TreeMap<Integer, String> map = new TreeMap<>();
 
@@ -33,6 +33,8 @@ public class RomanNumber
 		map.put(4, "IV");
 		map.put(1, "I");
 	}
+
+	private RomanNumber() {}
 
 	public static String toRoman(Integer number)
 	{
