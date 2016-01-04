@@ -11,6 +11,7 @@ import com.pgcraft.spectatorplus.utils.SPUtils;
 import fr.zcraft.zlib.components.commands.Command;
 import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 
@@ -23,9 +24,6 @@ public class ToggleHideCommand extends Command
 		// Toggled for self
 		if (args.length == 0)
 		{
-			if (!Permissions.HIDE_SELF_FROM_SPECTATORS.grantedTo(playerSender()))
-				throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 			Spectator spectator = SpectatorPlus.get().getPlayerData(playerSender());
 			spectator.setHiddenFromTp(!spectator.isHiddenFromTp());
 
@@ -38,9 +36,6 @@ public class ToggleHideCommand extends Command
 		// Toggled for other
 		else
 		{
-			if (!Permissions.HIDE_OTHERS_FROM_SPECTATORS.grantedTo(playerSender()))
-				throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 			String targetName = args[0];
 			Player target = SPUtils.getPlayer(targetName);
 
@@ -63,5 +58,11 @@ public class ToggleHideCommand extends Command
 				SpectatorPlus.get().sendMessage(target, "You are no longer hidden from the spectators: they can teleport themselves to you, now.", true);
 			}
 		}
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		return (args.length == 0 && Permissions.HIDE_SELF_FROM_SPECTATORS.grantedTo(sender)) || Permissions.HIDE_OTHERS_FROM_SPECTATORS.grantedTo(sender);
 	}
 }

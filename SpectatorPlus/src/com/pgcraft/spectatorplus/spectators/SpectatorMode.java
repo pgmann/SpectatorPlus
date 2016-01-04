@@ -2,7 +2,6 @@
  * This Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0.
  * If a copy of the MPL was not distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-
 package com.pgcraft.spectatorplus.spectators;
 
 /**
@@ -39,6 +38,10 @@ public enum SpectatorMode
 		this.description = description;
 	}
 
+	/**
+	 * @return a description of this spectating mode.
+	 * @since 3.0
+	 */
 	public String getDescription()
 	{
 		return description;

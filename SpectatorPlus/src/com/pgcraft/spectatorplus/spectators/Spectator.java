@@ -28,7 +28,7 @@ import java.util.UUID;
 
 public class Spectator
 {
-    private UUID playerID;
+    private final UUID playerID;
 
 	private Boolean spectating = false;
 	private Boolean teleporting = false;
@@ -55,7 +55,7 @@ public class Spectator
 	private Location deathLocation = null;
 
 
-	public Spectator(UUID id)
+	public Spectator(final UUID id)
     {
         playerID = id;
 	}
@@ -155,7 +155,7 @@ public class Spectator
 	        else
 	            disableSpectatorMode(executor, silent, worldChange);
 
-	        if(!worldChange)
+	        if(!worldChange || SpectatorPlus.get().getSpectatorsManager().getSpectatorsMode() == SpectatorMode.WORLD)
 		        Gui.update(TeleportationGUI.class);
         }
     }

@@ -19,6 +19,10 @@ import java.lang.reflect.InvocationTargetException;
 
 public class SPUtils
 {
+	/**
+	 * @param commandSender A command sender.
+	 * @return A name for this sender: the player name, or “Command block 'name'”, or “Console”.
+	 */
 	public static String getName(CommandSender commandSender)
 	{
 		if (commandSender instanceof Player)
@@ -31,6 +35,14 @@ public class SPUtils
 			return "Console";
 	}
 
+	/**
+	 * Returns the user-friendly name of the given effect.
+	 *
+	 * <p>As example, “SLOW_DIGGING” becomes “Mining Fatigue”.</p>
+	 *
+	 * @param type The potion effect type.
+	 * @return An user-friendly name.
+	 */
 	public static String getEffectName(PotionEffectType type)
 	{
 		if (type.equals(PotionEffectType.CONFUSION))
@@ -58,11 +70,23 @@ public class SPUtils
 			return WordUtils.capitalizeFully(type.getName().replace("_", " "));
 	}
 
+	/**
+	 * Converts a location into an user-friendly description: “world @ x,y,z”.
+	 *
+	 * @param location The location to display.
+	 * @return An user-friendly representation of the location.
+	 */
 	public static String userFriendlyLocation(Location location)
 	{
 		return location.getWorld().getName() + " @ " + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
 	}
 
+	/**
+	 * Returns a {@link Player} object from his player name.
+	 *
+	 * @param playerName The player name.
+	 * @return The {@link Player} object.
+	 */
 	public static Player getPlayer(String playerName)
 	{
 		for (Player player : Bukkit.getOnlinePlayers())

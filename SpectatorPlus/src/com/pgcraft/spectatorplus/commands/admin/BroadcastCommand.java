@@ -9,6 +9,7 @@ import com.pgcraft.spectatorplus.SpectatorPlus;
 import fr.zcraft.zlib.components.commands.Command;
 import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
+import org.bukkit.command.CommandSender;
 
 
 @CommandInfo (name = "say", usageParameters = "<message>")
@@ -17,13 +18,16 @@ public class BroadcastCommand extends Command
 	@Override
 	protected void run() throws CommandException
 	{
-		if (!Permissions.BROADCAST_MESSAGES_TO_SPECTATORS.grantedTo(sender))
-			throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 		String message = "";
 		for (String part : args)
 			message += part + " ";
 
 		SpectatorPlus.get().getSpectatorsManager().getChatManager().broadcastToSpectators(sender, message.trim());
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		return Permissions.BROADCAST_MESSAGES_TO_SPECTATORS.grantedTo(sender);
 	}
 }

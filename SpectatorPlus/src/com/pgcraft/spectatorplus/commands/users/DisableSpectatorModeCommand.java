@@ -12,6 +12,7 @@ import fr.zcraft.zlib.components.commands.Command;
 import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -27,9 +28,6 @@ public class DisableSpectatorModeCommand extends Command
 		// Disabled for self
 		if (args.length == 0)
 		{
-			if (!Permissions.DISABLE_SPECTATOR_MODE.grantedTo(sender))
-				throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 			Spectator spectator = SpectatorPlus.get().getPlayerData(playerSender());
 
 			if (spectator.isSpectating())
@@ -41,9 +39,6 @@ public class DisableSpectatorModeCommand extends Command
 		// Disabled for another player
 		else
 		{
-			if (!Permissions.CHANGE_SPECTATOR_MODE_FOR_OTHERS.grantedTo(sender))
-				throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 			String targetName = args[0];
 			Player target = SPUtils.getPlayer(targetName);
 
@@ -71,5 +66,11 @@ public class DisableSpectatorModeCommand extends Command
 		}
 
 		else return null;
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		return (args.length == 0 && Permissions.DISABLE_SPECTATOR_MODE.grantedTo(sender)) || Permissions.CHANGE_SPECTATOR_MODE_FOR_OTHERS.grantedTo(sender);
 	}
 }

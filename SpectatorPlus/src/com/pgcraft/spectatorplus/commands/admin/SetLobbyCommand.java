@@ -10,6 +10,7 @@ import com.pgcraft.spectatorplus.SpectatorPlus;
 import fr.zcraft.zlib.components.commands.Command;
 import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
+import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,9 +22,6 @@ public class SetLobbyCommand extends Command
 	@Override
 	protected void run() throws CommandException
 	{
-		if (!Permissions.CHANGE_SPECTATORS_LOBBY.grantedTo(sender))
-			throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 		if (args.length < 1)
 			throwInvalidArgument("No action provided.");
 
@@ -54,5 +52,11 @@ public class SetLobbyCommand extends Command
 		}
 
 		else return null;
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		return Permissions.CHANGE_SPECTATORS_LOBBY.grantedTo(sender);
 	}
 }

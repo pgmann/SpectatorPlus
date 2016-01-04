@@ -15,6 +15,7 @@ public enum Permissions
 
 	CHANGE_SPECTATORS_LOBBY("spectate.admin.lobby"),
 	CHANGE_SPECTATING_MODE("spectate.admin.mode"),
+	LIST_SPECTATORS("spectate.admin.list"),
 	MANAGE_ARENAS("spectate.admin.arena"),
 	CHANGE_CONFIG("spectate.admin.config"),
 	RELOAD_PLUGIN("spectate.admin.reload"),

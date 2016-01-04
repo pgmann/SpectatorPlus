@@ -9,7 +9,7 @@ import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.tasks.AfterRespawnTask;
-import org.bukkit.Bukkit;
+import fr.zcraft.zlib.tools.runners.RunTask;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -127,7 +127,7 @@ public class ServerActionsListener implements Listener
 		if (Toggles.SPECTATOR_MODE_ON_DEATH.get())
 		{
 			// Prevent murdering clients! (force close bug if spec mode is enabled instantly)
-			Bukkit.getScheduler().runTask(SpectatorPlus.get(), new AfterRespawnTask(ev.getPlayer()));
+			RunTask.nextTick(new AfterRespawnTask(ev.getPlayer()));
 		}
 	}
 
@@ -146,16 +146,16 @@ public class ServerActionsListener implements Listener
 		if (spectator.isSpectating())
 		{
 			spectator.setWasSpectatorBeforeWorldChanged(true);
-			spectator.setSpectating(false, true);
+			spectator.setSpectating(false, null, true, true);
 
-			Bukkit.getScheduler().runTaskLater(p, new Runnable()
+			RunTask.later(new Runnable()
 			{
 				@Override
 				public void run()
 				{
 					if (spectator.wasSpectatorBeforeWorldChanged())
 					{
-						spectator.setSpectating(true, false);
+						spectator.setSpectating(true, null, true, true);
 						spectator.setWasSpectatorBeforeWorldChanged(false);
 					}
 				}

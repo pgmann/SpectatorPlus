@@ -4,6 +4,7 @@
  */
 package com.pgcraft.spectatorplus.commands.admin;
 
+import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.arenas.ArenaSetup;
@@ -18,6 +19,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
@@ -342,5 +344,11 @@ public class ManageArenasCommand extends Command
 		}
 
 		else return null;
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		return Permissions.MANAGE_ARENAS.grantedTo(sender);
 	}
 }

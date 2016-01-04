@@ -47,6 +47,7 @@ permissions:
       spectate.admin.hide: true
       spectate.admin.hide.see: true
       spectate.admin.bypasswhitelist: true
+      spectate.admin.list: true
   spectate.admin.lobby:
     description: Allows you to set the global lobby
     default: op
@@ -58,6 +59,9 @@ permissions:
     default: op
   spectate.admin.reload:
     description: Allows you to reload the plugin
+    default: op
+  spectate.admin.list:
+    description: Allows you to list the spectators
     default: op
   spectate.admin.hide:
     description: Toggle to stop players spectating you (default off)

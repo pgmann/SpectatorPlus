@@ -28,6 +28,7 @@ import fr.zcraft.zlib.components.commands.Commands;
 import fr.zcraft.zlib.components.configuration.Configuration;
 import fr.zcraft.zlib.components.gui.Gui;
 import fr.zcraft.zlib.core.ZPlugin;
+import fr.zcraft.zlib.tools.runners.RunTask;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -82,25 +83,25 @@ public class SpectatorPlus extends ZPlugin
 
 		// Registering commands
 		Commands.register(
-				new String[]{"spec", "spectate"},
+			new String[]{"spec", "spectate"},
 
-				EnableSpectatorModeCommand.class,
-				DisableSpectatorModeCommand.class,
+			EnableSpectatorModeCommand.class,
+			DisableSpectatorModeCommand.class,
 
-				ConfigCommand.class,
-				SetSpectatingModeCommand.class,
-				SetLobbyCommand.class,
-				ManageArenasCommand.class,
-				ListCommand.class,
+			ConfigCommand.class,
+			SetSpectatingModeCommand.class,
+			SetLobbyCommand.class,
+			ManageArenasCommand.class,
+			ListCommand.class,
 
-				ToggleHideCommand.class,
-				BackFromNoClipCommand.class,
+			ToggleHideCommand.class,
+			BackFromNoClipCommand.class,
 
-				BroadcastCommand.class
+			BroadcastCommand.class
 		);
 
 		// Loading checking task
-		getServer().getScheduler().runTaskTimer(this, new SpectatorManagerTask(), 20l, 20l);
+		RunTask.timer(new SpectatorManagerTask(), 20l, 20l);
 
 		// Loading API
 		api = new SpectateAPI();

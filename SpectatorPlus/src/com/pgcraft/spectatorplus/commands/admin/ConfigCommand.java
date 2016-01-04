@@ -12,6 +12,7 @@ import fr.zcraft.zlib.components.commands.CommandInfo;
 import fr.zcraft.zlib.components.configuration.ConfigurationItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -27,9 +28,6 @@ public class ConfigCommand extends Command
 	@SuppressWarnings ({"ConstantConditions", "unchecked"})
 	protected void run() throws CommandException
 	{
-		if (!Permissions.CHANGE_CONFIG.grantedTo(sender))
-			throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 		if (args.length == 0)
 			throwInvalidArgument("you have to provide a configuration path; use autocompletion if needed.");
 
@@ -125,5 +123,11 @@ public class ConfigCommand extends Command
 		}
 
 		return null;
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		return Permissions.CHANGE_CONFIG.grantedTo(sender);
 	}
 }

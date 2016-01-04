@@ -11,6 +11,7 @@ import fr.zcraft.zlib.components.commands.Command;
 import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
 import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
 
 
 @CommandInfo (name = "b")
@@ -19,9 +20,6 @@ public class BackFromNoClipCommand extends Command
 	@Override
 	protected void run() throws CommandException
 	{
-		if (Toggles.VANILLA_SPECTATOR_MODE.get())
-			throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 		final Spectator spectator = SpectatorPlus.get().getPlayerData(playerSender());
 
 		if (spectator.isSpectating() && playerSender().getGameMode() == GameMode.SPECTATOR)
@@ -37,5 +35,12 @@ public class BackFromNoClipCommand extends Command
 
 			success("No-clip mode disabled.");
 		}
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		// Allowed if the vanilla spectator mode is not forced. No permission, as this is a workaround.
+		return !Toggles.VANILLA_SPECTATOR_MODE.get();
 	}
 }

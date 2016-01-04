@@ -100,7 +100,7 @@ public class Toggles
 
 
 
-	private static Map<String, ConfigurationItem<?>> ITEMS_PER_PATH = new HashMap<>();
+	private static Map<String, ConfigurationItem<?>> ITEMS_BY_PATH = new HashMap<>();
 
 	static
 	{
@@ -115,7 +115,7 @@ public class Toggles
 
 				if (item instanceof ConfigurationItem)
 				{
-					ITEMS_PER_PATH.put(((ConfigurationItem<?>) item).getFieldName(), (ConfigurationItem<?>) item);
+					ITEMS_BY_PATH.put(((ConfigurationItem<?>) item).getFieldName(), (ConfigurationItem<?>) item);
 				}
 			}
 			catch (IllegalAccessException e)
@@ -247,7 +247,7 @@ public class Toggles
 	 */
 	public static Collection<ConfigurationItem<?>> getToggles()
 	{
-		return Collections.unmodifiableCollection(ITEMS_PER_PATH.values());
+		return Collections.unmodifiableCollection(ITEMS_BY_PATH.values());
 	}
 
 	/**
@@ -255,7 +255,7 @@ public class Toggles
 	 */
 	public static Set<String> getPaths()
 	{
-		return Collections.unmodifiableSet(ITEMS_PER_PATH.keySet());
+		return Collections.unmodifiableSet(ITEMS_BY_PATH.keySet());
 	}
 
 	/**
@@ -264,6 +264,6 @@ public class Toggles
 	 */
 	public static ConfigurationItem<?> getToggleFromPath(String path)
 	{
-		return ITEMS_PER_PATH.get(path);
+		return ITEMS_BY_PATH.get(path);
 	}
 }

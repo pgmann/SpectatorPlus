@@ -10,6 +10,7 @@ import com.pgcraft.spectatorplus.spectators.SpectatorMode;
 import fr.zcraft.zlib.components.commands.Command;
 import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
+import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +22,6 @@ public class SetSpectatingModeCommand extends Command
 	@Override
 	protected void run() throws CommandException
 	{
-		if (!Permissions.CHANGE_SPECTATING_MODE.grantedTo(sender))
-			throw new CommandException(this, CommandException.Reason.SENDER_NOT_AUTHORIZED);
-
 		if (args.length < 1)
 			throwInvalidArgument("Spectating mode missing.");
 
@@ -48,5 +46,11 @@ public class SetSpectatingModeCommand extends Command
 		}
 
 		else return null;
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		return Permissions.CHANGE_SPECTATING_MODE.grantedTo(sender);
 	}
 }

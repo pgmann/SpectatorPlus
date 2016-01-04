@@ -4,6 +4,7 @@
  */
 package com.pgcraft.spectatorplus.commands.admin;
 
+import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.spectators.Spectator;
@@ -13,6 +14,7 @@ import fr.zcraft.zlib.components.commands.CommandException;
 import fr.zcraft.zlib.components.commands.CommandInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -96,5 +98,11 @@ public class ListCommand extends Command
 		}
 
 		else return null;
+	}
+
+	@Override
+	public boolean canExecute(CommandSender sender)
+	{
+		return Permissions.LIST_SPECTATORS.grantedTo(sender);
 	}
 }
