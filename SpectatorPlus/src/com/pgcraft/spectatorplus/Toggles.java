@@ -83,7 +83,7 @@ public class Toggles
 
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_GLOW = ConfigurationItem.item("tools.tools.glowEffectIfActive", true);
 
-	public static final ConfigurationItem<Boolean> TOOLS_INSPECTOR_ENABLED = ConfigurationItem.item("tools.inspector.enabled", false, "inspector");
+	public static final ConfigurationItem<Boolean> TOOLS_INSPECTOR_ENABLED = ConfigurationItem.item("tools.inspector.enabled", true, "inspector");
 	public static final ConfigurationItem<String>  TOOLS_INSPECTOR_ITEM = ConfigurationItem.item("tools.inspector.item", Material.FEATHER.toString(), "inspectorItem");
 
 
@@ -93,7 +93,7 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> CHAT_BLOCKCOMMANDS_ENABLED = ConfigurationItem.item("chat.blockCommands.enabled", true, "blockcmds");
 	public static final ConfigurationItem<Boolean> CHAT_BLOCKCOMMANDS_ADMINBYPASS = ConfigurationItem.item("chat.blockCommands.adminBypass", true, "adminbypass");
 
-	public static final ConfigurationItem<List<String>> CHAT_BLOCKCOMMANDS_WHITELIST = ConfigurationItem.item("chat.blockCommands.whitelist", Collections.<String>emptyList());
+	public static final ConfigurationItem<List<String>> CHAT_BLOCKCOMMANDS_WHITELIST = ConfigurationItem.item("chat.blockCommands.whitelist", Collections.singletonList("/login"));
 
 	public static final ConfigurationItem<Boolean> AUTOCOMPLETE_SPECTATORS_FOR_PLAYERS = ConfigurationItem.item("chat.autocompleteSpectators.forPlayers", false);
 	public static final ConfigurationItem<Boolean> AUTOCOMPLETE_SPECTATORS_FOR_SPECTATORS = ConfigurationItem.item("chat.autocompleteSpectators.forSpectators", true);
