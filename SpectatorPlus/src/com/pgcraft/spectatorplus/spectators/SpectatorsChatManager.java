@@ -20,9 +20,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SpectatorsChatManager
 {
-	private static final String SPECTATORS_CHAT_PREFIX = ChatColor.GRAY + "Spectators " + ChatColor.DARK_GRAY + " ▏  ";
+	private static final String SPECTATORS_CHAT_PREFIX = ChatColor.GRAY + "SPEC " + ChatColor.DARK_GRAY + ChatColor.BOLD + " ┃  ";
 
-	private static final String SPECTATORS_CHAT_FORMAT = SPECTATORS_CHAT_PREFIX + ChatColor.RESET + "{name}" + ChatColor.GRAY + " : {message}";
+	private static final String SPECTATORS_CHAT_FORMAT = SPECTATORS_CHAT_PREFIX + ChatColor.RESET + "{name}" + ChatColor.DARK_GRAY + ChatColor.BOLD + " ┃ " + ChatColor.GRAY + "{message}";
 	private static final String SPECTATORS_ACTION_FORMAT = SPECTATORS_CHAT_PREFIX + "* " + ChatColor.RESET + "{name}" + ChatColor.GRAY + " {message}";
 	private static final String SPECTATORS_BROADCAST_MESSAGE_FORMAT = ChatColor.GOLD + "[{name}" + ChatColor.GOLD + " -> spectators] " + ChatColor.RESET + "{message}";
 
