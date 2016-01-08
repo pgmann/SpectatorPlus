@@ -71,6 +71,6 @@ public class DisableSpectatorModeCommand extends Command
 	@Override
 	public boolean canExecute(CommandSender sender)
 	{
-		return (args.length == 0 && Permissions.DISABLE_SPECTATOR_MODE.grantedTo(sender)) || Permissions.CHANGE_SPECTATOR_MODE_FOR_OTHERS.grantedTo(sender);
+		return (args != null && args.length == 0 && Permissions.DISABLE_SPECTATOR_MODE.grantedTo(sender)) || Permissions.CHANGE_SPECTATOR_MODE_FOR_OTHERS.grantedTo(sender);
 	}
 }
