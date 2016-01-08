@@ -133,4 +133,4 @@ spectatorModeOnDeath: false
 # Stops them from generating far-off chunks.
 enforceBoundaries:
     arenas: false  # Cannot quit the arena
-    lobby: 0      # Cannot quit the spectator lobby (max x blocks from it are allowed in a sphere; if 0 or negative, disabled)
+    lobby: 0       # Cannot quit the spectator lobby (max x blocks from it are allowed in a sphere; if 0 or negative, disabled)
