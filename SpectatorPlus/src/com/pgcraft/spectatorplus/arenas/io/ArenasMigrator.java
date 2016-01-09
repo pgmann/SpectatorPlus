@@ -49,12 +49,12 @@ public final class ArenasMigrator
 			return;
 
 		StringBuilder fixedConfigurationFile = new StringBuilder();
-
+		BufferedReader reader = null;
 		try
 		{
 			Boolean fileUpdated = false;
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(configurationFile)));
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(configurationFile)));
 			for (String line; (line = reader.readLine()) != null; )
 			{
 				if (line.contains(V2_ARENA_SERIALIZATION_TOKEN_PGCRAFT))
@@ -75,7 +75,6 @@ public final class ArenasMigrator
 					fixedConfigurationFile.append(line).append('\n');
 				}
 			}
-			reader.close();
 
 			if (fileUpdated)
 			{
@@ -94,6 +93,13 @@ public final class ArenasMigrator
 		catch (IOException e)
 		{
 			PluginLogger.error("Cannot prepare migration of the {0} file", e, configurationFile.getPath());
+		}
+		finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				PluginLogger.error("Error closing file {0}", e, configurationFile.getPath());
+			}
 		}
 	}
 
