@@ -75,6 +75,7 @@ public final class ArenasMigrator
 					fixedConfigurationFile.append(line).append('\n');
 				}
 			}
+			reader.close();
 
 			if (fileUpdated)
 			{

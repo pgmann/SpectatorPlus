@@ -24,6 +24,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 
 
+@SuppressWarnings("deprecation")
 public class SpectatorsInventoryManager
 {
 	// Titles of the tools in the inventory
@@ -59,6 +60,7 @@ public class SpectatorsInventoryManager
 	}
 
 
+	@SuppressWarnings("incomplete-switch")
 	public void equipSpectator(Player player)
 	{
 		Spectator spectator = SpectatorPlus.get().getPlayerData(player);

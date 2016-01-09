@@ -199,6 +199,7 @@ public class TeleportationGUI extends ExplorerGui<Spectator>
 	}
 
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	protected ItemStack getPickedUpItem(Spectator spectator)
 	{

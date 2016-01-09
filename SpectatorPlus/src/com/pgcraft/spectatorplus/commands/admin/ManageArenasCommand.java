@@ -238,7 +238,6 @@ public class ManageArenasCommand extends Command
 	}
 
 
-	@SuppressWarnings ("ConstantConditions")
 	private void lobby() throws CommandException
 	{
 		if (args.length == 1)

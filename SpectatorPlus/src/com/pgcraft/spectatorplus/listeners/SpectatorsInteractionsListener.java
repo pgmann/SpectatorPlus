@@ -493,6 +493,7 @@ public class SpectatorsInteractionsListener implements Listener
 	 * This event is not directly cancelled as the cancellation is part of the {@link
 	 * #onPlayerInteract(PlayerInteractEvent)} event handler.
 	 */
+	@SuppressWarnings("incomplete-switch")
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onPlayerUseDoor(final PlayerInteractEvent ev)
 	{

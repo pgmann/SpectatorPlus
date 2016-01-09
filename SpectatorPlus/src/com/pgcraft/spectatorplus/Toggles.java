@@ -131,7 +131,6 @@ public class Toggles
 		Configuration.registerConfigurationUpdateCallback(new Callback<ConfigurationItem<?>>()
 		{
 			@Override
-			@SuppressWarnings ("unchecked")
 			public void call(ConfigurationItem<?> toggle)
 			{
 				if (toggle == TOOLS_ARENA_SELECTOR_ITEM || toggle == TOOLS_INSPECTOR_ITEM || toggle == TOOLS_TELEPORTER_ITEM || toggle == TOOLS_TOOLS_ITEM

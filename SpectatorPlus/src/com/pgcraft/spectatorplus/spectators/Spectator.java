@@ -265,6 +265,7 @@ public class Spectator
 	 * @param silent {@code true} to silently disable the spectator mode.
 	 * @param worldChange {@code true} if the spectator mode is changed due to a world change.
 	 */
+	@SuppressWarnings("deprecation")
 	private void disableSpectatorMode(CommandSender executor, boolean silent, boolean worldChange)
 	{
 		Player player = getPlayer();

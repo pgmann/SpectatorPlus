@@ -25,7 +25,6 @@ import java.util.List;
 public class ListCommand extends Command
 {
 	@Override
-	@SuppressWarnings ("ConstantConditions")
 	protected void run() throws CommandException
 	{
 		List<Player> spectators = new ArrayList<>();

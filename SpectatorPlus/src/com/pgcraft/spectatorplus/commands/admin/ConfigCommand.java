@@ -25,7 +25,7 @@ import java.util.List;
 public class ConfigCommand extends Command
 {
 	@Override
-	@SuppressWarnings ({"ConstantConditions", "unchecked"})
+	@SuppressWarnings ({"unchecked"})
 	protected void run() throws CommandException
 	{
 		if (args.length == 0)
