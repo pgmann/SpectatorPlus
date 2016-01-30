@@ -19,6 +19,7 @@
 	</issueManagement>
 
 	<build>
+		<finalName>${project.artifactId}-${project.version}-SNAPSHOT</finalName>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
 			<resource>
