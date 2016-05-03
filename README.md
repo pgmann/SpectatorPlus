@@ -19,10 +19,19 @@ Older development builds [can be obtained here](http://jenkins.carrade.eu/job/Sp
 
 If you want to integrate SpectatorPlus with your own project, you can either directly import a downloaded `.jar` into your IDE, or if you use Maven, you can reference [my Maven Repository](https://mvn.pgmann.cf/#browse/browse/components) in your `pom.xml` to have the correct version downloaded automatically during building. The advantage of this is that maven will automatically find new updates and download them from my repository.
 
-    <repositories>
-        <repository>
-            <id>pgmann-repo</id>
-            <name>pgmann's repository</name>
-            <url>https://mvn.pgmann.cf/repository/maven-snapshots/</url>
-        </repository>
-    </repositories>
+    <project ...>
+        <repositories>
+            <repository>
+                <id>mvn-pgmann</id>
+                <name>pgmann's repository</name>
+                <url>https://mvn.pgmann.cf/</url>
+            </repository>
+        </repositories>
+        <dependencies>
+            <dependency>
+                <groupId>com.pgcraft</groupId>
+                <artifactId>SpectatorPlus</artifactId>
+                <version>LATEST</version>
+            </dependency>
+        </dependencies>
+    </project>
