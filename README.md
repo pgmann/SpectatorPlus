@@ -37,7 +37,7 @@ If you want to integrate SpectatorPlus with your own project, you can either dir
     </dependencies>
 </project>
 ```
-You can prefix the dependency version with either an `S` for Stable (Release) or a `B` for Beta (Development). Beta builds need to be prefixed with `-SNAPSHOT`. The Maven Repository stores builds from `B3.0-SNAPSHOT` and onwards.
+You can prefix the dependency version with either an `S` for Stable (Release) or a `B` for Beta (Development). Beta builds need to be postfixed with `-SNAPSHOT`. The Maven Repository stores builds from `B3.0-SNAPSHOT` and onwards.
 
 Once SpectatorPlus is set up as a dependency of your project, you can start using the API.
 
@@ -47,14 +47,14 @@ Plugin spTest = Bukkit.getServer().getPluginManager().getPlugin("SpectatorPlus")
 if(spTest == null || !spTest.isEnabled()) return;
 
 // Get a reference to the public API
-SpectateAPI spApi = ((SpectatorPlus) spTest).getAPI();
+SpectateAPI spApi = SpectateAPI.getAPI();
 
 // Start using it!
 if(spApi.isSpectator(player)) { // Check if 'player' is spectating
     // ...
 }
 spApi.setSpectating(player, true); // Turn on/off spectate mode for 'player'
-//spApi.setCompass(true, true); // Edit the values of each item in toggles.yml
+Toggles.TOOLS_TELEPORTER_ENABLED = true; // Edit the values of each item in toggles.yml
 
 ```
 For detailed usage information on how to use the API, you can find [its JavaDoc here](https://ci.pgmann.cf/job/SpectatorPlus/javadoc?com/pgcraft/spectatorplus/SpectateAPI.html).
