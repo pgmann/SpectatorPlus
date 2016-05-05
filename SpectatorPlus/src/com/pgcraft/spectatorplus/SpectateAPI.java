@@ -166,7 +166,7 @@ public class SpectateAPI
 	}
 
 	/**
-	 * Sets the current SpectatorPlusOld' mode.
+	 * Sets the current SpectatorPlus mode.
 	 *
 	 * <ul>
 	 *     <li>
