@@ -78,7 +78,7 @@ public class SpectatorsChatManager
 		internalWhitelist.addAll(Arrays.asList("spec", "spectate"));
 
 		// Configurable whitelist
-		for (String rawCommand : Toggles.CHAT_BLOCKCOMMANDS_WHITELIST.get())
+		for (String rawCommand : Toggles.CHAT_BLOCKCOMMANDS_WHITELIST)
 			addCommandToWhitelist(rawCommand, false);
 	}
 
