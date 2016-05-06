@@ -61,18 +61,18 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> TOOLS_NEWBIES_MODE = item("tools.newbieMode", true, "newbieMode");
 
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_ENABLED = item("tools.teleporter.enabled", true, "compass");
-	public static final ConfigurationItem<String>  TOOLS_TELEPORTER_ITEM = item("tools.teleporter.item", Material.COMPASS.toString(), "compassItem");
+	public static final ConfigurationItem<Material> TOOLS_TELEPORTER_ITEM = item("tools.teleporter.item", Material.COMPASS, "compassItem");
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_INSPECTOR = item("tools.teleporter.inspector", true, "inspectPlayerFromTeleportationMenu");
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_HEALTH = item("tools.teleporter.health", true, "playersHealthInTeleportationMenu");
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_LOCATION = item("tools.teleporter.location", true, "playersLocationInTeleportationMenu");
 
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_ENABLED = item("tools.arenaChooser.enabled", true, "arenaclock");
-	public static final ConfigurationItem<String>  TOOLS_ARENA_SELECTOR_ITEM = item("tools.arenaChooser.item", Material.WATCH.toString(), "clockItem");
+	public static final ConfigurationItem<Material> TOOLS_ARENA_SELECTOR_ITEM = item("tools.arenaChooser.item", Material.WATCH, "clockItem");
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_PLAYERS_COUNT = item("tools.arenaChooser.playersCount", true);
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_TECH_INFOS = item("tools.arenaChooser.technicalInfos", true);
 
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_ENABLED = item("tools.tools.enabled", true, "spectatorsTools");
-	public static final ConfigurationItem<String>  TOOLS_TOOLS_ITEM = item("tools.tools.item", Material.MAGMA_CREAM.toString(), "spectatorsToolsItem");
+	public static final ConfigurationItem<Material> TOOLS_TOOLS_ITEM = item("tools.tools.item", Material.MAGMA_CREAM, "spectatorsToolsItem");
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_SPEED = item("tools.tools.speed", true);
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_NIGHTVISION = item("tools.tools.nightVision", true);
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_DIVINGSUIT = item("tools.tools.divingSuit", true);
@@ -83,7 +83,7 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_GLOW = item("tools.tools.glowEffectIfActive", true);
 
 	public static final ConfigurationItem<Boolean> TOOLS_INSPECTOR_ENABLED = item("tools.inspector.enabled", true, "inspector");
-	public static final ConfigurationItem<String>  TOOLS_INSPECTOR_ITEM = item("tools.inspector.item", Material.FEATHER.toString(), "inspectorItem");
+	public static final ConfigurationItem<Material> TOOLS_INSPECTOR_ITEM = item("tools.inspector.item", Material.FEATHER, "inspectorItem");
 
 
 	/* Spectators chat */
