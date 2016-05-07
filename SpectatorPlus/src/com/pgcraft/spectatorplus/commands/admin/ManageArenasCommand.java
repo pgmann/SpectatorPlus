@@ -89,7 +89,7 @@ public class ManageArenasCommand extends Command
 		Arena exists = SpectatorPlus.get().getArenasManager().getArena(arenaName);
 		if (exists != null)
 		{
-			error("An arena with this name (" + arenaName + ") already exists!");
+			error("An arena called " + arenaName + " already exists!");
 		}
 
 
@@ -154,7 +154,7 @@ public class ManageArenasCommand extends Command
 			catch (IllegalArgumentException e)
 			{
 				PluginLogger.error("An error occurred while adding the arena {0}.", e, arenaName);
-				error("An error occurred while adding the arena " + arenaName + "; see console for details.");
+				error("An error occurred while adding the arena " + arenaName + "; check the console for details.");
 			}
 		}
 		else
@@ -247,7 +247,7 @@ public class ManageArenasCommand extends Command
 		final Arena arena = SpectatorPlus.get().getArenasManager().getArena(arenaName);
 
 		if (arena == null)
-			error("We can't found an arena with the name « " + arenaName + " ».");
+			error("We can't find an arena with the name « " + arenaName + " ».");
 
 
 		if (args.length == 2)
@@ -262,7 +262,7 @@ public class ManageArenasCommand extends Command
 		}
 		else
 		{
-			throwInvalidArgument("unknown sub-command; « remove » or nothing required.");
+			throwInvalidArgument("Unknown sub-command; « remove » or nothing required.");
 		}
 	}
 

@@ -29,7 +29,7 @@ public class ConfigCommand extends Command
 	protected void run() throws CommandException
 	{
 		if (args.length == 0)
-			throwInvalidArgument("you have to provide a configuration path; use autocompletion if needed.");
+			throwInvalidArgument("you must provide a configuration path; use autocompletion if needed.");
 
 		// Display
 		else

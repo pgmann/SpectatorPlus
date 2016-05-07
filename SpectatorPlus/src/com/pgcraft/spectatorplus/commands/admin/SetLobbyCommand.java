@@ -29,12 +29,12 @@ public class SetLobbyCommand extends Command
 		{
 			case "set":
 				SpectatorPlus.get().getSpectatorsManager().setSpectatorsLobby(playerSender().getLocation());
-				success("The spectators lobby has been set on your current location.");
+				success("The spectator lobby has been set on your current location.");
 				break;
 
 			case "delete":
 				SpectatorPlus.get().getSpectatorsManager().setSpectatorsLobby(null);
-				success("The spectators lobby was successfully deleted. The spectators will no longer be teleported to it when they enter spectating mode.");
+				success("The spectator lobby was successfully deleted. Spectators will no longer be teleported to it when they enter spectating mode.");
 				break;
 
 			default:
