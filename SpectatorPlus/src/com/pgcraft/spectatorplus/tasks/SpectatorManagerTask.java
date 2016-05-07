@@ -50,7 +50,6 @@ public class SpectatorManagerTask implements Runnable
 				if (!target.getAllowFlight()) target.setAllowFlight(true);
 
 				// In arena mode, if boundaries are enforced, check if spectators are not inside the boundary.
-				// [Spawn allows free movement (before choosing an arena).]
 				if (ARENA_MODE && ENFORCE_ARENA_BOUNDARIES)
 				{
 					final Arena arena = spectator.getArena();

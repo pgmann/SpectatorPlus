@@ -26,7 +26,7 @@ public class SpectateAPI
 
 	private SpectatorPlus p;
 
-	public SpectateAPI()
+	protected SpectateAPI()
 	{
 		this.p = SpectatorPlus.get();
 		instance = this;
