@@ -34,6 +34,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -413,7 +414,7 @@ public class SpectatorsInteractionsListener implements Listener
 
 	/**
 	 * Used to prevent players & mobs from damaging spectators, and stop the fire display when a
-	 * spectator go out of a fire/lava block.
+	 * spectator comes out of a fire/lava block.
 	 */
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onEntityDamage(final EntityDamageEvent ev)
@@ -663,6 +664,17 @@ public class SpectatorsInteractionsListener implements Listener
 	public void onVehicleEnter(final VehicleEnterEvent e)
 	{
 		if (e.getEntered() instanceof Player && p.getPlayerData((Player) e.getEntered()).isSpectating())
+		{
+			e.setCancelled(true);
+		}
+	}
+	/**
+	 * Stops players trying to break entities such as Minecarts, Boats, etc.
+	 */
+	@EventHandler (priority = EventPriority.HIGHEST)
+	public void onVehicleDamage(final VehicleDamageEvent e)
+	{
+		if (e.getAttacker() instanceof Player && p.getPlayerData((Player) e.getAttacker()).isSpectating())
 		{
 			e.setCancelled(true);
 		}
