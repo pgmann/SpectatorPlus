@@ -13,6 +13,7 @@ import com.pgcraft.spectatorplus.guis.TeleportationGUI;
 import com.pgcraft.spectatorplus.utils.Collisions;
 import com.pgcraft.spectatorplus.utils.SPUtils;
 import fr.zcraft.zlib.components.gui.Gui;
+import fr.zcraft.zlib.tools.players.ReducedDebugInfos;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -231,6 +232,12 @@ public class Spectator
 		    SpectatorPlus.get().getSpectatorsManager().setSpectatingInScoreboard(this);
 	    }
 
+	    // We reduce debug infos (if needed)
+	    if (Toggles.REDUCE_DEBUG_INFOS.get())
+	    {
+		    ReducedDebugInfos.setForPlayer(player, true);
+	    }
+
 	    // We teleports the player to the spectating lobby, if needed
 	    if (!worldChange)
 	    {
@@ -316,6 +323,12 @@ public class Spectator
 		{
 			SpectatorPlus.get().getSpectatorsManager().setSpectatorsScoreboard(this);
 			SpectatorPlus.get().getSpectatorsManager().setSpectatingInScoreboard(this);
+		}
+
+		// The debug infos are expanded (if needed)
+		if (Toggles.REDUCE_DEBUG_INFOS.get())
+		{
+			ReducedDebugInfos.setForPlayer(player, false);
 		}
 
 		// The player is teleported back to the spawn if needed

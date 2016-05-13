@@ -104,6 +104,9 @@ spectators:
     # Same as no-clip mode tool, but mandatory.
     useVanillaMode: false
 
+    # Spectators will have reduced debug infos force-enabled.
+    reduceDebugInfos: false
+
 
 # What to do when the spectator mode is changed (enabled or disabled)?
 onSpectatorModeChanged:
