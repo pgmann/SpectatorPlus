@@ -15,6 +15,7 @@ import fr.zcraft.zlib.components.configuration.ConfigurationList;
 import fr.zcraft.zlib.components.gui.Gui;
 import fr.zcraft.zlib.tools.Callback;
 import fr.zcraft.zlib.tools.PluginLogger;
+import fr.zcraft.zlib.tools.players.ReducedDebugInfos;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -194,6 +195,9 @@ public class Toggles
 
 				else if (toggle == REDUCE_DEBUG_INFOS)
 				{
+					for (Player player : Bukkit.getOnlinePlayers())
+						if (SpectatorPlus.get().getPlayerData(player).isSpectating())
+							ReducedDebugInfos.setForPlayer(player, REDUCE_DEBUG_INFOS.get());
 
 				}
 
