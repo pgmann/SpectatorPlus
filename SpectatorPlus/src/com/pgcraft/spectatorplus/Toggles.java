@@ -31,7 +31,6 @@ import java.util.Set;
 import static fr.zcraft.zlib.components.configuration.ConfigurationItem.item;
 import static fr.zcraft.zlib.components.configuration.ConfigurationItem.list;
 
-
 public class Toggles
 {
 	/* Miscellaneous toggles */
@@ -39,14 +38,14 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> OUTPUT_MESSAGES = item("outputMessages", true, "outputmessages");
 	public static final ConfigurationItem<Boolean> VANILLA_SPECTATOR_MODE = item("spectators.useVanillaMode", false);
 
+	public static final ConfigurationItem<Boolean> REDUCE_DEBUG_INFOS = item("spectators.reduceDebugInfos", false);
+
 	public static final ConfigurationItem<Boolean> SKRIPT_INTEGRATION = item("skriptIntegration", false);
 
 	public static final ConfigurationItem<Boolean> SPECTATOR_MODE_ON_DEATH = item("spectatorModeOnDeath", false, "deathspec");
 
 	public static final ConfigurationItem<Boolean> ENFORCE_ARENA_BOUNDARIES = item("enforceBoundaries.arenas", false, "enforceArenaBoundary", "enforceArenaBoundaries");
 	public static final ConfigurationItem<Double>  ENFORCE_LOBBY_BOUNDARIES = item("enforceBoundaries.lobby", 0d);
-
-	public static final ConfigurationItem<Boolean> REDUCE_DEBUG_INFOS = item("spectators.reduceDebugInfos", false);
 
 
 	/* Spectators lobby */
@@ -67,18 +66,21 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> TOOLS_NEWBIES_MODE = item("tools.newbieMode", true, "newbieMode");
 
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_ENABLED = item("tools.teleporter.enabled", true, "compass");
-	public static final ConfigurationItem<String>  TOOLS_TELEPORTER_ITEM = item("tools.teleporter.item", Material.COMPASS.toString(), "compassItem");
+
+	public static final ConfigurationItem<Material> TOOLS_TELEPORTER_ITEM = item("tools.teleporter.item", Material.COMPASS, "compassItem");
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_INSPECTOR = item("tools.teleporter.inspector", true, "inspectPlayerFromTeleportationMenu");
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_HEALTH = item("tools.teleporter.health", true, "playersHealthInTeleportationMenu");
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_LOCATION = item("tools.teleporter.location", true, "playersLocationInTeleportationMenu");
 
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_ENABLED = item("tools.arenaChooser.enabled", true, "arenaclock");
-	public static final ConfigurationItem<String>  TOOLS_ARENA_SELECTOR_ITEM = item("tools.arenaChooser.item", Material.WATCH.toString(), "clockItem");
+
+	public static final ConfigurationItem<Material> TOOLS_ARENA_SELECTOR_ITEM = item("tools.arenaChooser.item", Material.WATCH, "clockItem");
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_PLAYERS_COUNT = item("tools.arenaChooser.playersCount", true);
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_TECH_INFOS = item("tools.arenaChooser.technicalInfos", true);
 
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_ENABLED = item("tools.tools.enabled", true, "spectatorsTools");
-	public static final ConfigurationItem<String>  TOOLS_TOOLS_ITEM = item("tools.tools.item", Material.MAGMA_CREAM.toString(), "spectatorsToolsItem");
+
+	public static final ConfigurationItem<Material> TOOLS_TOOLS_ITEM = item("tools.tools.item", Material.MAGMA_CREAM, "spectatorsToolsItem");
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_SPEED = item("tools.tools.speed", true);
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_NIGHTVISION = item("tools.tools.nightVision", true);
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_DIVINGSUIT = item("tools.tools.divingSuit", true);
@@ -89,7 +91,8 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_GLOW = item("tools.tools.glowEffectIfActive", true);
 
 	public static final ConfigurationItem<Boolean> TOOLS_INSPECTOR_ENABLED = item("tools.inspector.enabled", true, "inspector");
-	public static final ConfigurationItem<String>  TOOLS_INSPECTOR_ITEM = item("tools.inspector.item", Material.FEATHER.toString(), "inspectorItem");
+
+	public static final ConfigurationItem<Material> TOOLS_INSPECTOR_ITEM = item("tools.inspector.item", Material.FEATHER, "inspectorItem");
 
 
 	/* Spectators chat */
@@ -136,7 +139,6 @@ public class Toggles
 		Configuration.registerConfigurationUpdateCallback(new Callback<ConfigurationItem<?>>()
 		{
 			@Override
-			@SuppressWarnings ("unchecked")
 			public void call(ConfigurationItem<?> toggle)
 			{
 				if (toggle == TOOLS_ARENA_SELECTOR_ITEM || toggle == TOOLS_INSPECTOR_ITEM || toggle == TOOLS_TELEPORTER_ITEM || toggle == TOOLS_TOOLS_ITEM

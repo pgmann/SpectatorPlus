@@ -8,6 +8,7 @@ import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.utils.SPUtils;
+import fr.zcraft.zlib.components.rawtext.RawText;
 import fr.zcraft.zlib.tools.text.MessageSender;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -21,11 +22,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SpectatorsChatManager
 {
 	private static final String SPECTATORS_CHAT_PREFIX = ChatColor.GRAY + "Spectators " + ChatColor.DARK_GRAY + ChatColor.BOLD + "\u2503 "; // box drawings heavy vertical
-
-	private static final String SPECTATORS_CHAT_FORMAT = SPECTATORS_CHAT_PREFIX + ChatColor.RESET + "{name}" + ChatColor.DARK_GRAY + " : " + ChatColor.GRAY + "{message}";
-	private static final String SPECTATORS_ACTION_FORMAT = SPECTATORS_CHAT_PREFIX + "* " + ChatColor.RESET + "{name}" + ChatColor.GRAY + " {message}";
-	private static final String SPECTATORS_BROADCAST_MESSAGE_FORMAT = ChatColor.GOLD + "[{name}" + ChatColor.GOLD + " -> spectators] " + ChatColor.RESET + "{message}";
-
 
 	private final SpectatorPlus p;
 
@@ -82,7 +78,7 @@ public class SpectatorsChatManager
 		internalWhitelist.addAll(Arrays.asList("spec", "spectate"));
 
 		// Configurable whitelist
-		for (String rawCommand : Toggles.CHAT_BLOCKCOMMANDS_WHITELIST.get())
+		for (String rawCommand : Toggles.CHAT_BLOCKCOMMANDS_WHITELIST)
 			addCommandToWhitelist(rawCommand, false);
 	}
 
@@ -130,7 +126,33 @@ public class SpectatorsChatManager
 	 */
 	public void sendSpectatorsChatMessage(final CommandSender sender, final String message, final boolean isAction)
 	{
-		sendRawMessageToSpectators(formatMessage(isAction ? SPECTATORS_ACTION_FORMAT : SPECTATORS_CHAT_FORMAT, sender, message));
+		if (isAction)
+		{
+			sendRawMessageToSpectators(
+					new RawText(SPECTATORS_CHAT_PREFIX)
+							.then("* ")
+								.color(ChatColor.GRAY)
+							.then(SPUtils.getName(sender))
+								.color(ChatColor.WHITE)
+							.then(" ")
+							.then(message)
+								.color(ChatColor.GRAY)
+							.build()
+			);
+		}
+		else
+		{
+			sendRawMessageToSpectators(
+					new RawText(SPECTATORS_CHAT_PREFIX)
+							.then(SPUtils.getName(sender))
+								.color(ChatColor.WHITE)
+							.then(" : ")
+								.color(ChatColor.DARK_GRAY)
+							.then(message)
+								.color(ChatColor.GRAY)
+							.build()
+			);
+		}
 	}
 
 	/**
@@ -141,33 +163,22 @@ public class SpectatorsChatManager
 	 */
 	public void broadcastToSpectators(final CommandSender sender, final String message)
 	{
-		String formattedMessage = formatMessage(SPECTATORS_BROADCAST_MESSAGE_FORMAT, sender, message);
+		RawText broadcast = new RawText("")
+				.then("[" + SPUtils.getName(sender))
+					.color(ChatColor.GOLD)
+				.then(" -> spectators] ")
+					.color(ChatColor.GOLD)
+				.then(message)
+					.color(ChatColor.WHITE)
+				.build();
 
-		sendRawMessageToSpectators(formattedMessage);
+		sendRawMessageToSpectators(broadcast);
 
 		// If the sender don't receive the spectators chat
 		if (sender instanceof Player && !p.getPlayerData(((Player) sender)).isSpectating())
 		{
-			MessageSender.sendChatMessage(((Player) sender), formattedMessage);
+			MessageSender.sendChatMessage(((Player) sender), broadcast);
 		}
-	}
-
-
-	/**
-	 * Formats a message: replaces {name} by the display name of the sender, and {message} by the
-	 * message.
-	 *
-	 * @param format  The format.
-	 * @param sender  The sender.
-	 * @param message The message.
-	 *
-	 * @return The formatted message.
-	 */
-	private String formatMessage(final String format, final CommandSender sender, final String message)
-	{
-		return format
-				.replace("{name}", SPUtils.getName(sender))
-				.replace("{message}", message);
 	}
 
 	/**
@@ -175,7 +186,7 @@ public class SpectatorsChatManager
 	 *
 	 * @param message The message to be sent.
 	 */
-	private void sendRawMessageToSpectators(final String message)
+	private void sendRawMessageToSpectators(final RawText message)
 	{
 		for (Player player : p.getServer().getOnlinePlayers())
 		{
@@ -185,6 +196,6 @@ public class SpectatorsChatManager
 			}
 		}
 
-		p.getServer().getConsoleSender().sendMessage(message);
+		p.getServer().getConsoleSender().sendMessage(message.toFormattedText());
 	}
 }

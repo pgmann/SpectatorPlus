@@ -9,6 +9,6 @@ any non-spectating player in the server.
 §8- §6ARENA§r: the players will have to select an
 arena §7(see /spec help arena)§r; then, they will
 be able to teleport themselves to the player inside
-the bound of the selected arena only.
+the bounds of the selected arena only.
 §8- §6WORLD§r: the players can teleport themselves
 to any player in the same world.

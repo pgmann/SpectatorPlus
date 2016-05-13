@@ -25,11 +25,11 @@ import java.util.List;
 public class ConfigCommand extends Command
 {
 	@Override
-	@SuppressWarnings ({"ConstantConditions", "unchecked"})
+	@SuppressWarnings ({"unchecked"})
 	protected void run() throws CommandException
 	{
 		if (args.length == 0)
-			throwInvalidArgument("you have to provide a configuration path; use autocompletion if needed.");
+			throwInvalidArgument("you must provide a configuration path; use autocompletion if needed.");
 
 		// Display
 		else
@@ -51,18 +51,16 @@ public class ConfigCommand extends Command
 			else if (args.length > 1)
 			{
 				// Materials
-				if (toggle == Toggles.TOOLS_ARENA_SELECTOR_ITEM
-						|| toggle == Toggles.TOOLS_INSPECTOR_ITEM
-						|| toggle == Toggles.TOOLS_TELEPORTER_ITEM
-						|| toggle == Toggles.TOOLS_TOOLS_ITEM)
+				if (toggle.getDefaultValue() instanceof Material)
 				{
-					if (Material.matchMaterial(args[1]) == null)
+					final Material material = Material.matchMaterial(args[1]);
+					if (material == null)
 					{
 						error("A valid material is required for this toggle.");
 					}
 					else
 					{
-						((ConfigurationItem<String>) toggle).set(args[1].toUpperCase());
+						((ConfigurationItem<Material>) toggle).set(material);
 					}
 				}
 				else if (toggle.getDefaultValue() instanceof String)
@@ -102,10 +100,7 @@ public class ConfigCommand extends Command
 			ConfigurationItem<?> toggle = Toggles.getToggleFromPath(args[0]);
 			if (toggle != null)
 			{
-				if (toggle == Toggles.TOOLS_ARENA_SELECTOR_ITEM
-						|| toggle == Toggles.TOOLS_INSPECTOR_ITEM
-						|| toggle == Toggles.TOOLS_TELEPORTER_ITEM
-						|| toggle == Toggles.TOOLS_TOOLS_ITEM)
+				if (toggle.getDefaultValue() instanceof Material)
 				{
 					List<String> materialsNames = new ArrayList<>();
 					for (Material material : Material.values())
