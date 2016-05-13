@@ -9,7 +9,6 @@ import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
 import com.pgcraft.spectatorplus.spectators.Spectator;
 import com.pgcraft.spectatorplus.spectators.SpectatorMode;
-import fr.zcraft.zlib.components.configuration.ConfigurationItem;
 import fr.zcraft.zlib.components.gui.GuiUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,6 +23,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 
 
+@SuppressWarnings("deprecation")
 public class SpectatorsInventoryManager
 {
 	// Titles of the tools in the inventory
@@ -59,6 +59,7 @@ public class SpectatorsInventoryManager
 	}
 
 
+	@SuppressWarnings("incomplete-switch")
 	public void equipSpectator(Player player)
 	{
 		Spectator spectator = SpectatorPlus.get().getPlayerData(player);
@@ -277,17 +278,11 @@ public class SpectatorsInventoryManager
 
 	public void updateSpectatorsInventoriesConfig()
 	{
-		TELEPORTER_ITEM = getMaterial(Toggles.TOOLS_TELEPORTER_ITEM);
-		ARENA_SELECTOR_ITEM = getMaterial(Toggles.TOOLS_ARENA_SELECTOR_ITEM);
-		TOOLS_ITEM = getMaterial(Toggles.TOOLS_TOOLS_ITEM);
-		INSPECTOR_ITEM = getMaterial(Toggles.TOOLS_INSPECTOR_ITEM);
+		TELEPORTER_ITEM = Toggles.TOOLS_TELEPORTER_ITEM.get();
+		ARENA_SELECTOR_ITEM = Toggles.TOOLS_ARENA_SELECTOR_ITEM.get();
+		TOOLS_ITEM = Toggles.TOOLS_TOOLS_ITEM.get();
+		INSPECTOR_ITEM = Toggles.TOOLS_INSPECTOR_ITEM.get();
 
 		equipSpectators();
-	}
-
-	private Material getMaterial(ConfigurationItem<String> rawMaterial)
-	{
-		Material material = Material.matchMaterial(rawMaterial.get());
-		return material != null ? material : Material.matchMaterial(rawMaterial.getDefaultValue());
 	}
 }

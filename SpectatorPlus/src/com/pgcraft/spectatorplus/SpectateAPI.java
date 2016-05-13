@@ -26,7 +26,7 @@ public class SpectateAPI
 
 	private SpectatorPlus p;
 
-	public SpectateAPI()
+	protected SpectateAPI()
 	{
 		this.p = SpectatorPlus.get();
 		instance = this;
@@ -166,7 +166,7 @@ public class SpectateAPI
 	}
 
 	/**
-	 * Sets the current SpectatorPlusOld' mode.
+	 * Sets the current SpectatorPlus mode.
 	 *
 	 * <ul>
 	 *     <li>

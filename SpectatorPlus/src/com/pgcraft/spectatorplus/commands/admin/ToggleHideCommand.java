@@ -28,7 +28,7 @@ public class ToggleHideCommand extends Command
 			spectator.setHiddenFromTp(!spectator.isHiddenFromTp());
 
 			if (spectator.isHiddenFromTp())
-				success("The spectators can no longer see you.");
+				success("Spectators can no longer see you.");
 			else
 				success("You are no longer hidden from spectators.");
 		}
@@ -49,13 +49,13 @@ public class ToggleHideCommand extends Command
 
 			if (spectator.isHiddenFromTp())
 			{
-				success("The spectators can no longer see " + targetName + ".");
-				SpectatorPlus.get().sendMessage(target, "You are now hidden from the spectators: they can no longer see you in the teleportation menu.", true);
+				success("Spectators can no longer see " + targetName + ".");
+				SpectatorPlus.get().sendMessage(target, "You are now hidden from spectators: they can no longer see you in the teleportation menu.", true);
 			}
 			else
 			{
 				success(targetName + " is no longer hidden from spectators.");
-				SpectatorPlus.get().sendMessage(target, "You are no longer hidden from the spectators: they can teleport themselves to you, now.", true);
+				SpectatorPlus.get().sendMessage(target, "You are no longer hidden from spectators: they can teleport themselves to you, now.", true);
 			}
 		}
 	}

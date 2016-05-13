@@ -62,15 +62,15 @@ public class ArenaSetup
 		switch (step)
 		{
 			case 0:
-				SpectatorPlus.get().sendMessage(player, "You just entered arena setup mode for the arena " + ChatColor.RED + arenaName + ChatColor.GOLD + ".", true);
-				player.sendMessage(ChatColor.GRAY + "You'll have to mark the two opposite corners of the arena, witch is a 3D rectangular structure.");
-				player.sendMessage(ChatColor.GRAY + "Punch the " + ChatColor.RED + "first corner " + ChatColor.GOLD + " of the arena.");
+				SpectatorPlus.get().sendMessage(player, ChatColor.GOLD + "You just entered arena setup mode for the arena " + ChatColor.RED + arenaName + ChatColor.GOLD + ".", true);
+				player.sendMessage(ChatColor.GOLD + "You'll have to mark the two opposite corners of the arena, which is a 3D rectangular structure.");
+				player.sendMessage(ChatColor.GOLD + "Punch the " + ChatColor.RED + "first corner" + ChatColor.GOLD + " of the arena.");
 				player.sendMessage(ChatColor.GRAY + "You can also use the command " + ChatColor.WHITE + "/spec arena corner" + ChatColor.GRAY + " to set the corner at your current location.");
 				break;
 
 			case 1:
 				corner1 = location;
-				SpectatorPlus.get().sendMessage(player, "Now, punch the " + ChatColor.RED + "second corner " + ChatColor.GOLD + " of the arena, in the opposite corner.", true);
+				SpectatorPlus.get().sendMessage(player, ChatColor.GOLD + "Now, punch the " + ChatColor.RED + "second corner" + ChatColor.GOLD + " of the arena, at the opposite corner.", true);
 				player.sendMessage(ChatColor.GRAY + "You can still use the " + ChatColor.WHITE + "/spec arena corner" + ChatColor.GRAY + " command.");
 				break;
 

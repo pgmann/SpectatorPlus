@@ -25,7 +25,6 @@ import java.util.List;
 public class ListCommand extends Command
 {
 	@Override
-	@SuppressWarnings ("ConstantConditions")
 	protected void run() throws CommandException
 	{
 		List<Player> spectators = new ArrayList<>();
@@ -44,7 +43,7 @@ public class ListCommand extends Command
 			Arena arena = SpectatorPlus.get().getArenasManager().getArena(args[0]);
 
 			if (arena == null)
-				error("The arena " + args[0] + " does not exists.");
+				error("The arena " + args[0] + " does not exist.");
 
 			for (Player player : Bukkit.getOnlinePlayers())
 			{
@@ -61,7 +60,7 @@ public class ListCommand extends Command
 
 		if (spectators.size() == 0)
 		{
-			warning("(No player to display.)");
+			warning("(No players to display.)");
 		}
 		else
 		{
