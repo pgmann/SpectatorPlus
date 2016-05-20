@@ -45,9 +45,9 @@ public class PlayerInventoryGUI extends ActionGui
 	@Override
 	protected void onUpdate()
 	{
-		final int size = displayedInventory.getSize();
+		final int size = 36; // The size of the main part of the player inventory (excluding armor and shield)
 
-		setSize(size + 18);  // + 18: a separator row, and a row with armor, XP, potion effects, health and feed level.
+		setSize(MAX_INVENTORY_SIZE);  // 36 (inventory) + 18 (a separator row, and a row with armor, XP, potion effects, health and feed level) = max size.
 		setTitle(ChatColor.BLACK + displayedInventoryOwner.getDisplayName());
 
 
