@@ -156,7 +156,7 @@ public class SpectateAPI
 	 */
 	public boolean teleportSpectatorToPlayer(Player spectator, Player target)
 	{
-		if (p.getPlayerData(spectator).isSpectating() && !p.getPlayerData(spectator).isSpectating())
+		if (p.getPlayerData(spectator).isSpectating() && !p.getPlayerData(target).isSpectating())
 		{
 			spectator.teleport(target);
 			return true;
