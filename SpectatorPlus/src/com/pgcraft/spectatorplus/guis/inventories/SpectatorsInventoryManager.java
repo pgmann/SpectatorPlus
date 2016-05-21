@@ -101,7 +101,7 @@ public class SpectatorsInventoryManager
 		if (Toggles.TOOLS_TELEPORTER_ENABLED.get())
 		{
 			ItemStack teleporter = GuiUtils.makeItem(TELEPORTER_ITEM, getItemTitle(TELEPORTER_TITLE, RIGHT_CLICK), Arrays.asList(
-					ChatColor.GRAY + "Right-click to choose a player",
+					ChatColor.GRAY + "Click to choose a player",
 					ChatColor.GRAY + "to teleport to."
 			));
 
@@ -113,7 +113,7 @@ public class SpectatorsInventoryManager
 			Arena spectatorArena = spectator.getArena();
 
 			ItemStack arenaSelector = GuiUtils.makeItem(ARENA_SELECTOR_ITEM, getItemTitle(ARENA_SELECTOR_TITLE, RIGHT_CLICK), Arrays.asList(
-					ChatColor.GRAY + "Right-click to choose an arena",
+					ChatColor.GRAY + "Click to choose an arena",
 					ChatColor.GRAY + "to spectate in.",
 					"",
 					ChatColor.GRAY + "Current arena: " + ChatColor.WHITE + (spectatorArena == null ? "none" : spectatorArena.getName()) + ChatColor.GRAY + "."
@@ -125,7 +125,7 @@ public class SpectatorsInventoryManager
 		if (Toggles.TOOLS_TOOLS_ENABLED.get())
 		{
 			ItemStack tools = GuiUtils.makeItem(TOOLS_ITEM, getItemTitle(TOOLS_TITLE, RIGHT_CLICK), Arrays.asList(
-					ChatColor.GRAY + "Right-click to open the spectators'",
+					ChatColor.GRAY + "Click to open the spectators'",
 					ChatColor.GRAY + "tools menu."
 			));
 
