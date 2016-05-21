@@ -49,11 +49,11 @@ public class Toggles
 	public static final ConfigurationItem<Double>  ENFORCE_LOBBY_BOUNDARIES = item("enforceBoundaries.lobby", 0d);
 
 
-	/* Spectators lobby */
+	/* Spectators lobby and spectator mode persistence */
 
 	public static final ConfigurationItem<Boolean> ONSPECMODECHANGED_TELEPORTATION_TOSPAWN = item("onSpectatorModeChanged.teleportation.toSpawnWithoutLobby", false, "teleportToSpawnOnSpecChangeWithoutLobby");
 	public static final ConfigurationItem<Boolean> ONSPECMODECHANGED_TELEPORTATION_WITHSPAWNCMD = item("onSpectatorModeChanged.teleportation.usingSpawnCommand", false, "useSpawnCommandToTeleport");
-
+	public static final ConfigurationItem<Boolean> ONSPECMODECHANGED_SAVESPECTATORS = item("onSpectatorModeChanged.saveSpectators", true);
 
 	/* Scoreboards-related */
 

@@ -56,7 +56,7 @@ public class ServerActionsListener implements Listener
 			}
 		}
 
-		if (p.getSpectatorsManager().getSavedSpectatingPlayers().getConfig().contains(ev.getPlayer().getUniqueId().toString()))
+		if (Toggles.ONSPECMODECHANGED_SAVESPECTATORS.get() && p.getSpectatorsManager().getSavedSpectatingPlayers().getConfig().contains(ev.getPlayer().getUniqueId().toString()))
 		{
 			p.getPlayerData(ev.getPlayer()).setSpectating(true, true);
 		}

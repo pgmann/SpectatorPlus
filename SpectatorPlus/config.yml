@@ -1,4 +1,4 @@
-# This is the SpectatorPlus' configuration file. It can be edited in-game
+# This is the SpectatorPlus configuration file. It can be edited in-game
 # using the /spec config command.
 
 # If you don't see the comments below, explaining each configuration option,
@@ -30,7 +30,7 @@ tools:
         # Set to true to display the number of players in this arena in the tooltip
         playersCount: true
 
-        # Set to true to display technical informations to the players with the `spectate.admin.arena` permission.
+        # Set to true to display technical information to the players with the `spectate.admin.arena` permission.
         technicalInfos: true
     
     # Speed, night or underwater vision, teleportation to death location
@@ -124,6 +124,10 @@ onSpectatorModeChanged:
         # When teleporting the players to the spawn (without a main lobby set), use the /spawn command, or
         # the spawn point of the current world?
         usingSpawnCommand: false
+        
+        # Should a list of spectating players be used to re-enable spectate mode when players rejoin?
+        # Disable with caution - setting this to false means spectators can exit spectator mode by leaving and rejoining the game!
+    saveSpectators: true
 
 
 # Enable Skript integration? Only set to true if needed.
