@@ -20,6 +20,7 @@ public enum Permissions
 	CHANGE_CONFIG("spectate.admin.config"),
 	RELOAD_PLUGIN("spectate.admin.reload"),
 
+	CHAT_SHOUT("spectate.admin.shout"),
 	BYPASS_COMMANDS_WHITELIST("spectate.admin.bypasswhitelist"),
 
 	HIDE_SELF_FROM_SPECTATORS("spectate.admin.hide.self"),

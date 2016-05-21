@@ -48,6 +48,7 @@ permissions:
       spectate.admin.hide.see: true
       spectate.admin.bypasswhitelist: true
       spectate.admin.list: true
+      spectate.admin.shout: true
   spectate.admin.lobby:
     description: Allows you to set the global lobby
     default: op
@@ -94,3 +95,5 @@ permissions:
       Allows a player to bypass the commands whitelist while spectating: he will be able to send any command.
       Only effective if the chat.blockCommands.adminBypass configuration option is set to true.
     default: op
+  spectate.admin.shout:
+    description: Allow's a spectator's chat to be visible to non-spectators

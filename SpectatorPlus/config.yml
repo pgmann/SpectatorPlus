@@ -63,6 +63,13 @@ chat:
     # Enable spectator-only chat, invisible to non-specs?
     spectatorChat: true
     
+    # Allows a spectator's chat to be visible to non-spectators.
+    # - The user must have the permission spectate.admin.shout
+    # - Their message must start with the configured prefix, by default an exclamation mark
+    shout:
+        enabled: true
+        prefix: "!"
+
     # Block commands while spectating?
     blockCommands:
         enabled: true

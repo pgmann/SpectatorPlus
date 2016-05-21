@@ -4,6 +4,7 @@
  */
 package com.pgcraft.spectatorplus.listeners;
 
+import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.spectators.Spectator;
@@ -28,7 +29,8 @@ public class SpectatorsChatListener implements Listener
 
 
 	/**
-	 * Used to hide chat messages sent by spectators, if the spectator chat is enabled.
+	 * Used to hide chat messages sent by spectators, if the spectator chat is enabled.<br>
+	 * Spectators with appropriate permission can shout to bypass spectator chat by using a configurable message prefix.
 	 */
 	// Ignore cancelled, so another plugin can implement a private chat without conflicts.
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -36,15 +38,25 @@ public class SpectatorsChatListener implements Listener
 	{
 		if (Toggles.CHAT_ENABLED.get() && p.getPlayerData(ev.getPlayer()).isSpectating())
 		{
-			ev.setCancelled(true);
-			p.getSpectatorsManager().getChatManager().sendSpectatorsChatMessage(ev.getPlayer(), ev.getMessage(), false);
+			if(Toggles.CHAT_SHOUT_ENABLED.get()
+					&& ev.getMessage().startsWith(Toggles.CHAT_SHOUT_PREFIX.get())
+					&& Permissions.CHAT_SHOUT.grantedTo(ev.getPlayer()))
+			{
+				// Spectator SHOUT - trim off the SHOUT_PREFIX leaving the actual message
+				ev.setMessage(ev.getMessage().substring(Toggles.CHAT_SHOUT_PREFIX.get().length()));
+			} else {
+				// Spectator CHAT
+				ev.setCancelled(true);
+				p.getSpectatorsManager().getChatManager().sendSpectatorsChatMessage(ev.getPlayer(), ev.getMessage(), false);
+			}
 		}
 	}
 
 	/**
-	 * Prevents a command to be executed if the player is a spectator and the option is set in the
-	 * config; catches /me commands to show them into the spectator chat; allows specified commands
-	 * from the whitelist section to be executed.
+	 * <ul>
+	 * <li>Prevents a command being executed if the player is a spectator and the option is set in the config;</li>
+	 * <li>Catches /me commands to show them in the spectator chat (if the user isn't shouting);</li>
+	 * <li>Allows specified commands from the whitelist section to be executed.</li>
 	 */
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onCommandPreprocessed(PlayerCommandPreprocessEvent ev)
@@ -57,8 +69,20 @@ public class SpectatorsChatListener implements Listener
 
 		if (Toggles.CHAT_ENABLED.get() && ev.getMessage().toLowerCase().startsWith("/me "))
 		{
-			ev.setCancelled(true);
-			p.getSpectatorsManager().getChatManager().sendSpectatorsChatMessage(ev.getPlayer(), ev.getMessage().substring(4), true);
+			// Spectators with the appropriate permission can shout /me messages too (e.g. "/me !hi")
+			if(Toggles.CHAT_SHOUT_ENABLED.get()
+					&& ev.getMessage().startsWith("/me " + Toggles.CHAT_SHOUT_PREFIX.get())
+					&& Permissions.CHAT_SHOUT.grantedTo(ev.getPlayer()))
+			{
+				// Spectator SHOUT - trim off the SHOUT_PREFIX leaving the actual message
+				ev.setMessage(ev.getMessage().replaceFirst(Toggles.CHAT_SHOUT_PREFIX.get(), ""));
+			}
+			else
+			{
+				// Spectator CHAT (action)
+				ev.setCancelled(true);
+				p.getSpectatorsManager().getChatManager().sendSpectatorsChatMessage(ev.getPlayer(), ev.getMessage().substring(4), true);
+			}
 		}
 
 		else if (Toggles.CHAT_BLOCKCOMMANDS_ENABLED.get() && !p.getSpectatorsManager().getChatManager().isCommandWhitelisted(ev.getMessage(), ev.getPlayer()))

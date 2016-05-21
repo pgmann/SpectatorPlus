@@ -99,6 +99,8 @@ public class Toggles
 	/* Spectators chat */
 
 	public static final ConfigurationItem<Boolean> CHAT_ENABLED = item("chat.spectatorChat", true, "specchat");
+	public static final ConfigurationItem<Boolean> CHAT_SHOUT_ENABLED = item("chat.shout.enabled", true);
+	public static final ConfigurationItem<String> CHAT_SHOUT_PREFIX = item("chat.shout.prefix", "!");
 	public static final ConfigurationItem<Boolean> CHAT_BLOCKCOMMANDS_ENABLED = item("chat.blockCommands.enabled", true, "blockcmds");
 	public static final ConfigurationItem<Boolean> CHAT_BLOCKCOMMANDS_ADMINBYPASS = item("chat.blockCommands.adminBypass", true, "adminbypass");
 
