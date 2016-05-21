@@ -96,4 +96,4 @@ permissions:
       Only effective if the chat.blockCommands.adminBypass configuration option is set to true.
     default: op
   spectate.admin.shout:
-    description: Allow's a spectator's chat to be visible to non-spectators
+    description: Allows a spectator's chat to be visible to non-spectators
