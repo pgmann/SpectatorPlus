@@ -4,6 +4,7 @@
  */
 package com.pgcraft.spectatorplus.guis.inventories;
 
+import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.guis.ArenasSelectorGUI;
 import com.pgcraft.spectatorplus.guis.PlayerInventoryGUI;
@@ -168,6 +169,18 @@ public class SpectatorsInventoryListener implements Listener
 			player.setFlying(true); // The player comes from the spectator mode, so he was flying.
 
 			player.sendMessage(ChatColor.GREEN + "No-clip mode disabled.");
+		}
+		else if (displayName.startsWith(SpectatorsInventoryManager.LEAVE_TITLE))
+		{
+			if(Permissions.DISABLE_SPECTATOR_MODE.grantedTo(player))
+			{
+				SpectatorPlus.get().getPlayerData(player).setSpectating(false, player);
+			}
+			else
+			{
+				// Update the inventory, as player permissions have changed.
+				SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(player);
+			}
 		}
 	}
 

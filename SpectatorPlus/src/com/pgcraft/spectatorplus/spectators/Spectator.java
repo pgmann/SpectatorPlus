@@ -299,10 +299,10 @@ public class Spectator
 		player.getInventory().setArmorContents(oldArmourContent);
 		player.updateInventory();
 
-		// The arena is reset
+		// The arena is reset (silently)
 		if (!worldChange)
 		{
-			setArena(null);
+			setArena(null, true);
 		}
 
 		// The player is shown
@@ -449,17 +449,21 @@ public class Spectator
 
     public void setArena(Arena arena)
     {
+    	setArena(arena, false);
+    }
+    public void setArena(Arena arena, boolean silent)
+    {
         this.arena = arena;
 
 	    if (arena == null)
 	    {
-		    SpectatorPlus.get().sendMessage(this, "You were removed from your arena.");
+		    if(!silent) SpectatorPlus.get().sendMessage(this, "You were removed from your arena.");
 		    SpectatorPlus.get().getSpectatorsManager().teleportToLobby(this);
 	    }
 
 	    else
 	    {
-		    SpectatorPlus.get().sendMessage(this, "You are now in the " + arena.getName() + " arena.");
+		    if(!silent) SpectatorPlus.get().sendMessage(this, "You are now in the " + arena.getName() + " arena.");
 
 		    if (arena.getLobby() != null)
 		    {

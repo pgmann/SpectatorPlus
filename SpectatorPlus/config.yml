@@ -51,9 +51,15 @@ tools:
             # Display the cause of the death in the tooltip? (Example: « You starved to death ».)
             displayCause: true
     
+    # The inspector allows spectators to punch a player to see their inventory and stats (e.g. XP, Armour, etc.)
     inspector:
         enabled: true
         item: FEATHER
+        
+    # This tool allows a spectator to click with this item to leave spectate mode (same as the "/spec off" command)
+    leave:
+        enabled: true
+        item: BED
     
     # Add "(Right-click)" in the name of the spectators' tools (teleporter, etc.)?
     newbieMode: true

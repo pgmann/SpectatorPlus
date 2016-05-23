@@ -66,6 +66,7 @@ public class Toggles
 
 	public static final ConfigurationItem<Boolean> TOOLS_NEWBIES_MODE = item("tools.newbieMode", true, "newbieMode");
 
+	// TELEPORTER
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_ENABLED = item("tools.teleporter.enabled", true, "compass");
 
 	public static final ConfigurationItem<Material> TOOLS_TELEPORTER_ITEM = item("tools.teleporter.item", Material.COMPASS, "compassItem");
@@ -73,12 +74,14 @@ public class Toggles
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_HEALTH = item("tools.teleporter.health", true, "playersHealthInTeleportationMenu");
 	public static final ConfigurationItem<Boolean> TOOLS_TELEPORTER_LOCATION = item("tools.teleporter.location", true, "playersLocationInTeleportationMenu");
 
+	// ARENA SELECTOR
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_ENABLED = item("tools.arenaChooser.enabled", true, "arenaclock");
 
 	public static final ConfigurationItem<Material> TOOLS_ARENA_SELECTOR_ITEM = item("tools.arenaChooser.item", Material.WATCH, "clockItem");
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_PLAYERS_COUNT = item("tools.arenaChooser.playersCount", true);
 	public static final ConfigurationItem<Boolean> TOOLS_ARENA_SELECTOR_TECH_INFOS = item("tools.arenaChooser.technicalInfos", true);
 
+	// TOOLS
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_ENABLED = item("tools.tools.enabled", true, "spectatorsTools");
 
 	public static final ConfigurationItem<Material> TOOLS_TOOLS_ITEM = item("tools.tools.item", Material.MAGMA_CREAM, "spectatorsToolsItem");
@@ -91,9 +94,13 @@ public class Toggles
 
 	public static final ConfigurationItem<Boolean> TOOLS_TOOLS_GLOW = item("tools.tools.glowEffectIfActive", true);
 
+	// INSPECTOR
 	public static final ConfigurationItem<Boolean> TOOLS_INSPECTOR_ENABLED = item("tools.inspector.enabled", true, "inspector");
-
 	public static final ConfigurationItem<Material> TOOLS_INSPECTOR_ITEM = item("tools.inspector.item", Material.FEATHER, "inspectorItem");
+	
+	// LEAVE SPECTATE MODE
+	public static final ConfigurationItem<Boolean> TOOLS_LEAVE_ENABLED = item("tools.leave.enabled", true);
+	public static final ConfigurationItem<Material> TOOLS_LEAVE_ITEM = item("tools.leave.item", Material.BED);
 
 
 	/* Spectators chat */
@@ -144,8 +151,8 @@ public class Toggles
 			@Override
 			public void call(ConfigurationItem<?> toggle)
 			{
-				if (toggle == TOOLS_ARENA_SELECTOR_ITEM || toggle == TOOLS_INSPECTOR_ITEM || toggle == TOOLS_TELEPORTER_ITEM || toggle == TOOLS_TOOLS_ITEM
-						|| toggle == TOOLS_ARENA_SELECTOR_ENABLED || toggle == TOOLS_INSPECTOR_ENABLED || toggle == TOOLS_TELEPORTER_ENABLED || toggle == TOOLS_TOOLS_ENABLED)
+				if (toggle == TOOLS_ARENA_SELECTOR_ITEM || toggle == TOOLS_INSPECTOR_ITEM || toggle == TOOLS_TELEPORTER_ITEM || toggle == TOOLS_TOOLS_ITEM || toggle == TOOLS_LEAVE_ITEM
+						|| toggle == TOOLS_ARENA_SELECTOR_ENABLED || toggle == TOOLS_INSPECTOR_ENABLED || toggle == TOOLS_TELEPORTER_ENABLED || toggle == TOOLS_TOOLS_ENABLED || toggle == TOOLS_LEAVE_ENABLED)
 				{
 					SpectatorPlus.get().getSpectatorsManager().getInventoryManager().updateSpectatorsInventoriesConfig();
 

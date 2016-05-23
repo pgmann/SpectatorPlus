@@ -4,6 +4,7 @@
  */
 package com.pgcraft.spectatorplus.guis.inventories;
 
+import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.arenas.Arena;
@@ -31,6 +32,7 @@ public class SpectatorsInventoryManager
 	final static String ARENA_SELECTOR_TITLE = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Arena selector";
 	final static String TOOLS_TITLE = ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Spectators' tools";
 	final static String INSPECTOR_TITLE = ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Inspector";
+	final static String LEAVE_TITLE = ChatColor.DARK_RED + "" + ChatColor.BOLD + "Leave Spectate Mode";
 
 	// Titles of the tools in the no-clip inventory
 	final static String QUIT_NOCLIP_TITLE = ChatColor.DARK_GREEN + "Go back to the real "; //... spectator's name
@@ -43,10 +45,7 @@ public class SpectatorsInventoryManager
 	private final static String PUNCH_A_PLAYER = ChatColor.GRAY + "(Punch a player)";
 
 	// Items used
-	private static Material TELEPORTER_ITEM;
-	private static Material ARENA_SELECTOR_ITEM;
-	private static Material TOOLS_ITEM;
-	private static Material INSPECTOR_ITEM;
+	private static Material TELEPORTER_ITEM, ARENA_SELECTOR_ITEM, TOOLS_ITEM, INSPECTOR_ITEM, LEAVE_ITEM;
 
 	private final static Material QUIT_NOCLIP_ITEM = Material.SKULL_ITEM;
 	private final static Material NIGHT_VISION_ACTIVE_ITEM = Material.EYE_OF_ENDER;
@@ -155,7 +154,17 @@ public class SpectatorsInventoryManager
 					ChatColor.GRAY + "inventory, armour, health and more!"
 			));
 
-			inventory.setItem(8, inspector);
+			inventory.setItem(Toggles.TOOLS_LEAVE_ENABLED.get() && Permissions.DISABLE_SPECTATOR_MODE.grantedTo(player) ? 7 : 8, inspector);
+		}
+		
+		if (Toggles.TOOLS_LEAVE_ENABLED.get() && Permissions.DISABLE_SPECTATOR_MODE.grantedTo(player))
+		{
+			ItemStack leave = GuiUtils.makeItem(LEAVE_ITEM, getItemTitle(LEAVE_TITLE, RIGHT_CLICK), Arrays.asList(
+					ChatColor.GRAY + "Click with this item to",
+					ChatColor.GRAY + "leave spectator mode."
+			));
+
+			inventory.setItem(8, leave);
 		}
 	}
 
@@ -282,6 +291,7 @@ public class SpectatorsInventoryManager
 		ARENA_SELECTOR_ITEM = Toggles.TOOLS_ARENA_SELECTOR_ITEM.get();
 		TOOLS_ITEM = Toggles.TOOLS_TOOLS_ITEM.get();
 		INSPECTOR_ITEM = Toggles.TOOLS_INSPECTOR_ITEM.get();
+		LEAVE_ITEM = Toggles.TOOLS_LEAVE_ITEM.get();
 
 		equipSpectators();
 	}
