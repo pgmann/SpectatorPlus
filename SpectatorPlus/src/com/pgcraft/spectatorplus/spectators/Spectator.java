@@ -85,11 +85,14 @@ public class Spectator
 
 
     /**
-     * True if the player is currently spectating.
+     * True if the player is currently spectating.<br>
+     * This includes spectators switching worlds as the player was spectating and will be as soon as switching is complete.
      */
     public boolean isSpectating()
     {
-        return spectating;
+    	// The player is technically spectating if they're just switching worlds.
+    	// This also fixes events not being cancelled during world switching (e.g. item pickup, damage, etc)
+        return spectating || wasSpectatorBeforeWorldChanged();
     }
 
 	/**

@@ -8,7 +8,6 @@ import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.spectators.Spectator;
-import com.pgcraft.spectatorplus.tasks.AfterRespawnTask;
 import fr.zcraft.zlib.tools.runners.RunTask;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -127,7 +126,13 @@ public class ServerActionsListener implements Listener
 		if (Toggles.SPECTATOR_MODE_ON_DEATH.get())
 		{
 			// Prevent murdering clients! (force close bug if spec mode is enabled instantly)
-			RunTask.nextTick(new AfterRespawnTask(ev.getPlayer()));
+			RunTask.nextTick(new Runnable() {
+				@Override
+				public void run()
+				{
+					SpectatorPlus.get().getPlayerData(ev.getPlayer()).setSpectating(true, ev.getPlayer());
+				}
+			});
 		}
 	}
 
