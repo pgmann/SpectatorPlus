@@ -1,6 +1,6 @@
 # SpectatorPlus
 
-####Quick links · [BukkitDev](http://dev.bukkit.org/bukkit-plugins/spectator/) · [Jenkins Builds](https://ci.pgmann.cf/job/SpectatorPlus/) · [JavaDoc](https://ci.pgmann.cf/job/SpectatorPlus/javadoc?com/pgcraft/spectatorplus/SpectateAPI.html) · [Maven Repo](https://mvn.pgmann.cf/#browse/browse/components) · [License](https://www.mozilla.org/MPL/2.0/)
+####Quick links · [BukkitDev](http://dev.bukkit.org/bukkit-plugins/spectator/) · [Jenkins Builds](https://ci.pgmann.cf/job/SpectatorPlus/) · [JavaDoc](https://ci.pgmann.cf/job/SpectatorPlus/javadoc?com/pgcraft/spectatorplus/SpectateAPI.html) · [Maven Repo](https://mvn.pgmann.cf/) · [License](https://www.mozilla.org/MPL/2.0/)
 ---
 
 SpectatorPlus is a plugin for Bukkit. For more information and guides on how to use it, [see the BukkitDev page ](http://dev.bukkit.org/bukkit-plugins/spectator/).
@@ -17,7 +17,7 @@ Older, legacy development builds [can be obtained here](http://jenkins.carrade.e
 
 #### ~ API Usage ~
 
-If you want to integrate SpectatorPlus with your own project, you can either directly import a downloaded `.jar` into your IDE, or if you use Maven, you can reference [my Maven Repository](https://mvn.pgmann.cf/#browse/browse/components) in your `pom.xml` to have the correct version downloaded automatically during building. The advantage of this is that maven will automatically find new updates and download them from my repository.
+If you want to integrate SpectatorPlus with your own project, you can either directly import a downloaded `.jar` into your IDE, or if you use Maven, you can reference [my Maven Repository](https://mvn.pgmann.cf/) in your `pom.xml` to have the correct version downloaded automatically during building. The advantage of this is that maven will automatically find new updates and download them from my repository.
 
 ```xml
 <project ...>
@@ -25,7 +25,7 @@ If you want to integrate SpectatorPlus with your own project, you can either dir
         <repository>
             <id>mvn-pgmann</id>
             <name>pgmann's repository</name>
-            <url>https://mvn.pgmann.cf/repository/maven-snapshots/</url>
+            <url>https://mvn.pgmann.cf/</url>
         </repository>
     </repositories>
     <dependencies>
