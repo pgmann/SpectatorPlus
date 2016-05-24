@@ -27,6 +27,7 @@ import com.pgcraft.spectatorplus.tasks.SpectatorManagerTask;
 import fr.zcraft.zlib.components.commands.Commands;
 import fr.zcraft.zlib.components.configuration.Configuration;
 import fr.zcraft.zlib.components.gui.Gui;
+import fr.zcraft.zlib.core.ZLib;
 import fr.zcraft.zlib.core.ZPlugin;
 import fr.zcraft.zlib.tools.runners.RunTask;
 import org.bukkit.ChatColor;
@@ -73,13 +74,12 @@ public class SpectatorPlus extends ZPlugin
 		arenasManager = new ArenasManager(this);
 
 		// Registering listeners
-		final PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(new ServerActionsListener(), this);
-		pm.registerEvents(new SpectatorsInteractionsListener(), this);
-		pm.registerEvents(new SpectatorsInventoryListener(), this);
-		pm.registerEvents(new SpectatorsChatListener(), this);
-		pm.registerEvents(new GuiUpdatesListener(), this);
-		pm.registerEvents(new ArenaSetupListener(), this);
+		ZLib.registerEvents(new ServerActionsListener());
+		ZLib.registerEvents(new SpectatorsInteractionsListener());
+		ZLib.registerEvents(new SpectatorsInventoryListener());
+		ZLib.registerEvents(new SpectatorsChatListener());
+		ZLib.registerEvents(new GuiUpdatesListener());
+		ZLib.registerEvents(new ArenaSetupListener());
 
 		// Registering commands
 		Commands.register(

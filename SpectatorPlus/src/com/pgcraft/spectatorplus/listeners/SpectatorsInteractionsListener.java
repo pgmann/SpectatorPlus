@@ -8,6 +8,8 @@ import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.guis.InventoryGUI;
 import fr.zcraft.zlib.components.gui.Gui;
+import fr.zcraft.zlib.components.events.FutureEventHandler;
+import fr.zcraft.zlib.components.events.WrappedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,6 +32,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -80,6 +83,15 @@ public class SpectatorsInteractionsListener implements Listener
 	public void onInventoryDrag(final InventoryDragEvent ev)
 	{
 		if (p.getPlayerData(((Player) ev.getWhoClicked())).isSpectating())
+		{
+			ev.setCancelled(true);
+		}
+	}
+	
+	@FutureEventHandler(event = "player.PlayerSwapHandItemsEvent", priority = EventPriority.HIGHEST)
+	public void onPlayerSwapHandItems(WrappedEvent ev)
+	{
+		if(SpectatorPlus.get().getPlayerData(((PlayerEvent) ev.getEvent()).getPlayer()).isSpectating())
 		{
 			ev.setCancelled(true);
 		}
