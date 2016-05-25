@@ -13,6 +13,7 @@ import fr.zcraft.zlib.components.events.WrappedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -33,6 +34,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -445,7 +447,7 @@ public class SpectatorsInteractionsListener implements Listener
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onPlayerInteractEntity(final PlayerInteractEntityEvent ev)
 	{
-		if (p.getPlayerData(ev.getPlayer()).isSpectating() && ev.getRightClicked() instanceof Player && !ev.getRightClicked().hasMetadata("NPC"))
+		if (!ev.getPlayer().hasMetadata("NPC") && p.getPlayerData(ev.getPlayer()).isSpectating())
 		{
 			ev.setCancelled(true);
 		}
@@ -456,12 +458,24 @@ public class SpectatorsInteractionsListener implements Listener
 	 * If the Skript integration is enabled, the event is not cancelled and Skript users will have
 	 * to cancel the event.
 	 *
-	 * See https://github.com/pgmann/SpectatorPlus/pull/38 .
+	 * See https://github.com/pgmann/SpectatorPlus/pull/38.
 	 */
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(final PlayerInteractEvent ev)
 	{
 		if (p.getPlayerData(ev.getPlayer()).isSpectating() && !Toggles.SKRIPT_INTEGRATION.get())
+		{
+			ev.setCancelled(true);
+		}
+	}
+	
+	/**
+	 * Used to prevent stealing from ArmorStands while spectating.
+	 */
+	@EventHandler (priority = EventPriority.HIGHEST)
+	public void onPlayerInteractAtEntity(final PlayerInteractAtEntityEvent ev)
+	{
+		if (p.getPlayerData(ev.getPlayer()).isSpectating() && !Toggles.SKRIPT_INTEGRATION.get() && ev.getRightClicked() instanceof ArmorStand)
 		{
 			ev.setCancelled(true);
 		}
