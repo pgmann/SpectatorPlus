@@ -4,16 +4,13 @@
  */
 package com.pgcraft.spectatorplus.listeners;
 
-import com.pgcraft.spectatorplus.SpectatorPlus;
-import com.pgcraft.spectatorplus.Toggles;
-import com.pgcraft.spectatorplus.guis.InventoryGUI;
-import fr.zcraft.zlib.components.gui.Gui;
-import fr.zcraft.zlib.components.events.FutureEventHandler;
-import fr.zcraft.zlib.components.events.WrappedEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -29,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -39,6 +37,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerUnleashEntityEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.inventory.Inventory;
@@ -47,9 +46,13 @@ import org.bukkit.material.Gate;
 import org.bukkit.material.TrapDoor;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import com.pgcraft.spectatorplus.SpectatorPlus;
+import com.pgcraft.spectatorplus.Toggles;
+import com.pgcraft.spectatorplus.guis.InventoryGUI;
+
+import fr.zcraft.zlib.components.events.FutureEventHandler;
+import fr.zcraft.zlib.components.events.WrappedEvent;
+import fr.zcraft.zlib.components.gui.Gui;
 
 
 public class SpectatorsInteractionsListener implements Listener
@@ -470,12 +473,28 @@ public class SpectatorsInteractionsListener implements Listener
 	}
 	
 	/**
-	 * Used to prevent stealing from ArmorStands while spectating.
+	 * Used to prevent the following whilst spectating:
+	 * <ul>
+	 * <li>Modifying <tt>ArmorStand</tt>s</li>
+	 * <li>other cases where interaction occurs AT an entity</li> 
+	 * </ul>
 	 */
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onPlayerInteractAtEntity(final PlayerInteractAtEntityEvent ev)
 	{
-		if (p.getPlayerData(ev.getPlayer()).isSpectating() && !Toggles.SKRIPT_INTEGRATION.get() && ev.getRightClicked() instanceof ArmorStand)
+		if (p.getPlayerData(ev.getPlayer()).isSpectating() && !Toggles.SKRIPT_INTEGRATION.get())
+		{
+			ev.setCancelled(true);
+		}
+	}
+	
+	/**
+	 * Used to prevent spectators breaking hangings (ItemFrame, LeashHitch or Painting)
+	 */
+	@EventHandler (priority = EventPriority.HIGHEST)
+	public void onHangingBreakByEntity(final HangingBreakByEntityEvent ev)
+	{
+		if (ev.getRemover() instanceof Player && p.getPlayerData((Player)ev.getRemover()).isSpectating())
 		{
 			ev.setCancelled(true);
 		}
