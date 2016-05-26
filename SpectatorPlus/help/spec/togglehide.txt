@@ -1,14 +1,13 @@
-Hides a player from the spectators.
+Hides a player from spectators.
 
 This command allows you to hide a player from the
-spectators, even if the mode allows him to be seen
-§7(see /spec help mode)§r (excepted for the players
-with a sufficient permission).
+spectator GUI, even if the mode allows them to be seen
+§7(see /spec help mode)§r.
 
-It's a toggle, so if the player was hidden he will
-become visible.
+Running the command on a player who was previously
+hidden will make them visible again.
 
 Spectators with the permission spectate.admin.hide.see
 (by default, operators) will still be able to see hidden
-players. Such players will be prefixed with a HIDDEN tag
+players. Hidden players will be prefixed with a HIDDEN tag
 in the teleportation GUI.

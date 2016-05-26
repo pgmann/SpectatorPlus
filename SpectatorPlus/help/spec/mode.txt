@@ -1,14 +1,13 @@
 Updates the spectating mode.
 
-The spectating mode represents the way the players
-a spectator is able to see in his teleporter are
-selected. Three modes are available.
+The spectating mode represents the way players
+are chosen by the teleporter. Three modes are available.
 
-§8- §6ANY§r: the players can teleport themselves to
-any non-spectating player in the server.
-§8- §6ARENA§r: the players will have to select an
+§8- §6ANY§r: spectators can teleport themselves to
+any non-spectating player on the server.
+§8- §6ARENA§r: spectators must first select an
 arena §7(see /spec help arena)§r; then, they will
-be able to teleport themselves to the player inside
-the bounds of the selected arena only.
-§8- §6WORLD§r: the players can teleport themselves
-to any player in the same world.
+be able to teleport themselves to any player inside
+the selected arena's bounds.
+§8- §6WORLD§r: spectators can teleport themselves
+to any player in their current world.

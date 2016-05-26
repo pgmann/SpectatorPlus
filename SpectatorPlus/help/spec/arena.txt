@@ -5,12 +5,11 @@ delete and list arenas.
 It is only useful if the spectating mode is set
 to ARENA §7(see /spec help mode)§r.
 
-An arena is a three-dimensional space in the game;
-while spectating, a player have to select an arena
-using the arena selector GUI (next to his teleporter)
-and, when selected, he can only see in the teleportation
-GUI the players inside the bounds of the selected
-arena.
+An arena is a 3D, box-shaped region in the game;
+while spectating, a player has to select an arena
+using the arena selector (next to their teleporter)
+and, when selected, their teleporter only displays
+players within that arena's bounds.
 
 An arena can have a lobby, were spectators are
 teleported when they select the arena.

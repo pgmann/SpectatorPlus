@@ -1,15 +1,16 @@
-Displays or updates the configuration.
+Displays or updates the configuration instantly.
 
-This command displays the configuration values, if used
-without a new value (/spec config <path>), or updates
-the configuration entries directly from the game.
+If used without a new value (/spec config <path>),
+the current configuration value is displayed. 
+Including a new value after the <path> updates
+the configuration entry directly from the game.
 
-The updates are instantaneously applied: as example, if
-you change the item representing the teleporter, all the
-spectators will see this item change in their inventory.
-Or, if you disable the spectators tools, all players with
-the tools GUI opened will have it force-closed.
+The updates are instantaneously applied. For example, try
+changing the item representing the teleporter. All spectators
+will instantly see the item change in their inventory.
+You can also try disabling the spectators tools - the tools GUI
+will force-close if it's open and the tool will disappear.
 
 §oThis is basically an interface to the config.yml file.
-§oBut please note that some values cannot be updated, like
+§oPlease note that some values cannot be updated, like
 §othe lists.

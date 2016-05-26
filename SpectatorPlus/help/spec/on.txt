@@ -1,5 +1,4 @@
-Enables the spectator mode for the given target.
+Enables spectator mode for the given player.
 
-[player name]: The name of the player to put into
-spectator mode. This is required if you execute the
-command from the console.
+[player name]: The name of the target player.
+Required when executing this command from the console.

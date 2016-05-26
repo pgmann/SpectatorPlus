@@ -1,4 +1,4 @@
-Lists the spectators.
+Lists the names of all current spectators.
 
 [arena name]: if provided, lists the spectators in
-this arena only.
+the specified arena only.

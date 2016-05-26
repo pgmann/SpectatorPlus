@@ -6,8 +6,9 @@ is not enabled.
 
 It is here to be used as a workaround for a CraftBukkit/
 Spigot bug: in some earlier versions (1.8.0), it was not
-possible to execute something when a player clicked on
-his inventory, if he was in vanilla spectator mode. This
-is no longer the case in recent CraftBukkit/Spigot version,
-so ignore this command and use the GUI (except if you want
-to use this).
+possible to detect when a player clicked on their inventory,
+if they were in vanilla spectator mode. This is no longer the
+case in recent CraftBukkit/Spigot versions, so you can ignore
+this command and use the GUI instead.
+
+Unless you really want to use this, of course!

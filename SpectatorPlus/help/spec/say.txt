@@ -1,5 +1,5 @@
-Broadcasts a message to the spectators.
+Broadcasts a message to the spectator chat.
 
-The messages sent through this commands will only
-be displayed to the spectators and the sender of
+Any message sent through this command will only
+be displayed to spectators and the sender of
 the message.

@@ -1,13 +1,13 @@
 §6§lThis command is the base command of SpectatorPlus.
-§rUse it to change the spectator mode of the players, to create arenas, to change options of the plugin...
-on:Enables the spectator mode for the given player (or yourself).
-off:Disables the spectator mode for the given player (or yourself).
-say:Broadcasts a message to the spectators.
-togglehide:Hides a player from the spectators, even if the mode allows him to be seen (excepted for the players with a sufficient permission).
-list:Lists all the spectators in this server.
-mode:Changes the players a spectator can see in the teleporter.
-arena:Manages arenas: creation, deletion, list, lobby...
-lobby:Sets or deletes the spectators lobby, where the players are teleported when they enter or leave the spectator mode (if set).
-config:Updates the config from the game, with instant application of the new rules.
-b:A workaround command to exit the no-clip mode, because some versions of CraftBukkit 1.8 don't allow plugins to listen to clicks for spectators.
+§rUse it to enable or disable spectate mode for players, create arenas, change the configuration, etc.
+on:Enables spectator mode for the given player (or yourself).
+off:Disables spectator mode for the given player (or yourself).
+say:Broadcasts a message to the spectator chat.
+togglehide:Hides a player from spectators, even if the mode allows them to be seen (players with sufficient permission can still see them).
+list:Lists all players currently spectating.
+mode:Changes which players are shown to spectators in the teleporter, based on the location of both.
+arena:Manages arena creation, deletion, listing, lobby management, etc.
+lobby:Sets or deletes the global spectator lobby, where players are teleported when they enter or leave spectator mode (if this is set).
+config:Updates the plugin configuration from ingame, with instant application of the new settings.
+b:A workaround command to exit the no-clip mode, because some versions of CraftBukkit 1.8 don't register inventory clicks for players in vanilla spectate gamemode.
 help:Displays this help.
