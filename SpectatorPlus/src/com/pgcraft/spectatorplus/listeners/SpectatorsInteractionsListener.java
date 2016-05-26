@@ -420,7 +420,7 @@ public class SpectatorsInteractionsListener implements Listener
 	public void onEntityTarget(final EntityTargetEvent ev)
 	{
 		// Check to make sure it isn't an NPC
-		if (ev.getTarget() != null && ev.getTarget() instanceof Player && !ev.getTarget().hasMetadata("NPC") && p.getPlayerData(((Player) ev.getTarget())).isSpectating())
+		if (ev.getTarget() instanceof Player && !ev.getTarget().hasMetadata("NPC") && p.getPlayerData(((Player) ev.getTarget())).isSpectating())
 		{
 			ev.setCancelled(true);
 		}

@@ -244,7 +244,8 @@ public class SpectatorsInventoryManager
 			{
 				final ItemStack item = inventory.getItem(slot);
 
-				if (item == null || item.getType() == Material.AIR)
+				// We only care about actual items, that have a display name already.
+				if (item == null || item.getType() == Material.AIR || item.getItemMeta() == null || item.getItemMeta().getDisplayName() == null)
 					continue;
 
 				final ItemMeta meta = item.getItemMeta();
