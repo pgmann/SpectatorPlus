@@ -30,7 +30,8 @@ public class ArenaSetupListener implements Listener
 	@EventHandler
 	protected void onBlockBreak(BlockBreakEvent ev)
 	{
-		ev.setCancelled(handleSetup(ev.getPlayer(), ev.getBlock().getLocation()));
+		if(handleSetup(ev.getPlayer(), ev.getBlock().getLocation()))
+			ev.setCancelled(true);
 	}
 
 	/**
@@ -39,7 +40,8 @@ public class ArenaSetupListener implements Listener
 	@EventHandler
 	protected void onBlockDamage(BlockDamageEvent ev)
 	{
-		ev.setCancelled(handleSetup(ev.getPlayer(), ev.getBlock().getLocation()));
+		if(handleSetup(ev.getPlayer(), ev.getBlock().getLocation()))
+			ev.setCancelled(true);
 	}
 
 
