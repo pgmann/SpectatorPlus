@@ -57,4 +57,4 @@ spApi.setSpectating(player, true); // Turn on/off spectate mode for 'player'
 Toggles.TOOLS_TELEPORTER_ENABLED.set(true); // Edit the values of each item in toggles.yml
 
 ```
-For detailed usage information on how to use the API, you can find [its JavaDoc here](https://ci.pgmann.cf/job/SpectatorPlus/javadoc?com/pgcraft/spectatorplus/SpectateAPI.html).
+For detailed usage information on how to use the API, you can find [its JavaDoc here](https://ci.pgmann.cf/job/SpectatorPlus/javadoc/index.html?com/pgcraft/spectatorplus/SpectateAPI.html).
