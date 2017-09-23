@@ -1,6 +1,6 @@
 # SpectatorPlus
 
-####Quick links · [BukkitDev](http://dev.bukkit.org/bukkit-plugins/spectator/) · [Jenkins Builds](https://ci.pgmann.cf/job/SpectatorPlus/) · [JavaDoc](https://ci.pgmann.cf/job/SpectatorPlus/javadoc?com/pgcraft/spectatorplus/SpectateAPI.html) · [Maven Repo](https://mvn.pgmann.cf/) · [License](https://www.mozilla.org/MPL/2.0/)
+#### Quick links · [BukkitDev](http://dev.bukkit.org/bukkit-plugins/spectator/) · [Jenkins Builds](https://ci.pgmann.cf/job/SpectatorPlus/) · [JavaDoc](https://ci.pgmann.cf/job/SpectatorPlus/javadoc?com/pgcraft/spectatorplus/SpectateAPI.html) · [Maven Repo](https://mvn.pgmann.cf/) · [License](https://www.mozilla.org/MPL/2.0/)
 ---
 
 SpectatorPlus is a plugin for Bukkit. For more information and guides on how to use it, [see the BukkitDev page ](http://dev.bukkit.org/bukkit-plugins/spectator/).
