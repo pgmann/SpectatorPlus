@@ -49,5 +49,7 @@ jobs:
         git config --global user.name "Github Actions"
         git config --global user.email "noreply@github.com"
         git add docs/javadoc
+        if ! git diff --cached --quiet; then
         git commit -m "Update javadocs"
         git push
+        fi
