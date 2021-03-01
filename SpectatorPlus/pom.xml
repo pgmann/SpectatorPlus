@@ -114,4 +114,12 @@
 			<version>0.0.2</version>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>pgmann-public</id>
+			<name>pgmann's public maven repo</name>
+			<url>https://repo.repsy.io/mvn/pgmann/public</url>
+		</repository>
+	</distributionManagement>
 </project>

@@ -24,6 +24,9 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+        server-id: pgmann-public
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_PASSWORD
     - name: Build with Maven
       run: mvn -B package javadoc:javadoc --file SpectatorPlus/pom.xml
     - name: Archive final plugin JAR
@@ -31,13 +34,19 @@ jobs:
       with:
         name: SpectatorPlus Plugin
         path: SpectatorPlus/target/SpectatorPlus-*-SNAPSHOT.jar
+    - name: Publish JAR to Maven Repo
+      if: ${{ github.event_name == 'push' }}
+      run: mvn --batch-mode deploy
+      env:
+        MAVEN_USERNAME: ${{ secrets.MVN_UPLOAD_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.MVN_UPLOAD_PASSWORD }}
     - name: Push update to javadocs
       if: ${{ github.event_name == 'push' }}
       run: |
-        rm -rf docs
-        mv SpectatorPlus/target/site/apidocs docs
+        rm -rf docs/javadoc
+        mv SpectatorPlus/target/site/apidocs docs/javadoc
         git config --global user.name "Github Actions"
         git config --global user.email "noreply@github.com"
-        git add docs
+        git add docs/javadocs
         git commit -m "Update javadocs"
         git push
