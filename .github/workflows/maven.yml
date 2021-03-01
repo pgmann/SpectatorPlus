@@ -28,7 +28,7 @@ jobs:
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
     - name: Build with Maven
-      run: mvn -B package javadoc:javadoc --file SpectatorPlus/pom.xml
+      run: mvn --batch-mode package javadoc:javadoc --file SpectatorPlus/pom.xml
     - name: Archive final plugin JAR
       uses: actions/upload-artifact@v2
       with:
@@ -36,7 +36,7 @@ jobs:
         path: SpectatorPlus/target/SpectatorPlus-*-SNAPSHOT.jar
     - name: Publish JAR to Maven Repo
       if: ${{ github.event_name == 'push' }}
-      run: mvn --batch-mode deploy
+      run: mvn --batch-mode deploy --file SpectatorPlus/pom.xml
       env:
         MAVEN_USERNAME: ${{ secrets.MVN_UPLOAD_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.MVN_UPLOAD_PASSWORD }}
