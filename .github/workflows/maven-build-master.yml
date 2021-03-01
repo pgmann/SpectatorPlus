@@ -38,12 +38,13 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       run: mvn --batch-mode deploy --file SpectatorPlus/pom.xml
       env:
-        MAVEN_USERNAME: ${{ secrets.MVN_UPLOAD_USERNAME }}
+        MAVEN_USERNAME: pgmann
         MAVEN_PASSWORD: ${{ secrets.MVN_UPLOAD_PASSWORD }}
     - name: Push update to javadocs
       if: ${{ github.event_name == 'push' }}
       run: |
         rm -rf docs/javadoc
+        mkdir --parents docs/javadoc
         mv SpectatorPlus/target/site/apidocs docs/javadoc
         git config --global user.name "Github Actions"
         git config --global user.email "noreply@github.com"
