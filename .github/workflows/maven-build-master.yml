@@ -48,6 +48,6 @@ jobs:
         mv SpectatorPlus/target/site/apidocs docs/javadoc
         git config --global user.name "Github Actions"
         git config --global user.email "noreply@github.com"
-        git add docs/javadocs
+        git add docs/javadoc
         git commit -m "Update javadocs"
         git push
