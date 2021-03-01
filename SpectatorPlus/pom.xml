@@ -74,6 +74,10 @@
                             <pattern>fr.zcraft.quartzlib</pattern>
                             <shadedPattern>com.pgcraft.spectatorplus.quartzlib</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.apache.commons</pattern>
+                            <shadedPattern>com.pgcraft.spectatorplus.org.apache.commons</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>
