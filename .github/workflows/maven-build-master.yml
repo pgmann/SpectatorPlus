@@ -44,7 +44,7 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       run: |
         rm -rf docs/javadoc
-        mkdir --parents docs/javadoc
+        mkdir --parents docs
         mv SpectatorPlus/target/site/apidocs docs/javadoc
         git config --global user.name "Github Actions"
         git config --global user.email "noreply@github.com"
