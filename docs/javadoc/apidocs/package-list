@@ -1,0 +1,11 @@
+com.pgcraft.spectatorplus
+com.pgcraft.spectatorplus.arenas
+com.pgcraft.spectatorplus.arenas.io
+com.pgcraft.spectatorplus.commands.admin
+com.pgcraft.spectatorplus.commands.users
+com.pgcraft.spectatorplus.guis
+com.pgcraft.spectatorplus.guis.inventories
+com.pgcraft.spectatorplus.listeners
+com.pgcraft.spectatorplus.spectators
+com.pgcraft.spectatorplus.tasks
+com.pgcraft.spectatorplus.utils
