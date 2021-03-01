@@ -1,6 +1,6 @@
 # SpectatorPlus
 
-#### Quick links · [BukkitDev](https://dev.bukkit.org/projects/spectator) · [Dev Builds](https://github.com/pgmann/SpectatorPlus/actions/workflows/maven.yml) · [JavaDoc](https://pgmann.cf/SpectatorPlus/javadoc/?com/pgcraft/spectatorplus/SpectateAPI.html) · [Maven Repo](https://repo.repsy.io/mvn/pgmann/public/) · [License](https://www.mozilla.org/MPL/2.0/)
+#### Quick links · [BukkitDev](https://dev.bukkit.org/projects/spectator) · [Dev Builds](https://github.com/pgmann/SpectatorPlus/actions/workflows/maven-build-master.yml) · [JavaDoc](https://pgmann.cf/SpectatorPlus/javadoc/?com/pgcraft/spectatorplus/SpectateAPI.html) · [Maven Repo](https://repo.repsy.io/mvn/pgmann/public/) · [License](https://www.mozilla.org/MPL/2.0/)
 ---
 
 SpectatorPlus is a plugin for Bukkit. For more information and guides on how to use it, [see the BukkitDev page ](http://dev.bukkit.org/bukkit-plugins/spectator/).
@@ -12,7 +12,7 @@ A summary of this licence is [available here](https://tldrlegal.com/license/mozi
 
 #### ~ Obtaining a Build ~
 
-The source code of this repository is automatically built and [is always available here](https://github.com/pgmann/SpectatorPlus/actions/workflows/maven.yml).
+The source code of this repository is automatically built and [is always available here](https://github.com/pgmann/SpectatorPlus/actions/workflows/maven-build-master.yml).
 Older, legacy development builds [can be obtained here](http://jenkins.carrade.eu/job/SpectatorPlus/) instead. In order to build this project yourself, it is recommended to use **Maven**. If you don't, you will need to import the various dependencies manually, such as [Apache Commons Lang](http://commons.apache.org/proper/commons-lang/), to be able to build the project.
 
 #### ~ API Usage ~
