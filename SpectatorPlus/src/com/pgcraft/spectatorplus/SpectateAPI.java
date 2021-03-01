@@ -273,7 +273,7 @@ public class SpectateAPI {
      * @param sender   The sender of the message.
      * @param message  The text of the message.
      * @param isAction If true, the message will be displayed as an action message (like /me
-     *                 <message>).
+     *                 &lt;message&gt;).
      * @since 2.0
      */
     public void sendSpectatorMessage(CommandSender sender, String message, Boolean isAction) {

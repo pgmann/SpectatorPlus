@@ -51,6 +51,7 @@ public class SpectatorsChatListener implements Listener {
      * <li>Prevents a command being executed if the player is a spectator and the option is set in the config;</li>
      * <li>Catches /me commands to show them in the spectator chat (if the user isn't shouting);</li>
      * <li>Allows specified commands from the whitelist section to be executed.</li>
+     * </ul>
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCommandPreprocessed(PlayerCommandPreprocessEvent ev) {

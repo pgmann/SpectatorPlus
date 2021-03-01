@@ -68,7 +68,7 @@ public class ServerActionsListener implements Listener {
 
 
     /**
-     * Saves the death message & location, if the "teleportation to the death point"
+     * Saves the death message &amp; location, if the "teleportation to the death point"s
      * tool is enabled.
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -111,7 +111,7 @@ public class ServerActionsListener implements Listener {
 
 
     /**
-     * Handles MultiverseInventories & other similar plugins.
+     * Handles MultiverseInventories &amp; other similar plugins.
      * <p>
      * Disables spectate mode to restore proper inventory before world change; then
      * re-enables spectate mode to restore spectator inventory after world change.

@@ -6,8 +6,12 @@ name: Build Master
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - "docs/*"
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - "docs/*"
 
 jobs:
   build:
@@ -21,4 +25,19 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Maven
-      run: mvn -B package --file SpectatorPlus/pom.xml
+      run: mvn -B package javadoc:javadoc --file SpectatorPlus/pom.xml
+    - name: Archive final plugin JAR
+      uses: actions/upload-artifact@v2
+      with:
+        name: SpectatorPlus Plugin
+        path: SpectatorPlus/target/SpectatorPlus-*-SNAPSHOT.jar
+    - name: Push update to javadocs
+      if: ${{ github.event_name == 'push' }}
+      run: |
+        rm -rf docs
+        mv SpectatorPlus/target/site/apidocs docs
+        git config --global user.name "Github Actions"
+        git config --global user.email "noreply@github.com"
+        git add docs
+        git commit -m "Update javadocs"
+        git push

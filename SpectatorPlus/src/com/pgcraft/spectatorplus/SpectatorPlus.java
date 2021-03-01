@@ -154,10 +154,11 @@ public class SpectatorPlus extends QuartzPlugin {
     }
 
     /**
-     * Sends a message to the payer if the messages are enabled in the config.
+     * Sends a message to the player if the messages are enabled in the config.
      *
-     * @param message The message to be sent. It will be prefixed by the Spectator Plus prefix.
-     * @param force   {@code true} to send the message even if messages are not enabled.
+     * @param receiver The recipient of the message.
+     * @param message  The message to be sent. It will be prefixed by the Spectator Plus prefix.
+     * @param force    {@code true} to send the message even if messages are not enabled.
      */
     public void sendMessage(CommandSender receiver, String message, boolean force) {
         if (receiver != null && (!(receiver instanceof Player) || Toggles.OUTPUT_MESSAGES.get() || force)) {

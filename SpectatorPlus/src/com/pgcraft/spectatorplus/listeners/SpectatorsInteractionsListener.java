@@ -346,7 +346,7 @@ public class SpectatorsInteractionsListener implements Listener {
     }
 
     /**
-     * Used to prevent players & mobs from damaging spectators, and stop the fire display when a
+     * Used to prevent players &amp; mobs from damaging spectators, and stop the fire display when a
      * spectator comes out of a fire/lava block.
      */
     @EventHandler(priority = EventPriority.HIGHEST)

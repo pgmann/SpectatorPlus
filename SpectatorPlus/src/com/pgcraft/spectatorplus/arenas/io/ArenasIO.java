@@ -15,7 +15,7 @@ import java.util.*;
 
 
 /**
- * Loads & saves arenas.
+ * Loads and saves arenas.
  */
 public final class ArenasIO {
     private static final String STORAGE_KEY = "arenas";
