@@ -7,7 +7,7 @@ package com.pgcraft.spectatorplus.listeners;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.guis.InventoryGUI;
 import com.pgcraft.spectatorplus.guis.PlayerInventoryGUI;
-import fr.zcraft.zlib.components.gui.Gui;
+import fr.zcraft.quartzlib.components.gui.Gui;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,93 +25,64 @@ import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.inventory.Inventory;
 
 
-public class GuiUpdatesListener implements Listener
-{
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onInventoryClick(InventoryClickEvent ev)
-	{
-		updateInventory(ev.getInventory());
-	}
+public class GuiUpdatesListener implements Listener {
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onInventoryClick(InventoryClickEvent ev) {
+        updateInventory(ev.getInventory());
+    }
 
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onInventoryDrag(InventoryDragEvent ev)
-	{
-		updateInventory(ev.getInventory());
-	}
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onInventoryDrag(InventoryDragEvent ev) {
+        updateInventory(ev.getInventory());
+    }
 
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onItemMove(InventoryMoveItemEvent ev)
-	{
-		updateInventory(ev.getDestination());
-		updateInventory(ev.getSource());
-	}
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onItemMove(InventoryMoveItemEvent ev) {
+        updateInventory(ev.getDestination());
+        updateInventory(ev.getSource());
+    }
 
 
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerDamage(EntityDamageEvent ev)
-	{
-		if (ev.getEntity() instanceof Player)
-		{
-			updatePlayerInventoryGUI();
-		}
-	}
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerDamage(EntityDamageEvent ev) {
+        if (ev.getEntity() instanceof Player) {
+            updatePlayerInventoryGUI();
+        }
+    }
 
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerRegainHealth(EntityRegainHealthEvent ev)
-	{
-		if (ev.getEntity() instanceof Player)
-		{
-			updatePlayerInventoryGUI();
-		}
-	}
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerRegainHealth(EntityRegainHealthEvent ev) {
+        if (ev.getEntity() instanceof Player) {
+            updatePlayerInventoryGUI();
+        }
+    }
 
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerXPChange(PlayerExpChangeEvent ev)
-	{
-		updatePlayerInventoryGUI();
-	}
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerXPChange(PlayerExpChangeEvent ev) {
+        updatePlayerInventoryGUI();
+    }
 
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPlayerFoodLevelChange(FoodLevelChangeEvent ev)
-	{
-		updatePlayerInventoryGUI();
-	}
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerFoodLevelChange(FoodLevelChangeEvent ev) {
+        updatePlayerInventoryGUI();
+    }
 
-	@EventHandler (priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onPotionSplash(PotionSplashEvent ev)
-	{
-		updatePlayerInventoryGUI();
-	}
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPotionSplash(PotionSplashEvent ev) {
+        updatePlayerInventoryGUI();
+    }
 
+    private void updateInventory(final Inventory inventory) {
+        Bukkit.getScheduler().runTaskLater(SpectatorPlus.get(), () -> {
+            if (inventory.getType() == InventoryType.PLAYER || inventory.getType() == InventoryType.CREATIVE) {
+                updatePlayerInventoryGUI();
+            } else if (inventory.getType() == InventoryType.CHEST) {
+                Gui.update(InventoryGUI.class);
+            }
+        }, 1L);
+    }
 
-	private void updateInventory(final Inventory inventory)
-	{
-		Bukkit.getScheduler().runTaskLater(SpectatorPlus.get(), new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (inventory.getType() == InventoryType.PLAYER || inventory.getType() == InventoryType.CREATIVE)
-				{
-					updatePlayerInventoryGUI();
-				}
-				else if (inventory.getType() == InventoryType.CHEST)
-				{
-					Gui.update(InventoryGUI.class);
-				}
-			}
-		}, 1l);
-	}
-
-	private void updatePlayerInventoryGUI()
-	{
-		Bukkit.getScheduler().runTaskLater(SpectatorPlus.get(), new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				Gui.update(PlayerInventoryGUI.class);
-			}
-		}, 1l);
-	}
+    private void updatePlayerInventoryGUI() {
+        Bukkit.getScheduler().runTaskLater(SpectatorPlus.get(), () -> Gui.update(PlayerInventoryGUI.class), 1L);
+    }
 }

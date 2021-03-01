@@ -7,56 +7,48 @@ package com.pgcraft.spectatorplus.commands.admin;
 
 import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
-import fr.zcraft.zlib.components.commands.Command;
-import fr.zcraft.zlib.components.commands.CommandException;
-import fr.zcraft.zlib.components.commands.CommandInfo;
+import fr.zcraft.quartzlib.components.commands.Command;
+import fr.zcraft.quartzlib.components.commands.CommandException;
+import fr.zcraft.quartzlib.components.commands.CommandInfo;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 import java.util.List;
 
 
-@CommandInfo (name = "lobby", usageParameters = "<set|delete>")
-public class SetLobbyCommand extends Command
-{
-	@Override
-	protected void run() throws CommandException
-	{
-		if (args.length < 1)
-			throwInvalidArgument("No action provided.");
+@CommandInfo(name = "lobby", usageParameters = "<set|delete>")
+public class SetLobbyCommand extends Command {
+    @Override
+    protected void run() throws CommandException {
+        if (args.length < 1)
+            throwInvalidArgument("No action provided.");
 
-		switch (args[0].toLowerCase().trim())
-		{
-			case "set":
-				SpectatorPlus.get().getSpectatorsManager().setSpectatorsLobby(playerSender().getLocation());
-				success("The spectator lobby has been set on your current location.");
-				break;
+        switch (args[0].toLowerCase().trim()) {
+            case "set":
+                SpectatorPlus.get().getSpectatorsManager().setSpectatorsLobby(playerSender().getLocation());
+                success("The spectator lobby has been set on your current location.");
+                break;
 
-			case "delete":
-				SpectatorPlus.get().getSpectatorsManager().setSpectatorsLobby(null);
-				success("The spectator lobby was successfully deleted. Spectators will no longer be teleported to it when they enter spectating mode.");
-				break;
+            case "delete":
+                SpectatorPlus.get().getSpectatorsManager().setSpectatorsLobby(null);
+                success("The spectator lobby was successfully deleted. Spectators will no longer be teleported to it when they enter spectating mode.");
+                break;
 
-			default:
-				throwInvalidArgument("We don't understand « " + args[0] + " ».");
-				break;
-		}
-	}
+            default:
+                throwInvalidArgument("We don't understand « " + args[0] + " ».");
+                break;
+        }
+    }
 
-	@Override
-	protected List<String> complete() throws CommandException
-	{
-		if (args.length == 1)
-		{
-			return getMatchingSubset(Arrays.asList("set", "delete"), args[0]);
-		}
+    @Override
+    protected List<String> complete() {
+        if (args.length == 1) {
+            return getMatchingSubset(Arrays.asList("set", "delete"), args[0]);
+        } else return null;
+    }
 
-		else return null;
-	}
-
-	@Override
-	public boolean canExecute(CommandSender sender)
-	{
-		return Permissions.CHANGE_SPECTATORS_LOBBY.grantedTo(sender);
-	}
+    @Override
+    public boolean canExecute(CommandSender sender) {
+        return Permissions.CHANGE_SPECTATORS_LOBBY.grantedTo(sender);
+    }
 }

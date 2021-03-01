@@ -17,3 +17,4 @@ SpectatorPlus/target/
 SpectatorPlus/dependency-reduced-pom.xml
 
 *.iml
+.idea

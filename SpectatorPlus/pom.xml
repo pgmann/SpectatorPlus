@@ -4,7 +4,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pgcraft</groupId>
 	<artifactId>SpectatorPlus</artifactId>
@@ -12,6 +12,10 @@
 	<name>SpectatorPlus</name>
 	<url>http://github.com/pgmann/spectatorplus</url>
 	<description>This is a Minecraft Bukkit plugin providing an advanced spectator mode; see http://github.com/pgmann/spectatorplus for the source and README.</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 	<issueManagement>
 		<system>Github Issues</system>
@@ -48,25 +52,25 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
+				<version>2.4</version>
 				<configuration>
 					<minimizeJar>true</minimizeJar>
 					<artifactSet>
 						<includes>
-							<include>fr.zcraft:zlib</include>
+							<include>fr.zcraft:quartzlib</include>
 						</includes>
 					</artifactSet>
 					<relocations>
 						<relocation>
-							<pattern>fr.zcraft.zlib</pattern>
-							<shadedPattern>com.pgcraft.spectatorplus.zlib</shadedPattern>
+							<pattern>fr.zcraft.quartzlib</pattern>
+							<shadedPattern>com.pgcraft.spectatorplus.quartzlib</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
@@ -88,20 +92,16 @@
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
-			<id>carrade-repo</id>
-			<url>http://depot.carrade.eu/maven2/</url>
-		</repository>
-		<repository>
-			<id>zDevelopers</id>
-			<url>http://maven.carrade.eu/artifactory/snapshots</url>
+			<id>QuartzLib</id>
+			<url>https://maven.zcraft.fr/QuartzLib</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>1.8.3-R0.1-SNAPSHOT</version>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.16.5-R0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -110,8 +110,8 @@
 		</dependency>
 		<dependency>
 			<groupId>fr.zcraft</groupId>
-			<artifactId>zlib</artifactId>
-			<version>0.99-SNAPSHOT</version>
+			<artifactId>quartzlib</artifactId>
+			<version>0.0.2</version>
 		</dependency>
 	</dependencies>
 </project>

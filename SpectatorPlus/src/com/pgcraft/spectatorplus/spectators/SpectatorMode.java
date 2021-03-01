@@ -24,42 +24,35 @@ package com.pgcraft.spectatorplus.spectators;
  *
  * @since 2.0
  */
-public enum SpectatorMode
-{
-	ANY("Spectators can teleport themselves to any non-spectating player in the server."),
-	ARENA("Spectators needs to select an arena; then, they can only teleport themselves to the players inside the boundaries of this arena. An option is available to prevent the spectators from leaving the arena."),
-	WORLD("Spectators can teleport themselves to the players in the same world only.");
+public enum SpectatorMode {
+    ANY("Spectators can teleport themselves to any non-spectating player in the server."),
+    ARENA("Spectators needs to select an arena; then, they can only teleport themselves to the players inside the boundaries of this arena. An option is available to prevent the spectators from leaving the arena."),
+    WORLD("Spectators can teleport themselves to the players in the same world only.");
 
+    private final String description;
 
-	private String description;
+    SpectatorMode(String description) {
+        this.description = description;
+    }
 
-	SpectatorMode(String description)
-	{
-		this.description = description;
-	}
+    /**
+     * Returns the mode with the specified name.
+     *
+     * @param mode The mode.
+     * @return {@link SpectatorMode}.
+     * @throws IllegalArgumentException if there isn't any mode with this name.
+     * @throws NullPointerException     if mode is null.
+     * @since 2.0
+     */
+    static public SpectatorMode fromString(String mode) {
+        return SpectatorMode.valueOf(mode.toUpperCase().trim());
+    }
 
-	/**
-	 * @return a description of this spectating mode.
-	 * @since 3.0
-	 */
-	public String getDescription()
-	{
-		return description;
-	}
-
-
-	/**
-	 * Returns the mode with the specified name.
-	 *
-	 * @param mode The mode.
-	 *
-	 * @return {@link SpectatorMode}.
-	 * @throws IllegalArgumentException if there isn't any mode with this name.
-	 * @throws NullPointerException     if mode is null.
-	 * @since 2.0
-	 */
-	static public SpectatorMode fromString(String mode)
-	{
-		return SpectatorMode.valueOf(mode.toUpperCase().trim());
-	}
+    /**
+     * @return a description of this spectating mode.
+     * @since 3.0
+     */
+    public String getDescription() {
+        return description;
+    }
 }

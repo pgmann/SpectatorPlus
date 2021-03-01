@@ -13,53 +13,43 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 
+public class ArenaSetupListener implements Listener {
+    private final SpectatorPlus p;
 
-public class ArenaSetupListener implements Listener
-{
-	private SpectatorPlus p;
+    public ArenaSetupListener() {
+        this.p = SpectatorPlus.get();
+    }
 
-	public ArenaSetupListener()
-	{
-		this.p = SpectatorPlus.get();
-	}
+    /**
+     * Used to setup an arena, if the command was sent before by this player.
+     */
+    @EventHandler
+    protected void onBlockBreak(BlockBreakEvent ev) {
+        if (handleSetup(ev.getPlayer(), ev.getBlock().getLocation()))
+            ev.setCancelled(true);
+    }
 
-
-	/**
-	 * Used to setup an arena, if the command was sent before by this player.
-	 */
-	@EventHandler
-	protected void onBlockBreak(BlockBreakEvent ev)
-	{
-		if(handleSetup(ev.getPlayer(), ev.getBlock().getLocation()))
-			ev.setCancelled(true);
-	}
-
-	/**
-	 * Used to setup an arena (if the command was sent before by the sender).
-	 */
-	@EventHandler
-	protected void onBlockDamage(BlockDamageEvent ev)
-	{
-		if(handleSetup(ev.getPlayer(), ev.getBlock().getLocation()))
-			ev.setCancelled(true);
-	}
+    /**
+     * Used to setup an arena (if the command was sent before by the sender).
+     */
+    @EventHandler
+    protected void onBlockDamage(BlockDamageEvent ev) {
+        if (handleSetup(ev.getPlayer(), ev.getBlock().getLocation()))
+            ev.setCancelled(true);
+    }
 
 
-	/**
-	 * Used to setup an arena (if the command was sent before by the sender).
-	 *
-	 * @return {@code true} if the underlying event needs to be cancelled.
-	 */
-	private boolean handleSetup(Player player, Location location)
-	{
-		ArenaSetup setup = p.getPlayerData(player).getArenaSetup();
+    /**
+     * Used to setup an arena (if the command was sent before by the sender).
+     *
+     * @return {@code true} if the underlying event needs to be cancelled.
+     */
+    private boolean handleSetup(Player player, Location location) {
+        ArenaSetup setup = p.getPlayerData(player).getArenaSetup();
 
-		if (setup != null)
-		{
-			setup.next(location);
-			return true;
-		}
-
-		else return false;
-	}
+        if (setup != null) {
+            setup.next(location);
+            return true;
+        } else return false;
+    }
 }

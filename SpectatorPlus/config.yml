@@ -25,7 +25,7 @@ tools:
     # Tip: don't disable that except if you're using a plugin to put players into arenas automatically.
     arenaChooser:
         enabled: true
-        item: WATCH
+        item: CLOCK
 
         # Set to true to display the number of players in this arena in the tooltip
         playersCount: true
@@ -59,7 +59,7 @@ tools:
     # This tool allows a spectator to click with this item to leave spectate mode (same as the "/spec off" command)
     leave:
         enabled: true
-        item: BED
+        item: RED_BED
     
     # Add "(Right-click)" in the name of the spectators' tools (teleporter, etc.)?
     newbieMode: true

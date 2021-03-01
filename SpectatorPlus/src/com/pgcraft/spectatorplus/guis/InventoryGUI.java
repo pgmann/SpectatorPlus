@@ -4,31 +4,26 @@
  */
 package com.pgcraft.spectatorplus.guis;
 
-import fr.zcraft.zlib.components.gui.ActionGui;
+import fr.zcraft.quartzlib.components.gui.ActionGui;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 
-public class InventoryGUI extends ActionGui
-{
-	private Inventory displayedInventory;
+public class InventoryGUI extends ActionGui {
+    private Inventory displayedInventory;
 
-	public InventoryGUI(Inventory displayedInventory)
-	{
-		this.displayedInventory = displayedInventory;
-	}
+    public InventoryGUI(Inventory displayedInventory) {
+        this.displayedInventory = displayedInventory;
+    }
 
+    @Override
+    protected void onUpdate() {
+        setSize(displayedInventory.getSize());
+        setTitle(displayedInventory.getType().getDefaultTitle());
 
-	@Override
-	protected void onUpdate()
-	{
-		setSize(displayedInventory.getSize());
-		setTitle(displayedInventory.getTitle().startsWith("container.") ? displayedInventory.getType().getDefaultTitle() : displayedInventory.getTitle());
-
-		int slot = 0;
-		for (ItemStack stack : displayedInventory)
-		{
-			action("", slot++, stack);
-		}
-	}
+        int slot = 0;
+        for (ItemStack stack : displayedInventory) {
+            action("", slot++, stack);
+        }
+    }
 }

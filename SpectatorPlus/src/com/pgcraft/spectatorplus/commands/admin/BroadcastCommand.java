@@ -6,28 +6,24 @@ package com.pgcraft.spectatorplus.commands.admin;
 
 import com.pgcraft.spectatorplus.Permissions;
 import com.pgcraft.spectatorplus.SpectatorPlus;
-import fr.zcraft.zlib.components.commands.Command;
-import fr.zcraft.zlib.components.commands.CommandException;
-import fr.zcraft.zlib.components.commands.CommandInfo;
+import fr.zcraft.quartzlib.components.commands.Command;
+import fr.zcraft.quartzlib.components.commands.CommandInfo;
 import org.bukkit.command.CommandSender;
 
 
-@CommandInfo (name = "say", usageParameters = "<message>")
-public class BroadcastCommand extends Command
-{
-	@Override
-	protected void run() throws CommandException
-	{
-		String message = "";
-		for (String part : args)
-			message += part + " ";
+@CommandInfo(name = "say", usageParameters = "<message>")
+public class BroadcastCommand extends Command {
+    @Override
+    protected void run() {
+        StringBuilder message = new StringBuilder();
+        for (String part : args)
+            message.append(part).append(" ");
 
-		SpectatorPlus.get().getSpectatorsManager().getChatManager().broadcastToSpectators(sender, message.trim());
-	}
+        SpectatorPlus.get().getSpectatorsManager().getChatManager().broadcastToSpectators(sender, message.toString().trim());
+    }
 
-	@Override
-	public boolean canExecute(CommandSender sender)
-	{
-		return Permissions.BROADCAST_MESSAGES_TO_SPECTATORS.grantedTo(sender);
-	}
+    @Override
+    public boolean canExecute(CommandSender sender) {
+        return Permissions.BROADCAST_MESSAGES_TO_SPECTATORS.grantedTo(sender);
+    }
 }

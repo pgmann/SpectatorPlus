@@ -7,40 +7,36 @@ package com.pgcraft.spectatorplus.commands.users;
 import com.pgcraft.spectatorplus.SpectatorPlus;
 import com.pgcraft.spectatorplus.Toggles;
 import com.pgcraft.spectatorplus.spectators.Spectator;
-import fr.zcraft.zlib.components.commands.Command;
-import fr.zcraft.zlib.components.commands.CommandException;
-import fr.zcraft.zlib.components.commands.CommandInfo;
+import fr.zcraft.quartzlib.components.commands.Command;
+import fr.zcraft.quartzlib.components.commands.CommandException;
+import fr.zcraft.quartzlib.components.commands.CommandInfo;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 
 
-@CommandInfo (name = "b")
-public class BackFromNoClipCommand extends Command
-{
-	@Override
-	protected void run() throws CommandException
-	{
-		final Spectator spectator = SpectatorPlus.get().getPlayerData(playerSender());
+@CommandInfo(name = "b")
+public class BackFromNoClipCommand extends Command {
+    @Override
+    protected void run() throws CommandException {
+        final Spectator spectator = SpectatorPlus.get().getPlayerData(playerSender());
 
-		if (spectator.isSpectating() && playerSender().getGameMode() == GameMode.SPECTATOR)
-		{
-			spectator.setGamemodeChangeAllowed(true);
-			playerSender().setGameMode(GameMode.ADVENTURE);
-			spectator.setGamemodeChangeAllowed(false);
+        if (spectator.isSpectating() && playerSender().getGameMode() == GameMode.SPECTATOR) {
+            spectator.setGamemodeChangeAllowed(true);
+            playerSender().setGameMode(GameMode.ADVENTURE);
+            spectator.setGamemodeChangeAllowed(false);
 
-			playerSender().setAllowFlight(true);
-			playerSender().setFlying(true); // The player comes from the spectator mode, so he was flying.
+            playerSender().setAllowFlight(true);
+            playerSender().setFlying(true); // The player comes from the spectator mode, so he was flying.
 
-			SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(playerSender());
+            SpectatorPlus.get().getSpectatorsManager().getInventoryManager().equipSpectator(playerSender());
 
-			success("No-clip mode disabled.");
-		}
-	}
+            success("No-clip mode disabled.");
+        }
+    }
 
-	@Override
-	public boolean canExecute(CommandSender sender)
-	{
-		// Allowed if the vanilla spectator mode is not forced. No permission, as this is a workaround.
-		return !Toggles.VANILLA_SPECTATOR_MODE.get();
-	}
+    @Override
+    public boolean canExecute(CommandSender sender) {
+        // Allowed if the vanilla spectator mode is not forced. No permission, as this is a workaround.
+        return !Toggles.VANILLA_SPECTATOR_MODE.get();
+    }
 }
